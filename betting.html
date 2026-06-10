@@ -67,47 +67,32 @@
 </head>
 <body>
 <div class="app-container">
-    <div class="header">
-        <button class="back-btn" onclick="goBack()">←</button>
-        <img src="https://i.imgur.com/V4pMmxP.jpeg" alt="DURGA" class="logo-img">
-        <div class="market-title" id="marketName">Loading...</div>
-        <div class="bid-badge" id="bidTypeBadge"></div>
-    </div>
+    <div class="header"><button class="back-btn" onclick="goBack()">←</button><img src="https://i.imgur.com/V4pMmxP.jpeg" alt="DURGA" class="logo-img"><div class="market-title" id="marketName">Loading...</div><div class="bid-badge" id="bidTypeBadge"></div></div>
     <div class="balance-card"><span class="balance-label">Your Balance</span><span class="balance-amount">₹<span id="userBalance">0</span></span></div>
-    <div id="gameSelectionScreen" class="game-selection-screen">
-        <div class="selection-title">🌸 Choose Game Type</div>
-        <div class="selection-subtitle">Select a game to start betting</div>
-        <div class="game-types-grid" id="gameTypesGrid"></div>
-    </div>
-    <div id="biddingPanel" class="bidding-panel">
-        <div class="bidding-header">
-            <button class="back-to-games" onclick="showGameSelection()">←</button>
-            <div class="selected-game-title" id="selectedGameTitle">Single Digit</div>
-            <div class="selected-game-rate" id="selectedGameRate">10x</div>
-        </div>
-        <div id="timeWarning" class="time-warning hidden"></div>
-        <div id="gamePanel"></div>
-        <div class="summary-bar">
-            <div class="summary-item"><div class="summary-label">Total Bids</div><div class="summary-value" id="totalBids">0</div></div>
-            <div class="summary-item"><div class="summary-label">Total Amount</div><div class="summary-value" id="totalPoints">₹0</div></div>
-        </div>
-        <button class="submit-btn" id="submitBtn" onclick="submitBids()">💰 PLACE BETS</button>
-        <div id="message" class="message hidden"></div>
-    </div>
+    <div id="gameSelectionScreen" class="game-selection-screen"><div class="selection-title">🌸 Choose Game Type</div><div class="selection-subtitle">Select a game to start betting</div><div class="game-types-grid" id="gameTypesGrid"></div></div>
+    <div id="biddingPanel" class="bidding-panel"><div class="bidding-header"><button class="back-to-games" onclick="showGameSelection()">←</button><div class="selected-game-title" id="selectedGameTitle">Single Digit</div><div class="selected-game-rate" id="selectedGameRate">10x</div></div><div id="timeWarning" class="time-warning hidden"></div><div id="gamePanel"></div><div class="summary-bar"><div class="summary-item"><div class="summary-label">Total Bids</div><div class="summary-value" id="totalBids">0</div></div><div class="summary-item"><div class="summary-label">Total Amount</div><div class="summary-value" id="totalPoints">₹0</div></div></div><button class="submit-btn" id="submitBtn" onclick="submitBids()">💰 PLACE BETS</button><div id="message" class="message hidden"></div></div>
 </div>
-<div class="bottom-nav">
-    <div class="nav-item" onclick="location.href='dashboard.html'"><img src="https://i.imgur.com/StGZq3Y.png" alt="Home"><span>Home</span></div>
-    <div class="nav-item" onclick="location.href='mybids.html'"><img src="https://i.imgur.com/rUWwMYm.png" alt="Passbook"><span>Passbook</span></div>
-    <div class="nav-item" onclick="location.href='mybids.html'"><img src="https://i.imgur.com/QhfWXLI.jpeg" alt="Bids"><span>My Bids</span></div>
-    <div class="nav-item" onclick="location.href='funds.html'"><img src="https://i.imgur.com/NvJCTli.png" alt="Fund"><span>Fund</span></div>
-    <div class="nav-item" onclick="location.href='chat.html'"><img src="https://i.imgur.com/ug9IprL.jpeg" alt="Support"><span>Support</span></div>
-</div>
+<div class="bottom-nav"><div class="nav-item" onclick="location.href='dashboard.html'"><img src="https://i.imgur.com/StGZq3Y.png"><span>Home</span></div><div class="nav-item" onclick="location.href='mybids.html'"><img src="https://i.imgur.com/rUWwMYm.png"><span>Passbook</span></div><div class="nav-item" onclick="location.href='mybids.html'"><img src="https://i.imgur.com/QhfWXLI.jpeg"><span>Bids</span></div><div class="nav-item" onclick="location.href='funds.html'"><img src="https://i.imgur.com/NvJCTli.png"><span>Fund</span></div><div class="nav-item" onclick="location.href='chat.html'"><img src="https://i.imgur.com/ug9IprL.jpeg"><span>Support</span></div></div>
 
 <script>
     const firebaseConfig = { apiKey: "AIzaSyBeGpb7V0i5GN1opY9JECHxQIGvHFDPX38", authDomain: "win777-ed482.firebaseapp.com", projectId: "win777-ed482", storageBucket: "win777-ed482.firebasestorage.app", messagingSenderId: "843686112399", appId: "1:843686112399:web:9c20a96831e6a94cd814fa" };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
+    
+    // ========== LAST ACTIVE TRACKING ==========
+    function updateLastActive() {
+        if (auth.currentUser) {
+            db.collection('users').doc(auth.currentUser.uid).update({
+                lastActive: firebase.firestore.FieldValue.serverTimestamp()
+            }).catch(e => console.log("Last active update error:", e));
+        }
+    }
+    setInterval(updateLastActive, 30000);
+    updateLastActive();
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) updateLastActive(); });
+    ['click', 'touchstart', 'scroll'].forEach(ev => document.addEventListener(ev, () => updateLastActive()));
+    // ========== END LAST ACTIVE TRACKING ==========
     
     let currentUser=null, userData=null, currentMarket='', currentMarketId='', currentStatus='open', currentGameType='Single Digit', bids=[];
     let selectedDigits=[], selectedJodis=[];
