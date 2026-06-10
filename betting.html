@@ -12,7 +12,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
@@ -211,6 +211,81 @@
             accent-color: #e91e63;
         }
 
+        /* Grid Styles */
+        .digit-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .digit-btn {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a2e;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .digit-btn.selected {
+            background: #e91e63;
+            color: #fff;
+            border-color: #e91e63;
+        }
+        
+        .jodi-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin: 15px 0;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+        .jodi-btn {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 10px 5px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: #1a1a2e;
+            cursor: pointer;
+        }
+        .jodi-btn.selected {
+            background: #e91e63;
+            color: #fff;
+            border-color: #e91e63;
+        }
+        
+        .pana-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin: 15px 0;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+        .pana-btn {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 8px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: #1a1a2e;
+            cursor: pointer;
+        }
+        .pana-btn.selected {
+            background: #e91e63;
+            color: #fff;
+            border-color: #e91e63;
+        }
+
         .manual-entry {
             display: flex;
             flex-direction: column;
@@ -242,10 +317,6 @@
         .manual-row input:focus {
             outline: none;
             border-color: #e91e63;
-        }
-
-        .number-grid, .jodi-grid, .digit-grid {
-            display: none;
         }
 
         .add-btn {
@@ -497,6 +568,9 @@
     let marketOpenEndTime = null;
     let marketCloseEndTime = null;
     let isSubmitting = false;
+    let selectedDigits = [];
+    let selectedJodis = [];
+    let selectedPanas = [];
     
     const gameRates = {
         'Single Digit': 10, 'Jodi': 100, 'Single Pana': 160,
@@ -504,17 +578,7 @@
         'Half Sangam A': 1000, 'Half Sangam B': 1000, 'Full Sangam': 10000
     };
     
-    const allGameTypes = [
-        { name: 'Single Digit', rate: 10, hasOpenClose: true, availableInOpen: true, availableInClose: true },
-        { name: 'Jodi', rate: 100, hasOpenClose: false, availableInOpen: true, availableInClose: false },
-        { name: 'Single Pana', rate: 160, hasOpenClose: true, availableInOpen: true, availableInClose: true },
-        { name: 'Double Pana', rate: 320, hasOpenClose: true, availableInOpen: true, availableInClose: true },
-        { name: 'Triple Pana', rate: 1000, hasOpenClose: true, availableInOpen: true, availableInClose: true },
-        { name: 'Half Sangam A', rate: 1000, hasOpenClose: false, availableInOpen: true, availableInClose: false },
-        { name: 'Half Sangam B', rate: 1000, hasOpenClose: false, availableInOpen: true, availableInClose: false },
-        { name: 'Full Sangam', rate: 10000, hasOpenClose: false, availableInOpen: true, availableInClose: false }
-    ];
-    
+    // Valid Pana Lists
     const validSinglePanaList = [
         '128','137','146','236','245','290','380','470','489','560','579','678',
         '129','138','147','156','237','246','345','390','480','570','589','679',
@@ -538,6 +602,17 @@
         '299','334','488','550','668','677'
     ];
     const validTriplePanaList = ['111','222','333','444','555','666','777','888','999','000'];
+    
+    const allGameTypes = [
+        { name: 'Single Digit', rate: 10, hasOpenClose: true, availableInOpen: true, availableInClose: true, hasGrid: true },
+        { name: 'Jodi', rate: 100, hasOpenClose: false, availableInOpen: true, availableInClose: false, hasGrid: true },
+        { name: 'Single Pana', rate: 160, hasOpenClose: true, availableInOpen: true, availableInClose: true, hasGrid: true },
+        { name: 'Double Pana', rate: 320, hasOpenClose: true, availableInOpen: true, availableInClose: true, hasGrid: true },
+        { name: 'Triple Pana', rate: 1000, hasOpenClose: true, availableInOpen: true, availableInClose: true, hasGrid: true },
+        { name: 'Half Sangam A', rate: 1000, hasOpenClose: false, availableInOpen: true, availableInClose: false, hasGrid: false },
+        { name: 'Half Sangam B', rate: 1000, hasOpenClose: false, availableInOpen: true, availableInClose: false, hasGrid: false },
+        { name: 'Full Sangam', rate: 10000, hasOpenClose: false, availableInOpen: true, availableInClose: false, hasGrid: false }
+    ];
     
     let selectedOpenClose = 'Open';
     let cachedServerTime = null;
@@ -621,6 +696,9 @@
         }
         
         currentGameType = type;
+        selectedDigits = [];
+        selectedJodis = [];
+        selectedPanas = [];
         document.getElementById('selectedGameTitle').innerHTML = currentGameType;
         
         document.getElementById('gameSelectionScreen').style.display = 'none';
@@ -642,6 +720,9 @@
         document.getElementById('biddingPanel').style.display = 'none';
         document.getElementById('gameSelectionScreen').style.display = 'block';
         bids = [];
+        selectedDigits = [];
+        selectedJodis = [];
+        selectedPanas = [];
         updateSummary();
         renderGameTypeSelection();
     }
@@ -695,7 +776,72 @@
         renderGamePanel();
     }
     
-    async function addSingleDigit() {
+    // Grid selection functions
+    function toggleDigit(digit) {
+        const index = selectedDigits.indexOf(digit);
+        if (index === -1) {
+            selectedDigits.push(digit);
+        } else {
+            selectedDigits.splice(index, 1);
+        }
+        updateDigitButtons();
+    }
+    
+    function updateDigitButtons() {
+        for(let i = 0; i <= 9; i++) {
+            const btn = document.getElementById(`digit_${i}`);
+            if(btn) {
+                if(selectedDigits.includes(i.toString())) btn.classList.add('selected');
+                else btn.classList.remove('selected');
+            }
+        }
+    }
+    
+    function toggleJodi(jodi) {
+        const index = selectedJodis.indexOf(jodi);
+        if (index === -1) {
+            selectedJodis.push(jodi);
+        } else {
+            selectedJodis.splice(index, 1);
+        }
+        updateJodiButtons();
+    }
+    
+    function updateJodiButtons() {
+        for(let i = 0; i <= 99; i++) {
+            const jodiStr = i.toString().padStart(2, '0');
+            const btn = document.getElementById(`jodi_${jodiStr}`);
+            if(btn) {
+                if(selectedJodis.includes(jodiStr)) btn.classList.add('selected');
+                else btn.classList.remove('selected');
+            }
+        }
+    }
+    
+    function togglePana(pana) {
+        const index = selectedPanas.indexOf(pana);
+        if (index === -1) {
+            selectedPanas.push(pana);
+        } else {
+            selectedPanas.splice(index, 1);
+        }
+        updatePanaButtons();
+    }
+    
+    function updatePanaButtons() {
+        const panaList = currentGameType === 'Single Pana' ? validSinglePanaList : 
+                        (currentGameType === 'Double Pana' ? validDoublePanaList : validTriplePanaList);
+        
+        panaList.forEach(pana => {
+            const btn = document.getElementById(`pana_${pana}`);
+            if(btn) {
+                if(selectedPanas.includes(pana)) btn.classList.add('selected');
+                else btn.classList.remove('selected');
+            }
+        });
+    }
+    
+    async function addSelectedGridItems() {
         const bettingAllowed = await isBettingAllowed();
         if (!bettingAllowed.allowed) {
             showMessage(bettingAllowed.message, true);
@@ -704,76 +850,49 @@
         
         const points = getCurrentPoints();
         if(points === null) return;
-        const digit = document.getElementById('digitInput')?.value.trim();
-        if(!digit || !/^\d$/.test(digit)) {
-            alert('Please enter a valid digit (0-9)');
-            return;
+        
+        if(currentGameType === 'Single Digit') {
+            if(selectedDigits.length === 0) {
+                alert('Please select at least one digit');
+                return;
+            }
+            for(const digit of selectedDigits) {
+                addToBids(currentGameType, digit, points);
+            }
+            selectedDigits = [];
+            updateDigitButtons();
+            showMessage(`Added ${selectedDigits.length} digits with ₹${points} each`, 'success');
+        }
+        else if(currentGameType === 'Jodi') {
+            if(selectedJodis.length === 0) {
+                alert('Please select at least one Jodi');
+                return;
+            }
+            for(const jodi of selectedJodis) {
+                addToBids(currentGameType, jodi, points);
+            }
+            selectedJodis = [];
+            updateJodiButtons();
+            showMessage(`Added ${selectedJodis.length} Jodis with ₹${points} each`, 'success');
+        }
+        else if(currentGameType === 'Single Pana' || currentGameType === 'Double Pana' || currentGameType === 'Triple Pana') {
+            if(selectedPanas.length === 0) {
+                alert('Please select at least one Pana');
+                return;
+            }
+            for(const pana of selectedPanas) {
+                addToBids(currentGameType, pana, points);
+            }
+            selectedPanas = [];
+            updatePanaButtons();
+            showMessage(`Added ${selectedPanas.length} Panas with ₹${points} each`, 'success');
         }
         
-        addToBids(currentGameType, digit, points);
-        document.getElementById('digitInput').value = '';
-        // DO NOT clear points input - keep amount for next bid
         updateSummary();
         renderGamePanel();
     }
     
-    async function addJodi() {
-        const bettingAllowed = await isBettingAllowed();
-        if (!bettingAllowed.allowed) {
-            showMessage(bettingAllowed.message, true);
-            return;
-        }
-        
-        const points = getCurrentPoints();
-        if(points === null) return;
-        const jodi = document.getElementById('jodiInput')?.value.trim();
-        if(!jodi || !/^\d{2}$/.test(jodi)) {
-            alert('Please enter a valid Jodi (00-99)');
-            return;
-        }
-        
-        addToBids(currentGameType, jodi, points);
-        document.getElementById('jodiInput').value = '';
-        // DO NOT clear points input - keep amount for next bid
-        updateSummary();
-        renderGamePanel();
-    }
-    
-    async function addPana() {
-        const bettingAllowed = await isBettingAllowed();
-        if (!bettingAllowed.allowed) {
-            showMessage(bettingAllowed.message, true);
-            return;
-        }
-        
-        const points = getCurrentPoints();
-        if(points === null) return;
-        const pana = document.getElementById('panaInput')?.value.trim();
-        if(!pana || !/^\d{3}$/.test(pana)) {
-            alert('Please enter a valid 3-digit Pana');
-            return;
-        }
-        
-        if(currentGameType === 'Single Pana' && !validSinglePanaList.includes(pana)) {
-            alert('❌ Invalid Single Pana!');
-            return;
-        }
-        if(currentGameType === 'Double Pana' && !validDoublePanaList.includes(pana)) {
-            alert('❌ Invalid Double Pana!');
-            return;
-        }
-        if(currentGameType === 'Triple Pana' && !validTriplePanaList.includes(pana)) {
-            alert('❌ Invalid Triple Pana!');
-            return;
-        }
-        
-        addToBids(currentGameType, pana, points);
-        document.getElementById('panaInput').value = '';
-        // DO NOT clear points input - keep amount for next bid
-        updateSummary();
-        renderGamePanel();
-    }
-    
+    // Manual entry functions (for Half Sangam and Full Sangam)
     async function addHalfSangamA() {
         const bettingAllowed = await isBettingAllowed();
         if (!bettingAllowed.allowed) {
@@ -798,7 +917,6 @@
         addToBids(currentGameType, `${openPana}-${closeDigit}`, points);
         document.getElementById('openPanaInput').value = '';
         document.getElementById('closeDigitInput').value = '';
-        // DO NOT clear points input - keep amount for next bid
         updateSummary();
         renderGamePanel();
     }
@@ -827,7 +945,6 @@
         addToBids(currentGameType, `${openDigit}-${closePana}`, points);
         document.getElementById('openDigitInput').value = '';
         document.getElementById('closePanaInput').value = '';
-        // DO NOT clear points input - keep amount for next bid
         updateSummary();
         renderGamePanel();
     }
@@ -856,7 +973,6 @@
         addToBids(currentGameType, `${openPana}-${closePana}`, points);
         document.getElementById('fullOpenPanaInput').value = '';
         document.getElementById('fullClosePanaInput').value = '';
-        // DO NOT clear points input - keep amount for next bid
         updateSummary();
         renderGamePanel();
     }
@@ -971,6 +1087,9 @@
             showMessage(`✅ ₹${total} placed successfully!`, false);
             
             bids = [];
+            selectedDigits = [];
+            selectedJodis = [];
+            selectedPanas = [];
             updateSummary();
             renderGamePanel();
             
@@ -993,12 +1112,16 @@
         const panel = document.getElementById('gamePanel');
         const gameType = allGameTypes.find(g => g.name === currentGameType);
         const showOpenClose = gameType ? gameType.hasOpenClose : false;
+        const hasGrid = gameType ? gameType.hasGrid : false;
         const isCloseOnlyGame = (currentGameType === 'Jodi' || currentGameType === 'Half Sangam A' || currentGameType === 'Half Sangam B' || currentGameType === 'Full Sangam');
-        
-        // Get current points value to preserve it
         const currentPointsValue = document.getElementById('pointsInput')?.value || '';
         
-        if(currentGameType === 'Single Digit') {
+        // GRID BASED GAMES
+        if(currentGameType === 'Single Digit' && hasGrid) {
+            let digitsHtml = '';
+            for(let i = 0; i <= 9; i++) {
+                digitsHtml += `<div class="digit-btn ${selectedDigits.includes(i.toString()) ? 'selected' : ''}" id="digit_${i}" onclick="toggleDigit('${i}')">${i}</div>`;
+            }
             panel.innerHTML = `
                 <div class="game-panel-content">
                     ${showOpenClose && currentStatus === 'open' && !isCloseOnlyGame ? `
@@ -1011,17 +1134,19 @@
                             <label class="bid-label">Points (₹)</label>
                             <input type="number" id="pointsInput" class="bid-input" placeholder="Min ₹5" step="1" inputmode="numeric" value="${currentPointsValue}">
                         </div>
-                        <div class="bid-field">
-                            <label class="bid-label">Digit</label>
-                            <input type="number" id="digitInput" class="bid-input" placeholder="0-9" min="0" max="9" inputmode="numeric">
-                        </div>
                     </div>
-                    <button class="add-btn" onclick="addSingleDigit()">+ ADD</button>
+                    <div class="digit-grid">${digitsHtml}</div>
+                    <button class="add-btn" onclick="addSelectedGridItems()">+ ADD SELECTED (${selectedDigits.length})</button>
                     ${renderBidItems()}
                 </div>
             `;
         }
-        else if(currentGameType === 'Jodi') {
+        else if(currentGameType === 'Jodi' && hasGrid) {
+            let jodiHtml = '';
+            for(let i = 0; i <= 99; i++) {
+                const jodiStr = i.toString().padStart(2, '0');
+                jodiHtml += `<div class="jodi-btn ${selectedJodis.includes(jodiStr) ? 'selected' : ''}" id="jodi_${jodiStr}" onclick="toggleJodi('${jodiStr}')">${jodiStr}</div>`;
+            }
             panel.innerHTML = `
                 <div class="game-panel-content">
                     <div class="bid-row">
@@ -1029,17 +1154,20 @@
                             <label class="bid-label">Points (₹)</label>
                             <input type="number" id="pointsInput" class="bid-input" placeholder="Min ₹5" step="1" inputmode="numeric" value="${currentPointsValue}">
                         </div>
-                        <div class="bid-field">
-                            <label class="bid-label">Jodi</label>
-                            <input type="number" id="jodiInput" class="bid-input" placeholder="00-99" min="0" max="99" inputmode="numeric">
-                        </div>
                     </div>
-                    <button class="add-btn" onclick="addJodi()">+ ADD</button>
+                    <div class="jodi-grid">${jodiHtml}</div>
+                    <button class="add-btn" onclick="addSelectedGridItems()">+ ADD SELECTED (${selectedJodis.length})</button>
                     ${renderBidItems()}
                 </div>
             `;
         }
-        else if(currentGameType === 'Single Pana' || currentGameType === 'Double Pana' || currentGameType === 'Triple Pana') {
+        else if((currentGameType === 'Single Pana' || currentGameType === 'Double Pana' || currentGameType === 'Triple Pana') && hasGrid) {
+            let panaList = currentGameType === 'Single Pana' ? validSinglePanaList : 
+                          (currentGameType === 'Double Pana' ? validDoublePanaList : validTriplePanaList);
+            let panaHtml = '';
+            panaList.forEach(pana => {
+                panaHtml += `<div class="pana-btn ${selectedPanas.includes(pana) ? 'selected' : ''}" id="pana_${pana}" onclick="togglePana('${pana}')">${pana}</div>`;
+            });
             panel.innerHTML = `
                 <div class="game-panel-content">
                     ${showOpenClose && currentStatus === 'open' && !isCloseOnlyGame ? `
@@ -1052,16 +1180,14 @@
                             <label class="bid-label">Points (₹)</label>
                             <input type="number" id="pointsInput" class="bid-input" placeholder="Min ₹5" step="1" inputmode="numeric" value="${currentPointsValue}">
                         </div>
-                        <div class="bid-field">
-                            <label class="bid-label">Pana</label>
-                            <input type="number" id="panaInput" class="bid-input" placeholder="3-digit" inputmode="numeric">
-                        </div>
                     </div>
-                    <button class="add-btn" onclick="addPana()">+ ADD</button>
+                    <div class="pana-grid">${panaHtml}</div>
+                    <button class="add-btn" onclick="addSelectedGridItems()">+ ADD SELECTED (${selectedPanas.length})</button>
                     ${renderBidItems()}
                 </div>
             `;
         }
+        // MANUAL ENTRY GAMES (Half Sangam A, Half Sangam B, Full Sangam)
         else if(currentGameType === 'Half Sangam A') {
             panel.innerHTML = `
                 <div class="game-panel-content">
@@ -1135,7 +1261,6 @@
             `;
         }
         
-        // Restore points input value if it was set
         const newPointsInput = document.getElementById('pointsInput');
         if (newPointsInput && currentPointsValue) {
             newPointsInput.value = currentPointsValue;
@@ -1175,9 +1300,10 @@
     window.selectGameTypeFromCard = selectGameTypeFromCard;
     window.showGameSelection = showGameSelection;
     window.setOpenClose = setOpenClose;
-    window.addSingleDigit = addSingleDigit;
-    window.addJodi = addJodi;
-    window.addPana = addPana;
+    window.toggleDigit = toggleDigit;
+    window.toggleJodi = toggleJodi;
+    window.togglePana = togglePana;
+    window.addSelectedGridItems = addSelectedGridItems;
     window.addHalfSangamA = addHalfSangamA;
     window.addHalfSangamB = addHalfSangamB;
     window.addFullSangam = addFullSangam;
