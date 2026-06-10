@@ -92,7 +92,7 @@
             margin-top: 2px;
         }
 
-        /* Messages Area - Scrollable */
+        /* Messages Area */
         .chat-messages {
             flex: 1;
             overflow-y: auto;
@@ -160,7 +160,7 @@
             flex-shrink: 0;
         }
 
-        /* Input Area - FIXED: Always visible at bottom */
+        /* Input Area */
         .chat-input-area {
             background: #2a2a3e;
             padding: 10px 12px;
@@ -276,6 +276,7 @@
     </div>
 
     <script>
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBeGpb7V0i5GN1opY9JECHxQIGvHFDPX38",
             authDomain: "win777-ed482.firebaseapp.com",
@@ -284,7 +285,9 @@
             messagingSenderId: "843686112399",
             appId: "1:843686112399:web:9c20a96831e6a94cd814fa"
         };
-        firebase.initializeApp(firebaseConfig);
+        
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
         const storage = firebase.storage();
@@ -439,10 +442,15 @@
             btn.innerHTML = '⏳';
 
             try {
-                const storageRef = storage.ref(`chat_images/${chatRoomId}/${Date.now()}_${file.name}`);
-                const uploadTask = await storageRef.put(file);
-                const imageUrl = await uploadTask.ref.getDownloadURL();
+                // Create a unique filename
+                const filename = `${Date.now()}_${file.name}`;
+                const storageRef = storage.ref(`chat_images/${chatRoomId}/${filename}`);
+                
+                // Upload the file
+                const snapshot = await storageRef.put(file);
+                const imageUrl = await snapshot.ref.getDownloadURL();
 
+                // Save to Firestore
                 await db.collection('chats').doc(chatRoomId).collection('messages').add({
                     senderId: currentUser.uid,
                     senderName: currentUserData?.name || 'User',
@@ -456,7 +464,10 @@
                     lastMessageTime: firebase.firestore.FieldValue.serverTimestamp(),
                     unread: true
                 }, { merge: true });
+                
+                alert('✅ Image sent successfully!');
             } catch (e) {
+                console.error("Storage error:", e);
                 alert("Error sending image: " + e.message);
             } finally {
                 btn.disabled = false;
