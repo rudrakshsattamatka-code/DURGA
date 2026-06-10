@@ -65,6 +65,20 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
     
+    // ========== LAST ACTIVE TRACKING ==========
+    function updateLastActive() {
+        if (auth.currentUser) {
+            db.collection('users').doc(auth.currentUser.uid).update({
+                lastActive: firebase.firestore.FieldValue.serverTimestamp()
+            }).catch(e => console.log("Last active update error:", e));
+        }
+    }
+    setInterval(updateLastActive, 30000);
+    updateLastActive();
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) updateLastActive(); });
+    ['click', 'touchstart', 'scroll'].forEach(ev => document.addEventListener(ev, () => updateLastActive()));
+    // ========== END LAST ACTIVE TRACKING ==========
+    
     const gameRates = { 'Single Digit':10, 'Jodi':100, 'Single Pana':160, 'Double Pana':320, 'Triple Pana':1000, 'Half Sangam A':1000, 'Half Sangam B':1000, 'Full Sangam':10000 };
     let currentUserId=null, cleanupInterval=null;
     
