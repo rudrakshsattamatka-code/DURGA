@@ -61,9 +61,8 @@
             font-weight: bold;
         }
         
-        /* Market Cards - Light Blue Background */
+        /* Market Cards - Different Background Colors */
         .market-card { 
-            background: #e8f4f8; 
             margin: 10px 12px; 
             border-radius: 20px; 
             padding: 14px; 
@@ -71,6 +70,16 @@
             transition: all 0.2s;
         }
         .market-card:active { transform: scale(0.98); }
+        
+        /* Background color classes for markets */
+        .bg-pink-light { background: #ffe4ec; }
+        .bg-purple-light { background: #f3e5f5; }
+        .bg-blue-light { background: #e3f2fd; }
+        .bg-green-light { background: #e8f5e9; }
+        .bg-orange-light { background: #fff3e0; }
+        .bg-teal-light { background: #e0f2f1; }
+        .bg-yellow-light { background: #fffde7; }
+        .bg-indigo-light { background: #e8eaf6; }
         
         /* Market Header */
         .market-header { text-align: center; margin-bottom: 10px; }
@@ -239,6 +248,18 @@
     let marketsData = [], currentUserData = null, serverTimeCache = null, lastServerTimeFetch = 0, marketsListener = null, clockInterval = null, statusUpdateInterval = null;
     let chatUnsubscribe = null;
     
+    // Different background colors for market cards
+    const cardBgColors = [
+        'bg-pink-light',
+        'bg-purple-light', 
+        'bg-blue-light',
+        'bg-green-light',
+        'bg-orange-light',
+        'bg-teal-light',
+        'bg-yellow-light',
+        'bg-indigo-light'
+    ];
+    
     function updateLastActive() { if (auth.currentUser) { db.collection('users').doc(auth.currentUser.uid).update({ lastActive: firebase.firestore.FieldValue.serverTimestamp() }).catch(()=>{}); } }
     setInterval(updateLastActive, 30000);
     updateLastActive();
@@ -333,8 +354,9 @@
             let resultDisplay = market.closePana && market.closePana !== '***' ? `${market.openPana} - ${market.jodi} - ${market.closePana}` : (market.openPana && market.openPana !== '***' ? `${market.openPana} - ${market.openDigit}* - ***` : `*** - ** - ***`);
             let numbersDisplay = (market.numbers || '***-***-***').replace('Open Pana','').replace('JODI','').replace('Close Pana','').trim();
             let nameColor = nameColors[idx % nameColors.length];
+            let bgColorClass = cardBgColors[idx % cardBgColors.length];
             
-            html += `<div class="market-card">
+            html += `<div class="market-card ${bgColorClass}">
                         <div class="market-header">
                             <span class="market-name" style="color:${nameColor};">🌸 ${market.name}</span>
                         </div>
