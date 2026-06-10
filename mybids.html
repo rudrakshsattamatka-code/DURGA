@@ -9,39 +9,42 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #f5f7fa; padding-bottom: 65px; }
-        .app-container { max-width: 480px; margin: 0 auto; background: #f5f7fa; min-height: 100vh; }
-        .header { background: #fff; padding: 12px 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #eee; }
+        body { background: #f0f2f5; padding-bottom: 65px; }
+        .app-container { max-width: 480px; margin: 0 auto; background: #f0f2f5; min-height: 100vh; }
+        
+        .loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; display: flex; justify-content: center; align-items: center; }
+        .loader-spinner { width: 50px; height: 50px; border: 4px solid #fff; border-top: 4px solid #e91e63; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .header { background: #fff; padding: 10px 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #e0e0e0; }
         .logo-img { width: 36px; height: 36px; border-radius: 50%; border: 1px solid #e91e63; }
         .logo-text { color: #1a1a2e; font-size: 18px; font-weight: bold; flex: 1; text-align: center; }
-        .back-btn { background: none; border: none; font-size: 22px; color: #1a1a2e; cursor: pointer; }
-        .tab-bar { display: flex; background: #fff; margin: 10px; border-radius: 12px; padding: 4px; gap: 4px; border: 1px solid #eee; }
-        .tab { flex: 1; text-align: center; padding: 8px; cursor: pointer; border-radius: 10px; color: #888; font-weight: 500; font-size: 13px; }
-        .tab.active { background: linear-gradient(135deg, #e91e63, #9c27b0); color: #fff; }
-        .bid-card { background: #fff; margin: 10px; border-radius: 16px; overflow: hidden; border: 1px solid #eee; }
-        .bid-header { padding: 10px 12px; display: flex; justify-content: space-between; border-bottom: 1px solid #eee; }
+        .back-btn { background: none; border: none; font-size: 22px; color: #1a1a2e; cursor: pointer; touch-action: manipulation; }
+        .tab-bar { display: flex; background: #fff; margin: 10px; border-radius: 12px; padding: 4px; gap: 4px; border: 1px solid #e0e0e0; }
+        .tab { flex: 1; text-align: center; padding: 8px; cursor: pointer; border-radius: 10px; color: #888; font-weight: 500; font-size: 13px; touch-action: manipulation; }
+        .tab.active { background: #e91e63; color: #fff; }
+        .bid-card { background: #fff; margin: 10px; border-radius: 14px; overflow: hidden; border: 1px solid #e0e0e0; }
+        .bid-header { padding: 10px 12px; display: flex; justify-content: space-between; border-bottom: 1px solid #e0e0e0; }
         .market-name { color: #1a1a2e; font-size: 14px; font-weight: bold; }
         .status-badge { padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: bold; }
         .status-won { background: #d4edda; color: #28a745; }
         .status-lost { background: #ffe0e0; color: #dc3545; }
         .status-pending { background: #fff3cd; color: #ff9800; }
-        .bid-body { padding: 12px; }
-        .bid-row { display: flex; justify-content: space-between; margin-bottom: 8px; padding: 4px 0; border-bottom: 1px solid #f0f0f0; }
+        .bid-body { padding: 10px; }
+        .bid-row { display: flex; justify-content: space-between; margin-bottom: 6px; padding: 4px 0; border-bottom: 1px solid #f0f0f0; }
         .bid-label { color: #888; font-size: 12px; }
         .bid-value { color: #1a1a2e; font-weight: 600; font-size: 13px; }
-        .bid-footer { background: #f8f9fa; padding: 8px 12px; font-size: 10px; color: #888; text-align: right; border-top: 1px solid #eee; }
-        .clear-btn { background: #dc3545; color: #fff; border: none; padding: 8px 20px; border-radius: 30px; margin: 8px; cursor: pointer; font-weight: bold; font-size: 12px; }
+        .bid-footer { background: #f8f9fa; padding: 6px 12px; font-size: 10px; color: #888; text-align: right; border-top: 1px solid #e0e0e0; }
         .no-data { text-align: center; color: #888; padding: 40px; font-size: 14px; }
-        .delete-info { background: #e3f2fd; color: #1565c0; font-size: 10px; padding: 6px 12px; margin: 0 10px 10px 10px; border-radius: 8px; text-align: center; }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto; background: #fff; display: flex; justify-content: space-around; padding: 6px 8px; border-top: 1px solid #eee; }
-        .nav-item { text-align: center; color: #888; cursor: pointer; font-size: 9px; flex: 1; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto; background: #fff; display: flex; justify-content: space-around; padding: 6px 8px; border-top: 1px solid #e0e0e0; }
+        .nav-item { text-align: center; color: #888; cursor: pointer; font-size: 9px; flex: 1; touch-action: manipulation; }
         .nav-item:hover { color: #e91e63; }
-        .nav-item img { width: 24px; height: 24px; display: block; margin: 0 auto 2px; opacity: 0.7; }
+        .nav-item img { width: 22px; height: 22px; display: block; margin: 0 auto 2px; opacity: 0.7; }
         .nav-item.active { color: #e91e63; }
         .hidden { display: none; }
-        .loading-spinner { width: 30px; height: 30px; border: 3px solid #eee; border-top: 3px solid #e91e63; border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .error-box { background: #ffe0e0; color: #dc3545; padding: 12px; margin: 10px; border-radius: 10px; text-align: center; font-size: 12px; }
+        
+        button, .tab, .nav-item, .back-btn { touch-action: manipulation; }
     </style>
 </head>
 <body>
@@ -50,10 +53,8 @@
     
     <div class="tab-bar"><div class="tab active" onclick="showTab('bids')">My Bids</div><div class="tab" onclick="showTab('transactions')">Transactions</div><div class="tab" onclick="showTab('rates')">Game Rates</div></div>
     
-    <div id="bidsTab"><div style="text-align:center;"><button class="clear-btn" onclick="clearAllBids()">🗑️ Clear All Bids</button></div><div class="delete-info">📋 Bids older than 24 hours are automatically deleted</div><div id="bidsList"><div class="loading-spinner"></div></div></div>
-    
-    <div id="transactionsTab" class="hidden"><div style="text-align:center;"><button class="clear-btn" onclick="clearAllTransactions()">🗑️ Clear All Transactions</button></div><div id="transactionsList"><div class="loading-spinner"></div></div></div>
-    
+    <div id="bidsTab"><div id="bidsList"><div class="loader-overlay" style="position:relative; background:transparent; height:200px;"><div class="loader-spinner"></div></div></div></div>
+    <div id="transactionsTab" class="hidden"><div id="transactionsList"><div class="loader-overlay" style="position:relative; background:transparent; height:200px;"><div class="loader-spinner"></div></div></div></div>
     <div id="ratesTab" class="hidden"><div class="bid-card"><div class="bid-header"><span class="market-name">🎲 GAME RATES</span></div><div class="bid-body"><div class="bid-row"><span class="bid-label">Single Digit</span><span class="bid-value">10x</span></div><div class="bid-row"><span class="bid-label">Jodi</span><span class="bid-value">100x</span></div><div class="bid-row"><span class="bid-label">Single Pana</span><span class="bid-value">160x</span></div><div class="bid-row"><span class="bid-label">Double Pana</span><span class="bid-value">320x</span></div><div class="bid-row"><span class="bid-label">Triple Pana</span><span class="bid-value">1000x</span></div><div class="bid-row"><span class="bid-label">Half Sangam A</span><span class="bid-value">1000x</span></div><div class="bid-row"><span class="bid-label">Half Sangam B</span><span class="bid-value">1000x</span></div><div class="bid-row"><span class="bid-label">Full Sangam</span><span class="bid-value">10000x</span></div></div></div></div>
     
     <div class="bottom-nav"><div class="nav-item" onclick="location.href='dashboard.html'"><img src="https://i.imgur.com/StGZq3Y.png"><span>Home</span></div><div class="nav-item active" onclick="location.href='mybids.html'"><img src="https://i.imgur.com/rUWwMYm.png"><span>Passbook</span></div><div class="nav-item" onclick="location.href='dashboard.html'"><img src="https://i.imgur.com/QhfWXLI.jpeg"><span>My Bids</span></div><div class="nav-item" onclick="location.href='funds.html'"><img src="https://i.imgur.com/NvJCTli.png"><span>Fund</span></div><div class="nav-item" onclick="location.href='chat.html'"><img src="https://i.imgur.com/ug9IprL.jpeg"><span>Support</span></div></div>
@@ -65,45 +66,11 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
     
-    // ========== LAST ACTIVE TRACKING ==========
-    function updateLastActive() {
-        if (auth.currentUser) {
-            db.collection('users').doc(auth.currentUser.uid).update({
-                lastActive: firebase.firestore.FieldValue.serverTimestamp()
-            }).catch(e => console.log("Last active update error:", e));
-        }
-    }
-    setInterval(updateLastActive, 30000);
-    updateLastActive();
-    document.addEventListener('visibilitychange', () => { if (!document.hidden) updateLastActive(); });
-    ['click', 'touchstart', 'scroll'].forEach(ev => document.addEventListener(ev, () => updateLastActive()));
-    // ========== END LAST ACTIVE TRACKING ==========
+    function showLoader() { let div = document.createElement('div'); div.className = 'loader-overlay'; div.id = 'pageLoader'; div.innerHTML = '<div class="loader-spinner"></div>'; document.body.appendChild(div); }
+    function hideLoader() { let el = document.getElementById('pageLoader'); if(el) el.remove(); }
     
     const gameRates = { 'Single Digit':10, 'Jodi':100, 'Single Pana':160, 'Double Pana':320, 'Triple Pana':1000, 'Half Sangam A':1000, 'Half Sangam B':1000, 'Full Sangam':10000 };
-    let currentUserId=null, cleanupInterval=null;
-    
-    async function deleteOldBids() {
-        let user=auth.currentUser;
-        if(!user) return;
-        let twentyFourHoursAgo=new Date(); twentyFourHoursAgo.setHours(twentyFourHoursAgo.getHours()-24);
-        try{
-            let allBids=await db.collection('bids').get();
-            let batch=db.batch(); let deleteCount=0;
-            allBids.forEach(doc=>{ let bid=doc.data(); if(bid.userId!==user.uid) return; let bidDate=bid.createdAt?.toDate?bid.createdAt.toDate():(bid.createdAt?.seconds?new Date(bid.createdAt.seconds*1000):null); if(bidDate && bidDate<twentyFourHoursAgo){ batch.delete(doc.ref); deleteCount++; } });
-            if(deleteCount>0) await batch.commit();
-        }catch(e){ console.error(e); }
-    }
-    async function deleteOldTransactions() {
-        let user=auth.currentUser;
-        if(!user) return;
-        let twentyFourHoursAgo=new Date(); twentyFourHoursAgo.setHours(twentyFourHoursAgo.getHours()-24);
-        try{
-            let allTrans=await db.collection('transactions').get();
-            let batch=db.batch(); let deleteCount=0;
-            allTrans.forEach(doc=>{ let t=doc.data(); if(t.userId!==user.uid) return; let tDate=t.date?.toDate?t.date.toDate():(t.date?.seconds?new Date(t.date.seconds*1000):null); if(tDate && tDate<twentyFourHoursAgo){ batch.delete(doc.ref); deleteCount++; } });
-            if(deleteCount>0) await batch.commit();
-        }catch(e){ console.error(e); }
-    }
+    let currentUserId=null;
     
     function showTab(tab){
         document.getElementById('bidsTab').classList.add('hidden');
@@ -116,40 +83,13 @@
         if(tab==='bids') loadBids();
     }
     
-    async function clearAllBids(){
-        let user=auth.currentUser;
-        if(!user) return;
-        if(confirm("⚠️ Delete ALL your bid history? This cannot be undone!")){
-            let allBids=await db.collection('bids').get();
-            let batch=db.batch(); let count=0;
-            allBids.forEach(doc=>{ if(doc.data().userId===user.uid){ batch.delete(doc.ref); count++; } });
-            await batch.commit();
-            alert(`✅ Deleted ${count} bids!`);
-            loadBids();
-        }
-    }
-    
-    async function clearAllTransactions(){
-        let user=auth.currentUser;
-        if(!user) return;
-        if(confirm("⚠️ Delete ALL your transaction history? This cannot be undone!")){
-            let allTrans=await db.collection('transactions').get();
-            let batch=db.batch(); let count=0;
-            allTrans.forEach(doc=>{ if(doc.data().userId===user.uid){ batch.delete(doc.ref); count++; } });
-            await batch.commit();
-            alert(`✅ Deleted ${count} transactions!`);
-            loadTransactions();
-        }
-    }
-    
     async function loadBids(){
         let user=auth.currentUser;
         if(!user){ window.location.href='index.html'; return; }
         currentUserId=user.uid;
         let container=document.getElementById('bidsList');
-        container.innerHTML='<div class="loading-spinner"></div>';
+        container.innerHTML='<div class="loader-overlay" style="position:relative; background:transparent; height:200px;"><div class="loader-spinner"></div></div>';
         try{
-            await deleteOldBids();
             let allBids=await db.collection('bids').get();
             let bids=[];
             allBids.forEach(doc=>{ let b=doc.data(); if(b.userId===currentUserId){ let bidDate=b.createdAt?.toDate?b.createdAt.toDate():(b.createdAt?.seconds?new Date(b.createdAt.seconds*1000):new Date(0)); bids.push({id:doc.id,...b,dateObj:bidDate}); } });
@@ -158,11 +98,12 @@
             let html='';
             for(let b of bids){
                 let statusClass='',statusText='';
-                if(b.status==='won'){ statusClass='status-won'; statusText='🏆 WON'; }
-                else if(b.status==='lost'){ statusClass='status-lost'; statusText='❌ LOST'; }
-                else{ statusClass='status-pending'; statusText='⏳ PENDING'; }
+                if(b.status==='won'){ statusClass='status-won'; statusText='WON'; }
+                else if(b.status==='lost'){ statusClass='status-lost'; statusText='LOST'; }
+                else{ statusClass='status-pending'; statusText='PENDING'; }
                 let date=b.dateObj && b.dateObj.getTime()>0 ? b.dateObj.toLocaleString() : 'Pending';
-                html+=`<div class="bid-card"><div class="bid-header"><span class="market-name">🌸 ${escapeHtml(b.market)||'Unknown'}</span><span class="status-badge ${statusClass}">${statusText}</span></div><div class="bid-body"><div class="bid-row"><span class="bid-label">🎲 Game</span><span class="bid-value">${escapeHtml(b.gameType)}</span></div><div class="bid-row"><span class="bid-label">🔢 Number</span><span class="bid-value" style="color:#e91e63;">${escapeHtml(b.value)}</span></div><div class="bid-row"><span class="bid-label">💰 Amount</span><span class="bid-value">₹${b.points}</span></div></div><div class="bid-footer">📅 ${date}</div></div>`;
+                let winAmount = (b.status==='won') ? (b.points * (gameRates[b.gameType]||10)) : 0;
+                html+=`<div class="bid-card"><div class="bid-header"><span class="market-name">🌸 ${escapeHtml(b.market)||'Unknown'}</span><span class="status-badge ${statusClass}">${statusText}</span></div><div class="bid-body"><div class="bid-row"><span class="bid-label">Game</span><span class="bid-value">${escapeHtml(b.gameType)}</span></div><div class="bid-row"><span class="bid-label">Number</span><span class="bid-value" style="color:#e91e63;">${escapeHtml(b.value)}</span></div><div class="bid-row"><span class="bid-label">Amount</span><span class="bid-value">₹${b.points}</span></div>${b.status==='won'?`<div class="bid-row"><span class="bid-label">Winning Amount</span><span class="bid-value" style="color:#28a745;">+ ₹${winAmount}</span></div>`:''}</div><div class="bid-footer">📅 ${date}</div></div>`;
             }
             container.innerHTML=html;
         }catch(e){ container.innerHTML=`<div class="error-box">❌ Error: ${e.message}</div>`; }
@@ -172,12 +113,11 @@
         let user=auth.currentUser;
         if(!user) return;
         let container=document.getElementById('transactionsList');
-        container.innerHTML='<div class="loading-spinner"></div>';
+        container.innerHTML='<div class="loader-overlay" style="position:relative; background:transparent; height:200px;"><div class="loader-spinner"></div></div>';
         try{
-            await deleteOldTransactions();
             let allTrans=await db.collection('transactions').get();
             let transactions=[];
-            allTrans.forEach(doc=>{ let t=doc.data(); if(t.userId===user.uid){ let tDate=t.date?.toDate?t.date.toDate():(t.date?.seconds?new Date(t.date.seconds*1000):new Date(0)); transactions.push({id:doc.id,...t,dateObj:tDate}); } });
+            allTrans.forEach(doc=>{ let t=doc.data(); if(t.userId===user.uid && (t.type==='credit' || t.type==='debit') && t.description && !t.description.includes('Bid placed')){ let tDate=t.date?.toDate?t.date.toDate():(t.date?.seconds?new Date(t.date.seconds*1000):new Date(0)); transactions.push({id:doc.id,...t,dateObj:tDate}); } });
             if(transactions.length===0){ container.innerHTML='<div class="no-data">🌸 No transactions yet</div>'; return; }
             transactions.sort((a,b)=>b.dateObj-a.dateObj);
             let html='';
@@ -193,11 +133,10 @@
     
     function escapeHtml(str){ if(!str) return ''; return str.replace(/[&<>]/g,function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m; }); }
     
-    function startAutoCleanup(){ if(cleanupInterval) clearInterval(cleanupInterval); cleanupInterval=setInterval(()=>{ if(auth.currentUser){ deleteOldBids(); deleteOldTransactions(); } },3600000); }
+    showLoader();
+    auth.onAuthStateChanged(user=>{ if(!user) window.location.href='index.html'; else { loadBids(); hideLoader(); } });
     
-    auth.onAuthStateChanged(user=>{ if(!user) window.location.href='index.html'; else { loadBids(); startAutoCleanup(); } });
-    
-    window.showTab=showTab; window.clearAllBids=clearAllBids; window.clearAllTransactions=clearAllTransactions;
+    window.showTab=showTab;
 </script>
 </body>
 </html>
