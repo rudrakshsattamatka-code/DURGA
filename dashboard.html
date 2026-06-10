@@ -40,13 +40,30 @@
         .clock-time { font-size: 13px; font-weight: 700; color: #e91e63; font-family: monospace; background: #f8f9fa; padding: 3px 10px; border-radius: 20px; }
         .clock-date { font-size: 10px; color: #888; background: #f8f9fa; padding: 3px 8px; border-radius: 20px; }
         
-        /* Games Row */
         .games-row { display: flex; justify-content: space-around; background: #fff; margin: 8px; padding: 8px; border-radius: 14px; border: 1px solid #e0e0e0; }
-        .game-icon { text-align: center; color: #888; font-size: 11px; cursor: pointer; transition: 0.3s; flex: 1; }
+        .game-icon { text-align: center; color: #888; font-size: 11px; cursor: pointer; transition: 0.3s; flex: 1; position: relative; }
         .game-icon:hover { color: #e91e63; transform: translateY(-2px); }
         .game-icon img { width: 32px; height: 32px; display: block; margin: 0 auto 3px; border-radius: 8px; }
         
-        /* Market Cards - Better Separation */
+        /* Chat Notification Badge */
+        .chat-badge {
+            position: absolute;
+            top: -5px;
+            right: 5px;
+            background: #e91e63;
+            color: #fff;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            animation: pulse 1s ease-in-out infinite;
+        }
+        
+        /* Market Cards */
         .market-card { 
             background: #fff; 
             margin: 12px 10px; 
@@ -58,9 +75,10 @@
         }
         .market-card:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.12); }
         
-        .market-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 5px; }
-        .market-name { font-size: 17px; font-weight: bold; }
-        .market-numbers { color: #888; font-size: 10px; font-family: monospace; background: #f8f9fa; padding: 3px 8px; border-radius: 6px; }
+        /* Market Name - Centered */
+        .market-header { text-align: center; margin-bottom: 8px; }
+        .market-name { font-size: 18px; font-weight: bold; display: inline-block; }
+        .market-numbers { color: #888; font-size: 10px; font-family: monospace; background: #f8f9fa; padding: 3px 8px; border-radius: 6px; display: inline-block; margin-left: 8px; }
         
         .result-box { background: #f8f9fa; border-radius: 12px; padding: 8px; margin: 8px 0; text-align: center; }
         .result-numbers { color: #1a1a2e; font-size: 16px; font-weight: bold; letter-spacing: 2px; font-family: monospace; }
@@ -72,29 +90,41 @@
         .timing-label { color: #888; }
         .timing-value { color: #1a1a2e; font-weight: bold; }
         
-        /* Status Messages */
-        .market-status { font-size: 11px; padding: 4px 10px; border-radius: 20px; display: inline-block; font-weight: 600; text-align: center; width: 100%; margin-top: 5px; }
-        .status-open { background: #d4edda; color: #28a745; }
-        .status-close { background: #fff3cd; color: #ff9800; }
-        .status-closed { background: #ffe0e0; color: #dc3545; }
-        .status-holiday { background: #e0d5c1; color: #8B4513; }
+        /* Status Messages - Like Image Style */
+        .market-status { 
+            font-size: 13px; 
+            padding: 8px 12px; 
+            border-radius: 30px; 
+            display: block; 
+            font-weight: 700; 
+            text-align: center; 
+            margin: 8px 0;
+            letter-spacing: 1px;
+        }
+        .status-open { background: #28a745; color: #fff; }
+        .status-close { background: #ff9800; color: #fff; }
+        .status-closed { background: #dc3545; color: #fff; }
+        .status-holiday { background: #8B4513; color: #fff; }
         
         /* Small Pill-shaped Play Button */
         .play-btn { 
             width: auto; 
-            margin-top: 8px; 
-            padding: 6px 20px; 
+            margin-top: 5px; 
+            padding: 8px 30px; 
             background: #e91e63; 
             border: none; 
-            border-radius: 30px; 
+            border-radius: 40px; 
             color: #fff; 
-            font-weight: 600; 
+            font-weight: 700; 
             cursor: pointer; 
-            font-size: 12px;
+            font-size: 14px;
             display: inline-block;
             text-align: center;
+            letter-spacing: 1px;
         }
         .play-btn:disabled { opacity: 0.5; cursor: not-allowed; background: #ccc; }
+        
+        .btn-container { text-align: center; margin-top: 5px; }
         
         /* Bottom Navigation */
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto; background: #fff; display: flex; justify-content: space-around; padding: 10px 8px; border-top: 1px solid #e0e0e0; }
@@ -104,10 +134,10 @@
         .nav-item:hover img { opacity: 1; }
         .nav-item.active { color: #e91e63; }
         
-        /* Chat Notification Badge */
-        .chat-badge {
+        /* Bottom Nav Chat Badge */
+        .nav-badge {
             position: absolute;
-            top: -5px;
+            top: -3px;
             right: 20px;
             background: #e91e63;
             color: #fff;
@@ -149,9 +179,9 @@
         <div class="game-icon" onclick="location.href='deposit.html'"><img src="https://i.imgur.com/NvJCTli.png"><span>Deposit</span></div>
         <div class="game-icon" onclick="location.href='withdraw.html'"><img src="https://i.imgur.com/3ZxjAIp.png"><span>Withdraw</span></div>
         <div class="game-icon" onclick="location.href='mybids.html'"><img src="https://i.imgur.com/QhfWXLI.jpeg"><span>My Bids</span></div>
-        <div class="game-icon" id="supportNav" onclick="location.href='chat.html'" style="position:relative;">
+        <div class="game-icon" id="supportIcon" onclick="location.href='chat.html'" style="position:relative;">
             <img src="https://i.imgur.com/ug9IprL.jpeg"><span>Support</span>
-            <span id="chatNotificationBadge" class="chat-badge" style="display:none;">!</span>
+            <span id="chatBadgeTop" class="chat-badge" style="display:none;">!</span>
         </div>
     </div>
     
@@ -162,7 +192,10 @@
         <div class="nav-item" onclick="location.href='mybids.html'"><img src="https://i.imgur.com/rUWwMYm.png"><span>Passbook</span></div>
         <div class="nav-item" onclick="location.href='mybids.html'"><img src="https://i.imgur.com/QhfWXLI.jpeg"><span>My Bids</span></div>
         <div class="nav-item" onclick="location.href='funds.html'"><img src="https://i.imgur.com/NvJCTli.png"><span>Fund</span></div>
-        <div class="nav-item" onclick="location.href='chat.html'"><img src="https://i.imgur.com/ug9IprL.jpeg"><span>Support</span></div>
+        <div class="nav-item" id="supportNavBottom" onclick="location.href='chat.html'" style="position:relative;">
+            <img src="https://i.imgur.com/ug9IprL.jpeg"><span>Support</span>
+            <span id="chatBadgeBottom" class="nav-badge" style="display:none;">!</span>
+        </div>
     </div>
 </div>
 
@@ -190,6 +223,7 @@
     function hideLoader() { let el = document.getElementById('pageLoader'); if(el) el.remove(); }
     
     let marketsData = [], currentUserData = null, serverTimeCache = null, lastServerTimeFetch = 0, marketsListener = null, clockInterval = null, statusUpdateInterval = null;
+    let chatUnsubscribe = null;
     
     function updateLastActive() { if (auth.currentUser) { db.collection('users').doc(auth.currentUser.uid).update({ lastActive: firebase.firestore.FieldValue.serverTimestamp() }).catch(()=>{}); } }
     setInterval(updateLastActive, 30000);
@@ -199,12 +233,20 @@
     // Chat Notification Listener
     function listenToChatNotifications() {
         if (!auth.currentUser) return;
+        if (chatUnsubscribe) chatUnsubscribe();
+        
         const chatRoomId = `chat_${auth.currentUser.uid}`;
-        db.collection('chats').doc(chatRoomId).onSnapshot((doc) => {
-            if (doc.exists && doc.data().unread === true) {
-                document.getElementById('chatNotificationBadge').style.display = 'flex';
+        chatUnsubscribe = db.collection('chats').doc(chatRoomId).onSnapshot((doc) => {
+            const hasUnread = doc.exists && doc.data().unread === true;
+            const topBadge = document.getElementById('chatBadgeTop');
+            const bottomBadge = document.getElementById('chatBadgeBottom');
+            
+            if (hasUnread) {
+                if (topBadge) topBadge.style.display = 'flex';
+                if (bottomBadge) bottomBadge.style.display = 'flex';
             } else {
-                document.getElementById('chatNotificationBadge').style.display = 'none';
+                if (topBadge) topBadge.style.display = 'none';
+                if (bottomBadge) bottomBadge.style.display = 'none';
             }
         });
     }
@@ -225,9 +267,9 @@
         const currentMinutes = now.getHours() * 60 + now.getMinutes();
         const openEnd = timeToMinutes(openBidEnd);
         const closeEnd = timeToMinutes(closeBidEnd);
-        if (openEnd && currentMinutes < openEnd) return { status: 'open', message: '🟢 OPEN FOR BIDDING' };
-        else if (openEnd && closeEnd && currentMinutes >= openEnd && currentMinutes < closeEnd) return { status: 'close', message: '🟡 CLOSE BIDDING' };
-        else return { status: 'closed', message: '🔴 MARKET CLOSED' };
+        if (openEnd && currentMinutes < openEnd) return { status: 'open', message: 'OPEN FOR BIDDING' };
+        else if (openEnd && closeEnd && currentMinutes >= openEnd && currentMinutes < closeEnd) return { status: 'close', message: 'CLOSE BIDDING' };
+        else return { status: 'closed', message: 'MARKET CLOSED' };
     }
     
     async function updateLiveClock() { try { const st = await getServerTime(); document.getElementById('liveClockTime').innerHTML = formatCurrentTimeTo12Hour(st); document.getElementById('liveClockDate').innerHTML = `${st.getDate().toString().padStart(2,'0')}/${(st.getMonth()+1).toString().padStart(2,'0')}/${st.getFullYear()}`; } catch(e) {} }
@@ -275,7 +317,7 @@
             let resultDisplay = market.closePana && market.closePana !== '***' ? `${market.openPana} - ${market.jodi} - ${market.closePana}` : (market.openPana && market.openPana !== '***' ? `${market.openPana} - ${market.openDigit}* - ***` : `*** - ** - ***`);
             let numbersDisplay = (market.numbers || '***-***-***').replace('Open Pana','').replace('JODI','').replace('Close Pana','').trim();
             let nameColor = nameColors[idx % nameColors.length];
-            html += `<div class="market-card"><div class="market-header"><span class="market-name" style="color:${nameColor};">🌸 ${market.name}</span><span class="market-numbers">${numbersDisplay}</span></div><div class="result-box"><div class="result-numbers">${resultDisplay}</div></div><div class="market-timings"><div class="timing-item"><div class="green-dot"></div><span>Open ${formatTimeTo12Hour(market.openBidEnd)}</span></div><div class="timing-item"><div class="orange-dot"></div><span>Close ${formatTimeTo12Hour(market.closeBidEnd)}</span></div></div><div class="market-status ${getStatusClass(market.status)}">${market.statusMessage}</div><div style="text-align:center;"><button class="play-btn" onclick='openBetting(${JSON.stringify(market)})' ${!isPlayable ? 'disabled' : ''}>🎲 PLAY</button></div></div>`;
+            html += `<div class="market-card"><div class="market-header"><span class="market-name" style="color:${nameColor};">🌸 ${market.name}</span><span class="market-numbers">${numbersDisplay}</span></div><div class="result-box"><div class="result-numbers">${resultDisplay}</div></div><div class="market-timings"><div class="timing-item"><div class="green-dot"></div><span>Open ${formatTimeTo12Hour(market.openBidEnd)}</span></div><div class="timing-item"><div class="orange-dot"></div><span>Close ${formatTimeTo12Hour(market.closeBidEnd)}</span></div></div><div class="market-status ${getStatusClass(market.status)}">${market.statusMessage}</div><div class="btn-container"><button class="play-btn" onclick='openBetting(${JSON.stringify(market)})' ${!isPlayable ? 'disabled' : ''}>PLAY</button></div></div>`;
         });
         container.innerHTML = html;
     }
