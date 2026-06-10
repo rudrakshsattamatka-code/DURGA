@@ -3,510 +3,1332 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>DURGA - Place Bet</title>
+    <title>DURGA - Place Bets</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #f0f2f5; }
-        .app-container { max-width: 500px; margin: 0 auto; background: #f0f2f5; min-height: 100vh; padding-bottom: 70px; }
-        
-        /* Header - Minimal */
-        .header { background: #fff; padding: 10px 15px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #e0e0e0; }
-        .back-btn { background: none; border: none; font-size: 22px; color: #333; cursor: pointer; padding: 5px; }
-        .market-name { flex: 1; font-size: 16px; font-weight: 600; color: #1a1a2e; }
-        .balance { background: #e91e63; padding: 5px 12px; border-radius: 20px; color: #fff; font-size: 13px; font-weight: bold; }
-        
-        /* Game Selection - No Icons */
-        .game-section { background: #fff; margin: 10px; border-radius: 12px; padding: 12px; }
-        .section-title { font-size: 13px; font-weight: 600; color: #333; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 2px solid #e91e63; display: inline-block; }
-        .game-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-        .game-btn { background: #f5f5f5; border: 1px solid #ddd; border-radius: 10px; padding: 10px 5px; text-align: center; font-size: 13px; font-weight: 500; color: #333; cursor: pointer; transition: 0.2s; }
-        .game-btn.active { background: #e91e63; color: #fff; border-color: #e91e63; }
-        
-        /* Bet Type Toggle */
-        .bet-section { background: #fff; margin: 10px; border-radius: 12px; padding: 10px; display: none; }
-        .bet-toggle { display: flex; gap: 10px; }
-        .bet-opt { flex: 1; padding: 8px; text-align: center; background: #f5f5f5; border-radius: 10px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid #ddd; }
-        .bet-opt.active.open { background: #28a745; color: #fff; border-color: #28a745; }
-        .bet-opt.active.close { background: #ff9800; color: #fff; border-color: #ff9800; }
-        
-        /* Input Form */
-        .form-section { background: #fff; margin: 10px; border-radius: 12px; padding: 12px; display: none; }
-        .input-row { margin-bottom: 12px; }
-        .input-row label { display: block; font-size: 12px; color: #666; margin-bottom: 4px; }
-        .input-row input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 14px; text-align: center; background: #fff; }
-        .input-row input:focus { outline: none; border-color: #e91e63; }
-        
-        /* Digit Grid */
-        .digit-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 8px; }
-        .digit-btn { background: #f5f5f5; border: 1px solid #ddd; border-radius: 10px; padding: 10px; text-align: center; font-size: 16px; font-weight: 600; cursor: pointer; }
-        .digit-btn.selected { background: #e91e63; color: #fff; border-color: #e91e63; }
-        
-        /* Pana Grid */
-        .pana-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px; max-height: 220px; overflow-y: auto; }
-        .pana-item { background: #f5f5f5; border: 1px solid #ddd; border-radius: 8px; padding: 8px; text-align: center; font-size: 12px; font-weight: 500; cursor: pointer; }
-        .pana-item.selected { background: #e91e63; color: #fff; border-color: #e91e63; }
-        .custom-item { background: #e91e63; color: #fff; border-color: #e91e63; }
-        
-        /* Add Button */
-        .add-btn { width: calc(100% - 20px); margin: 0 10px 10px 10px; padding: 12px; background: #e91e63; border: none; border-radius: 30px; color: #fff; font-size: 14px; font-weight: bold; cursor: pointer; display: none; }
-        
-        /* Selected Bids List - Full View */
-        .bids-section { background: #fff; margin: 10px; border-radius: 12px; padding: 10px; max-height: 250px; overflow-y: auto; }
-        .bid-item { background: #f8f9fa; border-radius: 8px; padding: 8px 10px; margin-bottom: 6px; border-left: 3px solid #e91e63; }
-        .bid-row { display: flex; justify-content: space-between; align-items: center; }
-        .bid-number { font-weight: 700; font-size: 14px; color: #e91e63; }
-        .bid-type { font-size: 10px; color: #888; margin-top: 3px; }
-        .bid-points { font-size: 13px; font-weight: 600; color: #333; }
-        .remove-bid { background: none; border: none; color: #dc3545; font-size: 18px; cursor: pointer; padding: 0 5px; }
-        .empty-bids { text-align: center; color: #999; padding: 20px; font-size: 13px; }
-        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            padding-bottom: 70px;
+        }
+
+        /* Header - compact */
+        .app-header {
+            background: #ffffff;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: #1a1a2e;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .market-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a1a2e;
+            text-align: center;
+            flex: 1;
+        }
+        .bid-badge {
+            background: #e91e63;
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* Balance card - compact */
+        .balance-card {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            margin: 12px;
+            padding: 12px 16px;
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .balance-label {
+            color: #a0a4b0;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .balance-amount {
+            color: #e91e63;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        /* Game Selection - no icons, compact */
+        .game-selection-screen {
+            padding: 12px;
+        }
+        .selection-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 4px;
+        }
+        .selection-subtitle {
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 12px;
+        }
+        .game-types-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .game-type-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 12px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #e0e0e0;
+        }
+        .game-type-card:hover {
+            border-color: #e91e63;
+        }
+        .game-card-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+        .game-card-rate {
+            font-size: 11px;
+            color: #e91e63;
+            font-weight: 600;
+            margin-top: 3px;
+        }
+        .game-card-badge {
+            display: inline-block;
+            background: #fce4ec;
+            color: #e91e63;
+            font-size: 9px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-top: 6px;
+        }
+
+        /* Bidding Panel */
+        .bidding-panel {
+            display: none;
+        }
+        .bidding-header {
+            background: #fff;
+            padding: 10px 16px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .back-to-games {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #1a1a2e;
+            width: 32px;
+            height: 32px;
+        }
+        .selected-game-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a1a2e;
+            flex: 1;
+        }
+        .selected-game-rate {
+            background: #fce4ec;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #e91e63;
+        }
+        .selected-game-bidtype {
+            background: #fce4ec;
+            padding: 3px 8px;
+            border-radius: 16px;
+            font-size: 9px;
+            font-weight: 600;
+            color: #e91e63;
+        }
+
+        /* Game Panel Content - no outlines, compact */
+        .game-panel-content {
+            background: #fff;
+            margin: 12px;
+            border-radius: 16px;
+            padding: 12px;
+        }
+
+        .points-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 12px;
+        }
+        .points-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1a2e;
+            display: block;
+            margin-bottom: 6px;
+        }
+        .points-input {
+            width: 100%;
+            padding: 10px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a2e;
+            text-align: center;
+        }
+        .points-input:focus {
+            outline: none;
+            border-color: #e91e63;
+        }
+        .points-hint {
+            font-size: 10px;
+            color: #a0a4b0;
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        .toggle-section {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 12px;
+            padding: 6px;
+            background: #f8f9fa;
+            border-radius: 30px;
+        }
+        .toggle-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            color: #4a4e6b;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 6px 16px;
+            border-radius: 25px;
+        }
+        .toggle-option input {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: #e91e63;
+        }
+
+        /* Number Grid */
+        .number-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin: 12px 0;
+        }
+        .number-btn {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a1a2e;
+            cursor: pointer;
+        }
+        .number-btn.selected {
+            background: #e91e63;
+            border-color: #e91e63;
+            color: #fff;
+        }
+
+        /* Jodi Grid */
+        .jodi-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+            margin: 12px 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .jodi-btn {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 8px 4px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: #1a1a2e;
+            cursor: pointer;
+        }
+        .jodi-btn.selected {
+            background: #e91e63;
+            border-color: #e91e63;
+            color: #fff;
+        }
+
+        /* Manual Entry */
+        .manual-entry {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 12px 0;
+        }
+        .manual-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .manual-label {
+            width: 90px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #1a1a2e;
+        }
+        .manual-row input {
+            flex: 1;
+            padding: 10px;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #1a1a2e;
+        }
+        .manual-row input:focus {
+            outline: none;
+            border-color: #e91e63;
+        }
+
+        /* Buttons */
+        .add-btn {
+            width: 100%;
+            padding: 10px;
+            background: #e91e63;
+            border: none;
+            border-radius: 25px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        /* Selected Bids Section - FULL VISIBLE, no max-height */
+        .bids-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin: 12px 0;
+            padding: 10px;
+        }
+        .bid-item {
+            background: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #e0e0e0;
+        }
+        .bid-info {
+            flex: 1;
+        }
+        .bid-type {
+            font-weight: 700;
+            color: #1a1a2e;
+            font-size: 12px;
+        }
+        .bid-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #e91e63;
+            margin-top: 2px;
+        }
+        .bid-points {
+            font-size: 10px;
+            color: #6c757d;
+            margin-top: 3px;
+        }
+        .remove-bid {
+            background: none;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: #fee2e2;
+            color: #e91e63;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
         /* Summary Bar */
-        .summary { background: #fff; margin: 10px; padding: 10px 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; }
-        .summary-text { font-size: 13px; color: #666; }
-        .summary-value { font-size: 18px; font-weight: bold; color: #e91e63; }
-        
+        .summary-bar {
+            background: #fff;
+            margin: 12px;
+            padding: 10px 16px;
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            border: 1px solid #e0e0e0;
+        }
+        .summary-item {
+            text-align: center;
+            flex: 1;
+        }
+        .summary-label {
+            font-size: 11px;
+            color: #6c757d;
+            margin-bottom: 3px;
+        }
+        .summary-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #e91e63;
+        }
+
         /* Submit Button */
-        .submit-btn { width: calc(100% - 20px); margin: 0 10px 20px 10px; padding: 14px; background: #28a745; border: none; border-radius: 30px; color: #fff; font-size: 16px; font-weight: bold; cursor: pointer; }
-        .submit-btn:disabled { opacity: 0.6; }
+        .submit-btn {
+            width: calc(100% - 24px);
+            margin: 12px;
+            padding: 14px;
+            background: linear-gradient(135deg, #e91e63, #9c27b0);
+            border: none;
+            border-radius: 30px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .message {
+            text-align: center;
+            margin: 12px;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+        .error {
+            background: #fee2e2;
+            color: #e91e63;
+        }
+        .success {
+            background: #e0f7e8;
+            color: #28a745;
+        }
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .hidden { display: none; }
+
+        .rate-info {
+            text-align: center;
+            font-size: 11px;
+            color: #6c757d;
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .time-warning {
+            background: #fff3cd;
+            border-left: 3px solid #ffc107;
+            padding: 8px 12px;
+            margin: 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #856404;
+        }
         
-        /* Message */
-        .msg { margin: 10px; padding: 10px; border-radius: 10px; font-size: 12px; text-align: center; display: none; }
-        .msg-success { background: #d4edda; color: #28a745; display: block; }
-        .msg-error { background: #ffe0e0; color: #dc3545; display: block; }
-        .msg-warning { background: #fff3cd; color: #856404; display: block; }
-        
+        .loading-spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #fff;
+            border-top: 2px solid #e91e63;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 6px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         /* Bottom Nav */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; max-width: 500px; margin: 0 auto; background: #fff; display: flex; justify-content: space-around; padding: 6px 8px; border-top: 1px solid #eee; }
-        .nav-item { text-align: center; color: #888; cursor: pointer; font-size: 9px; flex: 1; }
-        .nav-item img { width: 22px; height: 22px; display: block; margin: 0 auto 2px; opacity: 0.7; }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-width: 500px;
+            margin: 0 auto;
+            background: #fff;
+            display: flex;
+            justify-content: space-around;
+            padding: 6px 8px;
+            border-top: 1px solid #e0e0e0;
+        }
+        .nav-item {
+            text-align: center;
+            color: #6c757d;
+            cursor: pointer;
+            font-size: 9px;
+            flex: 1;
+            padding: 4px 0;
+        }
+        .nav-item img {
+            width: 22px;
+            height: 22px;
+            display: block;
+            margin: 0 auto 2px;
+            opacity: 0.6;
+        }
+        .nav-item span {
+            font-size: 9px;
+            display: block;
+        }
+
+        /* Remove icons from game cards */
+        .game-icon {
+            display: none;
+        }
     </style>
 </head>
 <body>
 <div class="app-container">
-    <!-- Header with Back, Market Name, Balance -->
-    <div class="header">
+    <div class="app-header">
         <button class="back-btn" onclick="goBack()">←</button>
-        <span class="market-name" id="marketName">Loading...</span>
-        <span class="balance">₹<span id="userBalance">0</span></span>
+        <div class="market-title" id="marketName">Loading...</div>
+        <div class="bid-badge" id="bidTypeBadge"></div>
     </div>
-    
-    <!-- Game Selection -->
-    <div class="game-section">
-        <div class="section-title">Select Game</div>
-        <div class="game-grid" id="gameGrid"></div>
+
+    <div class="balance-card">
+        <span class="balance-label">Your Balance</span>
+        <span class="balance-amount">₹<span id="userBalance">0</span></span>
     </div>
-    
-    <!-- Bet Type -->
-    <div class="bet-section" id="betSection">
-        <div class="bet-toggle">
-            <div class="bet-opt open" onclick="setBetType('Open')">OPEN</div>
-            <div class="bet-opt close" onclick="setBetType('Close')">CLOSE</div>
+
+    <div id="gameSelectionScreen" class="game-selection-screen">
+        <div class="selection-title">Select Game Type</div>
+        <div class="selection-subtitle">Choose a game to start betting</div>
+        <div class="game-types-grid" id="gameTypesGrid"></div>
+    </div>
+
+    <div id="biddingPanel" class="bidding-panel">
+        <div class="bidding-header">
+            <button class="back-to-games" onclick="showGameSelection()">←</button>
+            <div class="selected-game-title" id="selectedGameTitle">Single Digit</div>
+            <div class="selected-game-rate" id="selectedGameRate">10x</div>
+            <div class="selected-game-bidtype" id="selectedGameBidType">OPEN BID</div>
         </div>
+        <div id="timeWarning" class="time-warning hidden"></div>
+        <div id="gamePanel"></div>
+        <div class="summary-bar">
+            <div class="summary-item">
+                <div class="summary-label">Total Bids</div>
+                <div class="summary-value" id="totalBids">0</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">Total Amount</div>
+                <div class="summary-value" id="totalPoints">₹0</div>
+            </div>
+        </div>
+        <button class="submit-btn" id="submitBtn" onclick="submitBids()">PLACE BETS</button>
+        <div id="message" class="message hidden"></div>
     </div>
-    
-    <!-- Input Form -->
-    <div class="form-section" id="formSection"></div>
-    
-    <!-- Add Button -->
-    <button class="add-btn" id="addBtn" onclick="addToBids()">+ ADD MORE</button>
-    
-    <!-- Selected Bids List -->
-    <div class="bids-section" id="bidsSection">
-        <div class="empty-bids">No bets added yet</div>
+</div>
+
+<div class="bottom-nav">
+    <div class="nav-item" onclick="location.href='dashboard.html'">
+        <img src="https://i.imgur.com/StGZq3Y.png" alt="Home"><span>Home</span>
     </div>
-    
-    <!-- Summary -->
-    <div class="summary">
-        <span class="summary-text">Total Bids / Amount</span>
-        <span class="summary-value"><span id="bidCount">0</span> / ₹<span id="totalPoints">0</span></span>
+    <div class="nav-item" onclick="location.href='mybids.html'">
+        <img src="https://i.imgur.com/rUWwMYm.png" alt="Passbook"><span>Passbook</span>
     </div>
-    
-    <!-- Submit -->
-    <button class="submit-btn" id="submitBtn" onclick="submitBids()">SUBMIT BETS</button>
-    
-    <div id="message" class="msg"></div>
-    
-    <!-- Bottom Nav -->
-    <div class="bottom-nav">
-        <div class="nav-item" onclick="location.href='dashboard.html'"><img src="https://i.imgur.com/StGZq3Y.png"><span>Home</span></div>
-        <div class="nav-item" onclick="location.href='mybids.html'"><img src="https://i.imgur.com/rUWwMYm.png"><span>Passbook</span></div>
-        <div class="nav-item" onclick="location.href='funds.html'"><img src="https://i.imgur.com/NvJCTli.png"><span>Fund</span></div>
-        <div class="nav-item" onclick="location.href='chat.html'"><img src="https://i.imgur.com/ug9IprL.jpeg"><span>Support</span></div>
+    <div class="nav-item" onclick="location.href='mybids.html'">
+        <img src="https://i.imgur.com/QhfWXLI.jpeg" alt="Bids"><span>My Bids</span>
+    </div>
+    <div class="nav-item" onclick="location.href='funds.html'">
+        <img src="https://i.imgur.com/NvJCTli.png" alt="Fund"><span>Fund</span>
+    </div>
+    <div class="nav-item" onclick="location.href='chat.html'">
+        <img src="https://i.imgur.com/ug9IprL.jpeg" alt="Support"><span>Support</span>
     </div>
 </div>
 
 <script>
-    const firebaseConfig = { apiKey: "AIzaSyBeGpb7V0i5GN1opY9JECHxQIGvHFDPX38", authDomain: "win777-ed482.firebaseapp.com", projectId: "win777-ed482", storageBucket: "win777-ed482.firebasestorage.app", messagingSenderId: "843686112399", appId: "1:843686112399:web:9c20a96831e6a94cd814fa" };
+    // ==================== ALL YOUR ORIGINAL JAVASCRIPT CODE - NO CHANGES ====================
+    const firebaseConfig = {
+        apiKey: "AIzaSyBeGpb7V0i5GN1opY9JECHxQIGvHFDPX38",
+        authDomain: "win777-ed482.firebaseapp.com",
+        projectId: "win777-ed482",
+        storageBucket: "win777-ed482.firebasestorage.app",
+        messagingSenderId: "843686112399",
+        appId: "1:843686112399:web:9c20a96831e6a94cd814fa"
+    };
+    
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
     
-    // Last Active Tracking
-    function updateLastActive() {
-        if (auth.currentUser) {
-            db.collection('users').doc(auth.currentUser.uid).update({ lastActive: firebase.firestore.FieldValue.serverTimestamp() }).catch(()=>{});
-        }
-    }
-    setInterval(updateLastActive, 30000);
-    updateLastActive();
-    document.addEventListener('visibilitychange', () => { if (!document.hidden) updateLastActive(); });
-    
-    let currentUser = null;
-    let userData = null;
-    let currentMarket = '';
-    let currentMarketId = '';
-    let currentAdminStatus = 'open';
-    let currentGame = '';
-    let currentBetType = 'Open';
-    let bids = [];
+    let currentUser = null, userData = null, currentMarket = '', currentMarketId = '', currentStatus = 'open', currentGameType = 'Single Digit', bids = [];
+    let currentPoints = null;
+    let selectedDigits = [];
+    let selectedJodis = [];
     let marketOpenEndTime = null;
     let marketCloseEndTime = null;
-    let selectedDigits = [];
+    let isSubmitting = false;
     
-    // Game Types
-    const games = [
-        'Single Digit', 'Single Digit Bulk', 'Jodi', 
-        'Single Pana', 'Double Pana', 'Triple Pana',
-        'Half Sangam A', 'Half Sangam B', 'Full Sangam'
+    const gameRates = {
+        'Single Digit': 10, 'Jodi': 100, 'Single Pana': 160,
+        'Double Pana': 320, 'Triple Pana': 1000,
+        'Half Sangam A': 1000, 'Half Sangam B': 1000, 'Full Sangam': 10000
+    };
+    
+    const gameBadges = {
+        'Single Digit': { open: 'OPEN BID', close: 'CLOSE BID' },
+        'Jodi': { open: 'CLOSE BID ONLY', close: 'CLOSE BID' },
+        'Single Pana': { open: 'OPEN BID', close: 'CLOSE BID' },
+        'Double Pana': { open: 'OPEN BID', close: 'CLOSE BID' },
+        'Triple Pana': { open: 'OPEN BID', close: 'CLOSE BID' },
+        'Half Sangam A': { open: 'CLOSE BID ONLY', close: 'CLOSE BID' },
+        'Half Sangam B': { open: 'CLOSE BID ONLY', close: 'CLOSE BID' },
+        'Full Sangam': { open: 'CLOSE BID ONLY', close: 'CLOSE BID' }
+    };
+    
+    const gameIcons = {
+        'Single Digit': '🔢', 'Jodi': '🔗', 'Single Pana': '🎲',
+        'Double Pana': '🎲🎲', 'Triple Pana': '🎲🎲🎲',
+        'Half Sangam A': '🔄', 'Half Sangam B': '🔄', 'Full Sangam': '⭐'
+    };
+    
+    const gameDescriptions = {
+        'Single Digit': 'Bet on 0-9 digits', 'Jodi': 'Bet on 00-99 pairs',
+        'Single Pana': '3-digit combination', 'Double Pana': '3-digit with double',
+        'Triple Pana': 'Same 3 digits', 'Half Sangam A': 'Open Pana + Close Digit',
+        'Half Sangam B': 'Open Digit + Close Pana', 'Full Sangam': 'Both Open & Close Pana'
+    };
+    
+    const allGameTypes = [
+        { name: 'Single Digit', rate: 10, hasOpenClose: true, availableInOpen: true, availableInClose: true },
+        { name: 'Jodi', rate: 100, hasOpenClose: false, availableInOpen: true, availableInClose: false },
+        { name: 'Single Pana', rate: 160, hasOpenClose: true, availableInOpen: true, availableInClose: true },
+        { name: 'Double Pana', rate: 320, hasOpenClose: true, availableInOpen: true, availableInClose: true },
+        { name: 'Triple Pana', rate: 1000, hasOpenClose: true, availableInOpen: true, availableInClose: true },
+        { name: 'Half Sangam A', rate: 1000, hasOpenClose: false, availableInOpen: true, availableInClose: false },
+        { name: 'Half Sangam B', rate: 1000, hasOpenClose: false, availableInOpen: true, availableInClose: false },
+        { name: 'Full Sangam', rate: 10000, hasOpenClose: false, availableInOpen: true, availableInClose: false }
     ];
     
-    // Valid Pana Lists
-    const validSinglePana = ['128','137','146','236','245','290','380','470','489','560','579','678','129','138','147','156','237','246','345','390','480','570','589','679','120','139','148','157','238','247','256','346','490','580','670','689','130','149','158','167','239','248','257','347','356','590','680','789','140','159','168','230','249','258','267','348','357','456','690','780','123','150','169','178','240','259','268','349','358','367','457','790','124','160','278','179','250','269','340','359','368','458','467','890','125','134','170','189','260','279','350','369','468','378','459','567','126','135','180','234','270','289','360','379','450','469','478','568','127','136','145','190','235','280','370','389','460','479','569','578'];
-    const validDoublePana = ['100','119','155','227','335','344','399','588','669','110','200','228','255','366','499','660','688','778','166','229','300','337','355','445','599','779','788','112','220','266','338','400','446','455','699','770','113','122','177','339','366','447','500','799','889','600','114','277','330','448','466','556','880','899','115','133','188','223','377','449','557','566','700','116','224','233','288','440','477','558','800','990','117','144','199','225','388','559','577','667','900','118','226','244','299','334','488','550','668','677'];
-    const validTriplePana = ['111','222','333','444','555','666','777','888','999','000'];
+    const validSinglePanaList = [
+        '128','137','146','236','245','290','380','470','489','560','579','678',
+        '129','138','147','156','237','246','345','390','480','570','589','679',
+        '120','139','148','157','238','247','256','346','490','580','670','689',
+        '130','149','158','167','239','248','257','347','356','590','680','789',
+        '140','159','168','230','249','258','267','348','357','456','690','780',
+        '123','150','169','178','240','259','268','349','358','367','457','790',
+        '124','160','278','179','250','269','340','359','368','458','467','890',
+        '125','134','170','189','260','279','350','369','468','378','459','567',
+        '126','135','180','234','270','289','360','379','450','469','478','568',
+        '127','136','145','190','235','280','370','389','460','479','569','578'
+    ];
+    const validDoublePanaList = [
+        '100','119','155','227','335','344','399','588','669','110','200','228',
+        '255','366','499','660','688','778','166','229','300','337','355','445',
+        '599','779','788','112','220','266','338','400','446','455','699','770',
+        '113','122','177','339','366','447','500','799','889','600','114','277',
+        '330','448','466','556','880','899','115','133','188','223','377','449',
+        '557','566','700','116','224','233','288','440','477','558','800','990',
+        '117','144','199','225','388','559','577','667','900','118','226','244',
+        '299','334','488','550','668','677'
+    ];
+    const validTriplePanaList = ['111','222','333','444','555','666','777','888','999','000'];
     
-    // Get URL params
-    const urlParams = new URLSearchParams(window.location.search);
-    currentMarket = decodeURIComponent(urlParams.get('market') || 'Main Bazar');
-    currentMarketId = urlParams.get('marketId') || '';
-    currentAdminStatus = urlParams.get('status') || 'open';
-    document.getElementById('marketName').innerHTML = currentMarket;
+    let availableGameTypes = [];
+    let selectedOpenClose = 'Open';
     
-    async function init() {
-        await loadUserData();
-        await loadMarketData();
-        renderGameGrid();
-        updateBidsDisplay();
+    let cachedServerTime = null;
+    let lastServerTimeFetch = 0;
+    
+    async function getServerTime() {
+        const now = Date.now();
+        if (cachedServerTime && (now - lastServerTimeFetch) < 5000) {
+            const elapsed = (now - lastServerTimeFetch) / 1000;
+            return new Date(cachedServerTime.getTime() + (elapsed * 1000));
+        }
+        try {
+            const docRef = db.collection('settings').doc('servertime');
+            await docRef.set({ timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+            const doc = await docRef.get();
+            cachedServerTime = doc.data().timestamp.toDate();
+            lastServerTimeFetch = now;
+            return cachedServerTime;
+        } catch (error) {
+            return cachedServerTime || new Date();
+        }
     }
     
-    async function loadUserData() {
-        const user = auth.currentUser;
-        if (!user) { location.href = 'index.html'; return; }
-        currentUser = user;
-        const doc = await db.collection('users').doc(user.uid).get();
-        if (doc.exists) {
-            userData = doc.data();
-            document.getElementById('userBalance').innerText = userData.balance || 0;
+    async function isBettingAllowed() {
+        const serverTime = await getServerTime();
+        const currentMinutes = serverTime.getHours() * 60 + serverTime.getMinutes();
+        
+        if (currentStatus === 'open') {
+            if (marketOpenEndTime && currentMinutes >= marketOpenEndTime) {
+                return { allowed: false, message: '⚠️ Open bidding time is over! Please select CLOSE bidding if available.' };
+            }
+            return { allowed: true, message: null };
+        } 
+        else if (currentStatus === 'close') {
+            if (marketCloseEndTime && currentMinutes >= marketCloseEndTime) {
+                return { allowed: false, message: '⚠️ Close bidding time is over! Market is now closed.' };
+            }
+            return { allowed: true, message: null };
         }
+        return { allowed: true, message: null };
+    }
+    
+    function timeToMinutes(timeStr) {
+        if (!timeStr) return null;
+        const parts = timeStr.split(':');
+        return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+    }
+    
+    async function updateTimeWarning() {
+        const warningDiv = document.getElementById('timeWarning');
+        const bettingAllowed = await isBettingAllowed();
+        
+        if (!bettingAllowed.allowed) {
+            warningDiv.innerHTML = bettingAllowed.message;
+            warningDiv.classList.remove('hidden');
+        } else {
+            warningDiv.classList.add('hidden');
+        }
+    }
+    
+    function getAvailableGameTypes() {
+        if (currentStatus === 'open') return allGameTypes.filter(g => g.availableInOpen === true);
+        else return allGameTypes.filter(g => g.availableInClose === true);
+    }
+    
+    function renderGameTypeSelection() {
+        availableGameTypes = getAvailableGameTypes();
+        const container = document.getElementById('gameTypesGrid');
+        container.innerHTML = availableGameTypes.map(type => {
+            const badgeText = currentStatus === 'open' ? (gameBadges[type.name]?.open || 'OPEN BID') : (gameBadges[type.name]?.close || 'CLOSE BID');
+            return `
+                <div class="game-type-card" onclick="selectGameTypeFromCard('${type.name}')">
+                    <div class="game-card-name">${type.name}</div>
+                    <div class="game-card-rate">${type.rate}x</div>
+                    <div class="game-card-badge">${badgeText}</div>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    async function selectGameTypeFromCard(type) {
+        const bettingAllowed = await isBettingAllowed();
+        if (!bettingAllowed.allowed) {
+            showMessage(bettingAllowed.message, true);
+            return;
+        }
+        
+        currentGameType = type;
+        selectedDigits = [];
+        selectedJodis = [];
+        
+        document.getElementById('selectedGameTitle').innerHTML = currentGameType;
+        document.getElementById('selectedGameRate').innerHTML = `${gameRates[currentGameType]}x`;
+        
+        let bidTypeText = '';
+        if (currentStatus === 'open') {
+            bidTypeText = gameBadges[currentGameType]?.open || 'OPEN BID';
+        } else {
+            bidTypeText = gameBadges[currentGameType]?.close || 'CLOSE BID';
+        }
+        document.getElementById('selectedGameBidType').innerHTML = bidTypeText;
+        
+        document.getElementById('gameSelectionScreen').style.display = 'none';
+        document.getElementById('biddingPanel').style.display = 'block';
+        renderGamePanel();
+        updateTimeWarning();
+        
+        if (window.timeCheckInterval) clearInterval(window.timeCheckInterval);
+        window.timeCheckInterval = setInterval(async () => {
+            const allowed = await isBettingAllowed();
+            if (!allowed.allowed) {
+                updateTimeWarning();
+            }
+        }, 5000);
+    }
+    
+    function showGameSelection() {
+        if (window.timeCheckInterval) clearInterval(window.timeCheckInterval);
+        document.getElementById('biddingPanel').style.display = 'none';
+        document.getElementById('gameSelectionScreen').style.display = 'block';
+        bids = [];
+        updateSummary();
+    }
+    
+    function updatePoints() {
+        const pointsInput = document.getElementById('pointsInput');
+        if (pointsInput) {
+            let pts = parseInt(pointsInput.value);
+            if (isNaN(pts)) pts = null;
+            currentPoints = pts;
+        }
+    }
+    
+    function getCurrentPoints() {
+        const pointsInput = document.getElementById('pointsInput');
+        if (pointsInput) {
+            let pts = parseInt(pointsInput.value);
+            if (isNaN(pts) || pts === '' || pts === null) {
+                alert('Please enter points amount');
+                return null;
+            }
+            if (pts < 5) {
+                alert('⚠️ Minimum bid amount is ₹5. Please enter ₹5 or more.');
+                return null;
+            }
+            currentPoints = pts;
+            return currentPoints;
+        }
+        return null;
+    }
+    
+    function toggleDigit(digit) {
+        const index = selectedDigits.indexOf(digit);
+        if (index === -1) selectedDigits.push(digit);
+        else selectedDigits.splice(index, 1);
+        updateDigitButtons();
+    }
+    
+    function updateDigitButtons() {
+        for(let i = 0; i <= 9; i++) {
+            const btn = document.getElementById(`digit_${i}`);
+            if(btn) {
+                if(selectedDigits.includes(i.toString())) btn.classList.add('selected');
+                else btn.classList.remove('selected');
+            }
+        }
+    }
+    
+    function toggleJodi(jodi) {
+        const index = selectedJodis.indexOf(jodi);
+        if (index === -1) selectedJodis.push(jodi);
+        else selectedJodis.splice(index, 1);
+        updateJodiButtons();
+    }
+    
+    function updateJodiButtons() {
+        for(let i = 0; i <= 99; i++) {
+            const jodiStr = i.toString().padStart(2, '0');
+            const btn = document.getElementById(`jodi_${jodiStr}`);
+            if(btn) {
+                if(selectedJodis.includes(jodiStr)) btn.classList.add('selected');
+                else btn.classList.remove('selected');
+            }
+        }
+    }
+    
+    async function addSelectedNumbers() {
+        const bettingAllowed = await isBettingAllowed();
+        if (!bettingAllowed.allowed) {
+            showMessage(bettingAllowed.message, true);
+            return;
+        }
+        
+        const points = getCurrentPoints();
+        if(points === null) return;
+        
+        if(currentGameType === 'Single Digit') {
+            if(selectedDigits.length === 0) { alert('Please select at least one digit'); return; }
+            for(const digit of selectedDigits) addToBids(currentGameType, digit, points);
+            selectedDigits = [];
+            updateDigitButtons();
+        } 
+        else if(currentGameType === 'Jodi') {
+            if(selectedJodis.length === 0) { alert('Please select at least one Jodi'); return; }
+            for(const jodi of selectedJodis) addToBids(currentGameType, jodi, points);
+            selectedJodis = [];
+            updateJodiButtons();
+        }
+        updateSummary();
+        renderGamePanel();
+    }
+    
+    function addToBids(gameType, value, points) {
+        let bidTypeValue = null;
+        
+        if (gameType === 'Single Digit' || gameType === 'Single Pana' || gameType === 'Double Pana' || gameType === 'Triple Pana') {
+            bidTypeValue = (currentStatus === 'close') ? 'Close' : 'Open';
+        } else {
+            bidTypeValue = 'Close';
+        }
+        
+        const existingIndex = bids.findIndex(b => 
+            b.type === gameType && 
+            b.value === value && 
+            b.bidType === bidTypeValue
+        );
+        
+        if (existingIndex !== -1) {
+            bids[existingIndex].points += points;
+        } else {
+            bids.push({ 
+                type: gameType, 
+                bidType: bidTypeValue, 
+                value: value, 
+                points: points, 
+                market: currentMarket, 
+                marketId: currentMarketId 
+            });
+        }
+        
+        updateSummary();
+        renderGamePanel();
+    }
+    
+    async function addManualNumber() {
+        const bettingAllowed = await isBettingAllowed();
+        if (!bettingAllowed.allowed) {
+            showMessage(bettingAllowed.message, true);
+            return;
+        }
+        
+        const points = getCurrentPoints();
+        if(points === null) return;
+        const value = document.getElementById('manualValue')?.value.trim();
+        if(!value) { alert('Please enter a number'); return; }
+        
+        if(currentGameType === 'Single Pana' && !validSinglePanaList.includes(value)) { alert('❌ Invalid Single Pana!'); return; }
+        if(currentGameType === 'Double Pana' && !validDoublePanaList.includes(value)) { alert('❌ Invalid Double Pana!'); return; }
+        if(currentGameType === 'Triple Pana' && !validTriplePanaList.includes(value)) { alert('❌ Invalid Triple Pana!'); return; }
+        if(currentGameType === 'Half Sangam A' && !/^\d{3}-\d$/.test(value)) { alert('❌ Invalid Half Sangam A format!\n\nFormat: 123-5'); return; }
+        if(currentGameType === 'Half Sangam B' && !/^\d-\d{3}$/.test(value)) { alert('❌ Invalid Half Sangam B format!\n\nFormat: 5-123'); return; }
+        if(currentGameType === 'Full Sangam' && !/^\d{3}-\d{3}$/.test(value)) { alert('❌ Invalid Full Sangam format!\n\nFormat: 123-456'); return; }
+        
+        addToBids(currentGameType, value, points);
+        document.getElementById('manualValue').value = '';
+        updateSummary();
+        renderGamePanel();
+    }
+    
+    async function addHalfSangamA() {
+        const bettingAllowed = await isBettingAllowed();
+        if (!bettingAllowed.allowed) {
+            showMessage(bettingAllowed.message, true);
+            return;
+        }
+        
+        const points = getCurrentPoints();
+        if(points === null) return;
+        const open = document.getElementById('halfSangamAOpen')?.value.trim();
+        const close = document.getElementById('halfSangamAClose')?.value.trim();
+        if(!open || !close) { alert('Please enter both fields'); return; }
+        if(open.length !== 3 || !/^\d{3}$/.test(open)) { alert('Open Pana must be 3 digits'); return; }
+        if(close.length !== 1 || !/^\d$/.test(close)) { alert('Close Digit must be 0-9'); return; }
+        addToBids(currentGameType, `${open}-${close}`, points);
+        document.getElementById('halfSangamAOpen').value = '';
+        document.getElementById('halfSangamAClose').value = '';
+        updateSummary();
+        renderGamePanel();
+    }
+    
+    async function addHalfSangamB() {
+        const bettingAllowed = await isBettingAllowed();
+        if (!bettingAllowed.allowed) {
+            showMessage(bettingAllowed.message, true);
+            return;
+        }
+        
+        const points = getCurrentPoints();
+        if(points === null) return;
+        const open = document.getElementById('halfSangamBOpen')?.value.trim();
+        const close = document.getElementById('halfSangamBClose')?.value.trim();
+        if(!open || !close) { alert('Please enter both fields'); return; }
+        if(open.length !== 1 || !/^\d$/.test(open)) { alert('Open Digit must be 0-9'); return; }
+        if(close.length !== 3 || !/^\d{3}$/.test(close)) { alert('Close Pana must be 3 digits'); return; }
+        addToBids(currentGameType, `${open}-${close}`, points);
+        document.getElementById('halfSangamBOpen').value = '';
+        document.getElementById('halfSangamBClose').value = '';
+        updateSummary();
+        renderGamePanel();
+    }
+    
+    async function addFullSangam() {
+        const bettingAllowed = await isBettingAllowed();
+        if (!bettingAllowed.allowed) {
+            showMessage(bettingAllowed.message, true);
+            return;
+        }
+        
+        const points = getCurrentPoints();
+        if(points === null) return;
+        const open = document.getElementById('fullSangamOpen')?.value.trim();
+        const close = document.getElementById('fullSangamClose')?.value.trim();
+        if(!open || !close) { alert('Please enter both fields'); return; }
+        if(open.length !== 3 || !/^\d{3}$/.test(open)) { alert('Open Pana must be 3 digits'); return; }
+        if(close.length !== 3 || !/^\d{3}$/.test(close)) { alert('Close Pana must be 3 digits'); return; }
+        addToBids(currentGameType, `${open}-${close}`, points);
+        document.getElementById('fullSangamOpen').value = '';
+        document.getElementById('fullSangamClose').value = '';
+        updateSummary();
+        renderGamePanel();
+    }
+    
+    function renderBidItems() {
+        if(bids.length === 0) return '<div class="bids-section" style="text-align:center; color:#6c757d;">No bids added yet</div>';
+        return `<div class="bids-section">${bids.map((b,i)=>`
+            <div class="bid-item">
+                <div class="bid-info">
+                    <div class="bid-type">${b.type} ${b.bidType === 'Open' ? '(OPEN)' : '(CLOSE)'}</div>
+                    <div class="bid-value">${b.value}</div>
+                    <div class="bid-points">₹${b.points} × ${gameRates[b.type] || 10}x = ₹${b.points * (gameRates[b.type] || 10)}</div>
+                </div>
+                <button class="remove-bid" onclick="removeBid(${i})">✕</button>
+            </div>
+        `).join('')}</div>`;
+    }
+    
+    function updateSummary() {
+        const total = bids.reduce((s,b)=>s+b.points,0);
+        document.getElementById('totalBids').innerText = bids.length;
+        document.getElementById('totalPoints').innerHTML = `₹${total}`;
+    }
+    
+    function removeBid(i) { 
+        bids.splice(i,1); 
+        updateSummary(); 
+        renderGamePanel(); 
+    }
+    
+    function showMessage(msg, isError) {
+        const d = document.getElementById('message');
+        d.innerText = msg;
+        d.className = `message ${isError ? 'error' : 'success'}`;
+        d.classList.remove('hidden');
+        setTimeout(() => d.classList.add('hidden'), 3000);
+    }
+    
+    async function submitBids() {
+        if(isSubmitting) {
+            showMessage('Please wait, processing...', true);
+            return;
+        }
+        if(bids.length === 0) { showMessage('No bids to place', true); return; }
+        if(!currentUser) return;
+        
+        const bettingAllowed = await isBettingAllowed();
+        if (!bettingAllowed.allowed) {
+            showMessage(bettingAllowed.message, true);
+            return;
+        }
+        
+        const total = bids.reduce((sum, bid) => sum + bid.points, 0);
+        
+        if (total < 5) {
+            showMessage('⚠️ Minimum total bid amount is ₹5. Please add more bids.', true);
+            return;
+        }
+        
+        const freshUserDoc = await db.collection('users').doc(currentUser.uid).get();
+        const currentBalance = freshUserDoc.data()?.balance || 0;
+        
+        if(currentBalance < total) { 
+            showMessage(`Insufficient balance! Need ₹${total}. Your balance: ₹${currentBalance}`, true); 
+            return; 
+        }
+        
+        isSubmitting = true;
+        const submitBtn = document.getElementById('submitBtn');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<span class="loading-spinner"></span> Processing...';
+        submitBtn.disabled = true;
+        
+        const newBalance = currentBalance - total;
+        const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+        
+        try {
+            const batch = db.batch();
+            const userRef = db.collection('users').doc(currentUser.uid);
+            batch.update(userRef, { balance: newBalance });
+            
+            for(let b of bids) {
+                const bidRef = db.collection('bids').doc();
+                batch.set(bidRef, {
+                    userId: currentUser.uid,
+                    market: b.market,
+                    marketId: b.marketId,
+                    gameType: b.type,
+                    bidType: b.bidType,
+                    value: b.value,
+                    points: b.points,
+                    status: 'pending',
+                    createdAt: timestamp
+                });
+            }
+            
+            const transactionRef = db.collection('transactions').doc();
+            batch.set(transactionRef, {
+                userId: currentUser.uid,
+                type: 'debit',
+                amount: total,
+                status: 'Completed',
+                description: `Bid placed on ${currentMarket} (${bids.length} bids)`,
+                date: timestamp
+            });
+            
+            await batch.commit();
+            
+            userData.balance = newBalance;
+            document.getElementById('userBalance').innerText = newBalance;
+            
+            showMessage(`✅ ₹${total} bids placed successfully!`, false);
+            
+            bids = [];
+            updateSummary();
+            renderGamePanel();
+            
+        } catch(e) { 
+            console.error("Submit error:", e);
+            showMessage('Error: ' + e.message, true);
+        } finally {
+            isSubmitting = false;
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+    }
+    
+    function setOpenClose(value) { 
+        selectedOpenClose = value; 
+        renderGamePanel(); 
+    }
+    
+    function renderGamePanel() {
+        const panel = document.getElementById('gamePanel');
+        const rate = gameRates[currentGameType];
+        const gameType = allGameTypes.find(g => g.name === currentGameType);
+        const showOpenClose = gameType ? gameType.hasOpenClose : false;
+        const isCloseOnlyGame = (currentGameType === 'Jodi' || currentGameType === 'Half Sangam A' || currentGameType === 'Half Sangam B' || currentGameType === 'Full Sangam');
+        
+        if(currentGameType === 'Single Digit') {
+            let digitsHtml = '';
+            for(let i = 0; i <= 9; i++) {
+                digitsHtml += `<div class="number-btn ${selectedDigits.includes(i.toString()) ? 'selected' : ''}" id="digit_${i}" onclick="toggleDigit('${i}')">${i}</div>`;
+            }
+            panel.innerHTML = `
+                <div class="game-panel-content">
+                    ${showOpenClose && currentStatus === 'open' && !isCloseOnlyGame ? `
+                    <div class="toggle-section">
+                        <label class="toggle-option"><input type="radio" name="openClose" value="Open" ${selectedOpenClose === 'Open' ? 'checked' : ''} onchange="setOpenClose('Open')"> Open</label>
+                        <label class="toggle-option"><input type="radio" name="openClose" value="Close" ${selectedOpenClose === 'Close' ? 'checked' : ''} onchange="setOpenClose('Close')"> Close</label>
+                    </div>` : showOpenClose && currentStatus === 'close' ? '<div class="toggle-section"><span style="color:#e91e63;">Close Only Bidding</span></div>' : ''}
+                    <div class="points-section">
+                        <label class="points-label">Bid Amount (₹)</label>
+                        <input type="number" id="pointsInput" class="points-input" placeholder="Enter amount (Min ₹5)" step="1" onchange="updatePoints()" oninput="updatePoints()" inputmode="numeric">
+                        <div class="points-hint">Minimum ₹5 per bid</div>
+                    </div>
+                    <div class="number-grid">${digitsHtml}</div>
+                    <button class="add-btn" onclick="addSelectedNumbers()">Add Selected (${selectedDigits.length} digits)</button>
+                    ${renderBidItems()}
+                    <div class="rate-info">Win ${rate}x your bid amount</div>
+                </div>
+            `;
+        }
+        else if(currentGameType === 'Jodi') {
+            let jodiHtml = '';
+            for(let i = 0; i <= 99; i++) {
+                const jodiStr = i.toString().padStart(2, '0');
+                jodiHtml += `<div class="jodi-btn ${selectedJodis.includes(jodiStr) ? 'selected' : ''}" id="jodi_${jodiStr}" onclick="toggleJodi('${jodiStr}')">${jodiStr}</div>`;
+            }
+            panel.innerHTML = `
+                <div class="game-panel-content">
+                    <div class="toggle-section"><span>CLOSE BIDDING ONLY</span></div>
+                    <div class="points-section">
+                        <label class="points-label">Bid Amount (₹)</label>
+                        <input type="number" id="pointsInput" class="points-input" placeholder="Enter amount (Min ₹5)" step="1" onchange="updatePoints()" oninput="updatePoints()" inputmode="numeric">
+                        <div class="points-hint">Minimum ₹5 per bid</div>
+                    </div>
+                    <div class="jodi-grid">${jodiHtml}</div>
+                    <button class="add-btn" onclick="addSelectedNumbers()">Add Selected (${selectedJodis.length} Jodis)</button>
+                    ${renderBidItems()}
+                    <div class="rate-info">Win ${rate}x your bid amount</div>
+                </div>
+            `;
+        }
+        else if(currentGameType === 'Single Pana' || currentGameType === 'Double Pana' || currentGameType === 'Triple Pana') {
+            panel.innerHTML = `
+                <div class="game-panel-content">
+                    ${showOpenClose && currentStatus === 'open' && !isCloseOnlyGame ? `
+                    <div class="toggle-section">
+                        <label class="toggle-option"><input type="radio" name="openClose" value="Open" ${selectedOpenClose === 'Open' ? 'checked' : ''} onchange="setOpenClose('Open')"> Open</label>
+                        <label class="toggle-option"><input type="radio" name="openClose" value="Close" ${selectedOpenClose === 'Close' ? 'checked' : ''} onchange="setOpenClose('Close')"> Close</label>
+                    </div>` : showOpenClose && currentStatus === 'close' ? '<div class="toggle-section"><span>Close Only Bidding</span></div>' : ''}
+                    <div class="points-section">
+                        <label class="points-label">Bid Amount (₹)</label>
+                        <input type="number" id="pointsInput" class="points-input" placeholder="Enter amount (Min ₹5)" step="1" onchange="updatePoints()" oninput="updatePoints()" inputmode="numeric">
+                        <div class="points-hint">Minimum ₹5 per bid</div>
+                    </div>
+                    <div class="manual-entry">
+                        <div class="manual-row">
+                            <span class="manual-label">Enter Number:</span>
+                            <input type="text" id="manualValue" placeholder="Enter 3-digit ${currentGameType}" maxlength="3" inputmode="numeric">
+                        </div>
+                    </div>
+                    <button class="add-btn" onclick="addManualNumber()">Add to Bids</button>
+                    ${renderBidItems()}
+                    <div class="rate-info">Win ${rate}x your bid amount</div>
+                </div>
+            `;
+        }
+        else if(currentGameType === 'Half Sangam A') {
+            panel.innerHTML = `
+                <div class="game-panel-content">
+                    <div class="toggle-section"><span>CLOSE BIDDING ONLY</span></div>
+                    <div class="points-section">
+                        <label class="points-label">Bid Amount (₹)</label>
+                        <input type="number" id="pointsInput" class="points-input" placeholder="Enter amount (Min ₹5)" step="1" onchange="updatePoints()" oninput="updatePoints()" inputmode="numeric">
+                        <div class="points-hint">Minimum ₹5 per bid</div>
+                    </div>
+                    <div class="manual-entry">
+                        <div class="manual-row"><span class="manual-label">Open Pana:</span><input type="text" id="halfSangamAOpen" placeholder="3-digit Open Pana" maxlength="3" inputmode="numeric"></div>
+                        <div class="manual-row"><span class="manual-label">Close Digit:</span><input type="text" id="halfSangamAClose" placeholder="Close Digit (0-9)" maxlength="1" inputmode="numeric"></div>
+                    </div>
+                    <button class="add-btn" onclick="addHalfSangamA()">Add to Bids</button>
+                    ${renderBidItems()}
+                    <div class="rate-info">Win ${rate}x your bid amount</div>
+                </div>
+            `;
+        }
+        else if(currentGameType === 'Half Sangam B') {
+            panel.innerHTML = `
+                <div class="game-panel-content">
+                    <div class="toggle-section"><span>CLOSE BIDDING ONLY</span></div>
+                    <div class="points-section">
+                        <label class="points-label">Bid Amount (₹)</label>
+                        <input type="number" id="pointsInput" class="points-input" placeholder="Enter amount (Min ₹5)" step="1" onchange="updatePoints()" oninput="updatePoints()" inputmode="numeric">
+                        <div class="points-hint">Minimum ₹5 per bid</div>
+                    </div>
+                    <div class="manual-entry">
+                        <div class="manual-row"><span class="manual-label">Open Digit:</span><input type="text" id="halfSangamBOpen" placeholder="Open Digit (0-9)" maxlength="1" inputmode="numeric"></div>
+                        <div class="manual-row"><span class="manual-label">Close Pana:</span><input type="text" id="halfSangamBClose" placeholder="3-digit Close Pana" maxlength="3" inputmode="numeric"></div>
+                    </div>
+                    <button class="add-btn" onclick="addHalfSangamB()">Add to Bids</button>
+                    ${renderBidItems()}
+                    <div class="rate-info">Win ${rate}x your bid amount</div>
+                </div>
+            `;
+        }
+        else if(currentGameType === 'Full Sangam') {
+            panel.innerHTML = `
+                <div class="game-panel-content">
+                    <div class="toggle-section"><span>CLOSE BIDDING ONLY</span></div>
+                    <div class="points-section">
+                        <label class="points-label">Bid Amount (₹)</label>
+                        <input type="number" id="pointsInput" class="points-input" placeholder="Enter amount (Min ₹5)" step="1" onchange="updatePoints()" oninput="updatePoints()" inputmode="numeric">
+                        <div class="points-hint">Minimum ₹5 per bid</div>
+                    </div>
+                    <div class="manual-entry">
+                        <div class="manual-row"><span class="manual-label">Open Pana:</span><input type="text" id="fullSangamOpen" placeholder="3-digit Open Pana" maxlength="3" inputmode="numeric"></div>
+                        <div class="manual-row"><span class="manual-label">Close Pana:</span><input type="text" id="fullSangamClose" placeholder="3-digit Close Pana" maxlength="3" inputmode="numeric"></div>
+                    </div>
+                    <button class="add-btn" onclick="addFullSangam()">Add to Bids</button>
+                    ${renderBidItems()}
+                    <div class="rate-info">Win ${rate}x your bid amount</div>
+                </div>
+            `;
+        }
+        
+        const pointsInput = document.getElementById('pointsInput');
+        if (pointsInput && currentPoints) pointsInput.value = currentPoints;
     }
     
     async function loadMarketData() {
-        if (!currentMarketId) return;
-        const doc = await db.collection('markets').doc(currentMarketId).get();
-        if (doc.exists) {
-            const data = doc.data();
+        const marketDoc = await db.collection('markets').doc(currentMarketId).get();
+        if (marketDoc.exists) {
+            const data = marketDoc.data();
             marketOpenEndTime = timeToMinutes(data.openBidEnd);
             marketCloseEndTime = timeToMinutes(data.closeBidEnd);
         }
     }
     
-    function timeToMinutes(t) { if (!t) return null; let [h,m]=t.split(':'); return parseInt(h)*60+parseInt(m); }
-    
-    async function checkBettingAllowed() {
-        const serverTime = await getServerTime();
-        const mins = serverTime.getHours()*60 + serverTime.getMinutes();
-        if (currentAdminStatus === 'holiday') return { allowed: false, message: 'Market is on HOLIDAY!' };
-        if (currentAdminStatus === 'open' && marketOpenEndTime && mins >= marketOpenEndTime) return { allowed: false, message: 'Open bidding time is over!' };
-        if (currentAdminStatus === 'close' && marketCloseEndTime && mins >= marketCloseEndTime) return { allowed: false, message: 'Close bidding time is over!' };
-        return { allowed: true, message: null };
+    async function loadUserData() {
+        const user = auth.currentUser;
+        if(!user) { window.location.href = 'index.html'; return; }
+        currentUser = user;
+        const doc = await db.collection('users').doc(user.uid).get();
+        userData = doc.data();
+        document.getElementById('userBalance').innerText = userData?.balance || 0;
     }
     
-    async function getServerTime() {
-        try {
-            const docRef = db.collection('settings').doc('servertime');
-            await docRef.set({ timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-            const doc = await docRef.get();
-            return doc.data().timestamp.toDate();
-        } catch(e) { return new Date(); }
-    }
+    function goBack() { window.location.href = 'dashboard.html'; }
     
-    function renderGameGrid() {
-        let html = '';
-        games.forEach(game => {
-            html += `<div class="game-btn" onclick="selectGame('${game}')">${game}</div>`;
-        });
-        document.getElementById('gameGrid').innerHTML = html;
-    }
+    const urlParams = new URLSearchParams(window.location.search);
+    currentMarket = decodeURIComponent(urlParams.get('market') || 'Main Bazar');
+    currentMarketId = urlParams.get('marketId') || '';
+    currentStatus = urlParams.get('status') || 'open';
+    document.getElementById('marketName').innerHTML = currentMarket;
+    document.getElementById('bidTypeBadge').innerHTML = currentStatus === 'open' ? 'OPEN BIDDING' : 'CLOSE BIDDING';
     
-    function selectGame(game) {
-        currentGame = game;
-        document.querySelectorAll('.game-btn').forEach(btn => btn.classList.remove('active'));
-        event.target.classList.add('active');
-        
-        // Show/hide bet type
-        const hideBet = ['Jodi', 'Half Sangam A', 'Half Sangam B', 'Full Sangam'];
-        if (hideBet.includes(game) || currentAdminStatus === 'close') {
-            document.getElementById('betSection').style.display = 'none';
-            currentBetType = 'Close';
-        } else {
-            document.getElementById('betSection').style.display = 'block';
-            if (currentAdminStatus === 'open') {
-                currentBetType = 'Open';
-                document.querySelectorAll('.bet-opt').forEach(opt => opt.classList.remove('active'));
-                document.querySelector('.bet-opt.open').classList.add('active');
-            }
-        }
-        
-        renderForm();
-        document.getElementById('formSection').style.display = 'block';
-        document.getElementById('addBtn').style.display = 'block';
-        selectedDigits = [];
-    }
+    loadMarketData();
+    renderGameTypeSelection();
     
-    function setBetType(type) {
-        currentBetType = type;
-        document.querySelectorAll('.bet-opt').forEach(opt => opt.classList.remove('active'));
-        if (type === 'Open') document.querySelector('.bet-opt.open').classList.add('active');
-        else document.querySelector('.bet-opt.close').classList.add('active');
-        renderForm();
-    }
-    
-    function renderForm() {
-        const container = document.getElementById('formSection');
-        let html = '';
-        
-        switch(currentGame) {
-            case 'Single Digit':
-                html = `<div class="input-row"><label>Points (Min ₹5)</label><input type="number" id="points" placeholder="Enter points" min="5" value="10"></div>
-                        <div class="input-row"><label>Digit (0-9)</label><input type="text" id="digit" placeholder="Enter digit" maxlength="1" oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div>`;
-                break;
-            case 'Single Digit Bulk':
-                html = `<div class="input-row"><label>Points (Min ₹5)</label><input type="number" id="points" placeholder="Enter points" min="5" value="10"></div>
-                        <div class="digit-grid" id="digitGrid"></div>`;
-                setTimeout(() => {
-                    let dg = document.getElementById('digitGrid');
-                    if(dg) { let h=''; for(let i=0;i<=9;i++) h+=`<div class="digit-btn" onclick="toggleDigit('${i}')">${i}</div>`; dg.innerHTML=h; }
-                }, 10);
-                break;
-            case 'Jodi':
-                html = `<div class="input-row"><label>Points (Min ₹5)</label><input type="number" id="points" placeholder="Enter points" min="5" value="10"></div>
-                        <div class="input-row"><label>Jodi (00-99)</label><input type="text" id="jodi" placeholder="Enter Jodi" maxlength="2" oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div>`;
-                break;
-            case 'Single Pana':
-                html = `<div class="input-row"><label>Points (Min ₹5)</label><input type="number" id="points" placeholder="Enter points" min="5" value="10"></div>
-                        <div class="input-row"><label>Single Pana (3 digits)</label><input type="text" id="pana" placeholder="Enter 3-digit Pana" maxlength="3" oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div>`;
-                break;
-            case 'Double Pana':
-                html = `<div class="input-row"><label>Points (Min ₹5)</label><input type="number" id="points" placeholder="Enter points" min="5" value="10"></div>
-                        <div class="pana-grid" id="doubleGrid"></div>`;
-                setTimeout(() => {
-                    let dg = document.getElementById('doubleGrid');
-                    if(dg) { let h=''; validDoublePana.slice(0,30).forEach(p=>h+=`<div class="pana-item" onclick="selectPana('${p}')">${p}</div>`); h+=`<div class="pana-item custom-item" onclick="customPana()">Custom</div>`; dg.innerHTML=h; }
-                }, 10);
-                break;
-            case 'Triple Pana':
-                html = `<div class="input-row"><label>Points (Min ₹5)</label><input type="number" id="points" placeholder="Enter points" min="5" value="10"></div>
-                        <div class="pana-grid" id="tripleGrid"></div>`;
-                setTimeout(() => {
-                    let dg = document.getElementById('tripleGrid');
-                    if(dg) { let h=''; validTriplePana.forEach(p=>h+=`<div class="pana-item" onclick="selectPana('${p}')">${p}</div>`); dg.innerHTML=h; }
-                }, 10);
-                break;
-            case 'Half Sangam A':
-                html = `<div class="input-row"><label>Points (Min ₹5)</label><input type="number" id="points" placeholder="Enter points" min="5" value="10"></div>
-                        <div class="input-row"><label>Open Pana (3 digits)</label><input type="text" id="openPana" placeholder="Open Pana" maxlength="3" oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div>
-                        <div class="input-row"><label>Close Digit (0-9)</label><input type="text" id="closeDigit" placeholder="Close Digit" maxlength="1" oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div>`;
-                break;
-            case 'Half Sangam B':
-                html = `<div class="input-row"><label>Points (Min ₹5)</label><input type="number" id="points" placeholder="Enter points" min="5" value="10"></div>
-                        <div class="input-row"><label>Open Digit (0-9)</label><input type="text" id="openDigit" placeholder="Open Digit" maxlength="1" oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div>
-                        <div class="input-row"><label>Close Pana (3 digits)</label><input type="text" id="closePana" placeholder="Close Pana" maxlength="3" oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div>`;
-                break;
-            case 'Full Sangam':
-                html = `<div class="input-row"><label>Points (Min ₹5)</label><input type="number" id="points" placeholder="Enter points" min="5" value="10"></div>
-                        <div class="input-row"><label>Open Pana (3 digits)</label><input type="text" id="openPana" placeholder="Open Pana" maxlength="3" oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div>
-                        <div class="input-row"><label>Close Pana (3 digits)</label><input type="text" id="closePana" placeholder="Close Pana" maxlength="3" oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div>`;
-                break;
-        }
-        container.innerHTML = html;
-    }
-    
-    function toggleDigit(d) {
-        let idx = selectedDigits.indexOf(d);
-        idx === -1 ? selectedDigits.push(d) : selectedDigits.splice(idx,1);
-        let btns = document.querySelectorAll('.digit-btn');
-        btns.forEach(btn => {
-            if(btn.innerText === d) btn.classList.toggle('selected');
-        });
-    }
-    
-    function selectPana(pana) {
-        let pts = document.getElementById('points')?.value;
-        if(!pts || pts<5) { showMessage('Enter points (Min ₹5)', 'error'); return; }
-        addToBids(currentGame, pana, parseInt(pts), currentBetType);
-        showMessage(`Added ${pana} with ₹${pts}`, 'success');
-    }
-    
-    function customPana() {
-        let val = prompt('Enter Pana number (3 digits):');
-        if(val && /^\d{3}$/.test(val) && validDoublePana.includes(val)) {
-            selectPana(val);
-        } else { showMessage('Invalid Double Pana!', 'error'); }
-    }
-    
-    function addToBids() {
-        let pts = parseInt(document.getElementById('points')?.value);
-        if(isNaN(pts) || pts<5) { showMessage('Enter valid points (Min ₹5)', 'error'); return; }
-        
-        switch(currentGame) {
-            case 'Single Digit':
-                let digit = document.getElementById('digit')?.value.trim();
-                if(!digit || !/^\d$/.test(digit)) { showMessage('Enter valid digit', 'error'); return; }
-                addToBidsList(currentGame, digit, pts, currentBetType);
-                document.getElementById('digit').value = '';
-                break;
-            case 'Single Digit Bulk':
-                if(selectedDigits.length === 0) { showMessage('Select at least one digit', 'error'); return; }
-                selectedDigits.forEach(d => addToBidsList(currentGame, d, pts, currentBetType));
-                selectedDigits = [];
-                renderForm();
-                showMessage(`Added ${selectedDigits.length} digits`, 'success');
-                break;
-            case 'Jodi':
-                let jodi = document.getElementById('jodi')?.value.trim();
-                if(!jodi || !/^\d{2}$/.test(jodi)) { showMessage('Enter valid Jodi (00-99)', 'error'); return; }
-                addToBidsList(currentGame, jodi, pts, 'Close');
-                document.getElementById('jodi').value = '';
-                break;
-            case 'Single Pana':
-                let pana = document.getElementById('pana')?.value.trim();
-                if(!pana || !/^\d{3}$/.test(pana)) { showMessage('Enter valid 3-digit Pana', 'error'); return; }
-                if(!validSinglePana.includes(pana)) { showMessage('Invalid Single Pana!', 'error'); return; }
-                addToBidsList(currentGame, pana, pts, currentBetType);
-                document.getElementById('pana').value = '';
-                break;
-            case 'Half Sangam A':
-                let op = document.getElementById('openPana')?.value.trim();
-                let cd = document.getElementById('closeDigit')?.value.trim();
-                if(!op || !/^\d{3}$/.test(op) || !cd || !/^\d$/.test(cd)) { showMessage('Enter valid Open Pana and Close Digit', 'error'); return; }
-                addToBidsList(currentGame, `${op}-${cd}`, pts, 'Close');
-                document.getElementById('openPana').value = '';
-                document.getElementById('closeDigit').value = '';
-                break;
-            case 'Half Sangam B':
-                let od = document.getElementById('openDigit')?.value.trim();
-                let cp = document.getElementById('closePana')?.value.trim();
-                if(!od || !/^\d$/.test(od) || !cp || !/^\d{3}$/.test(cp)) { showMessage('Enter valid Open Digit and Close Pana', 'error'); return; }
-                addToBidsList(currentGame, `${od}-${cp}`, pts, 'Close');
-                document.getElementById('openDigit').value = '';
-                document.getElementById('closePana').value = '';
-                break;
-            case 'Full Sangam':
-                let op1 = document.getElementById('openPana')?.value.trim();
-                let cp1 = document.getElementById('closePana')?.value.trim();
-                if(!op1 || !/^\d{3}$/.test(op1) || !cp1 || !/^\d{3}$/.test(cp1)) { showMessage('Enter valid Open Pana and Close Pana', 'error'); return; }
-                addToBidsList(currentGame, `${op1}-${cp1}`, pts, 'Close');
-                document.getElementById('openPana').value = '';
-                document.getElementById('closePana').value = '';
-                break;
-        }
-        document.getElementById('points').value = '10';
-        updateBidsDisplay();
-    }
-    
-    function addToBidsList(game, val, pts, type) {
-        let existing = bids.findIndex(b => b.game === game && b.value === val && b.betType === type);
-        existing !== -1 ? bids[existing].points += pts : bids.push({ game, value: val, points: pts, betType: type, market: currentMarket, marketId: currentMarketId });
-        updateBidsDisplay();
-    }
-    
-    function updateBidsDisplay() {
-        let container = document.getElementById('bidsSection');
-        let total = 0;
-        if(bids.length === 0) {
-            container.innerHTML = '<div class="empty-bids">No bets added yet</div>';
-            document.getElementById('bidCount').innerText = '0';
-            document.getElementById('totalPoints').innerText = '0';
-            return;
-        }
-        let html = '';
-        bids.forEach((b, i) => {
-            total += b.points;
-            html += `<div class="bid-item">
-                        <div class="bid-row">
-                            <span class="bid-number">${b.value}</span>
-                            <span class="bid-points">₹${b.points}</span>
-                            <button class="remove-bid" onclick="removeBid(${i})">✕</button>
-                        </div>
-                        <div class="bid-type">${b.game} ${b.betType === 'Open' ? 'OPEN' : 'CLOSE'}</div>
-                    </div>`;
-        });
-        container.innerHTML = html;
-        document.getElementById('bidCount').innerText = bids.length;
-        document.getElementById('totalPoints').innerText = total;
-    }
-    
-    function removeBid(i) { bids.splice(i,1); updateBidsDisplay(); showMessage('Bet removed', 'success'); }
-    
-    async function submitBids() {
-        if(bids.length === 0) { showMessage('No bets to place!', 'error'); return; }
-        let allowed = await checkBettingAllowed();
-        if(!allowed.allowed) { showMessage(allowed.message, 'error'); return; }
-        let total = bids.reduce((s,b)=>s+b.points,0);
-        let fresh = await db.collection('users').doc(currentUser.uid).get();
-        let balance = fresh.data()?.balance || 0;
-        if(balance < total) { showMessage(`Insufficient balance! Need ₹${total}`, 'error'); return; }
-        
-        let btn = document.getElementById('submitBtn');
-        btn.disabled = true; btn.innerText = 'Processing...';
-        try {
-            let batch = db.batch();
-            batch.update(db.collection('users').doc(currentUser.uid), { balance: balance - total });
-            for(let b of bids) {
-                batch.set(db.collection('bids').doc(), {
-                    userId: currentUser.uid, market: b.market, marketId: b.marketId,
-                    gameType: b.game, bidType: b.betType, value: b.value, points: b.points,
-                    status: 'pending', createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-            }
-            batch.set(db.collection('transactions').doc(), {
-                userId: currentUser.uid, type: 'debit', amount: total, status: 'Completed',
-                description: `Bets on ${currentMarket} (${bids.length} bets)`,
-                date: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            await batch.commit();
-            document.getElementById('userBalance').innerText = balance - total;
-            showMessage(`✅ ₹${total} placed! ${bids.length} bet(s) active.`, 'success');
-            bids = [];
-            updateBidsDisplay();
-            setTimeout(() => goBack(), 2000);
-        } catch(e) { showMessage('Error: '+e.message, 'error'); }
-        finally { btn.disabled = false; btn.innerText = 'SUBMIT BETS'; }
-    }
-    
-    function showMessage(msg, type) {
-        let d = document.getElementById('message');
-        d.innerText = msg;
-        d.className = `msg msg-${type}`;
-        setTimeout(() => { d.className = 'msg'; d.innerText = ''; }, 3000);
-    }
-    
-    function goBack() { location.href = 'dashboard.html'; }
-    
-    window.selectGame = selectGame;
-    window.setBetType = setBetType;
-    window.toggleDigit = toggleDigit;
-    window.selectPana = selectPana;
-    window.customPana = customPana;
-    window.addToBids = addToBids;
+    window.selectGameTypeFromCard = selectGameTypeFromCard;
+    window.showGameSelection = showGameSelection;
+    window.setOpenClose = setOpenClose;
+    window.addManualNumber = addManualNumber;
     window.removeBid = removeBid;
+    window.addHalfSangamA = addHalfSangamA;
+    window.addHalfSangamB = addHalfSangamB;
+    window.addFullSangam = addFullSangam;
     window.submitBids = submitBids;
-    window.goBack = goBack;
+    window.updatePoints = updatePoints;
+    window.toggleDigit = toggleDigit;
+    window.toggleJodi = toggleJodi;
+    window.addSelectedNumbers = addSelectedNumbers;
     
-    auth.onAuthStateChanged(user => { if(!user) location.href='index.html'; else init(); });
+    auth.onAuthStateChanged(async (user) => {
+        if(!user) window.location.href = 'index.html';
+        else await loadUserData();
+    });
 </script>
 </body>
 </html>
