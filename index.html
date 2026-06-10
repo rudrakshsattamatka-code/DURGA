@@ -3,725 +3,393 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>DURGA - Royal Login</title>
+    <title>DURGA - Dashboard</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        
-        body {
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .app-container {
-            max-width: 400px;
-            width: 100%;
-            background: #fff;
-            min-height: 100vh;
-            margin: 0 auto;
-            border-radius: 0;
-        }
-        
-        .header {
-            background: linear-gradient(135deg, #e91e63, #9c27b0);
-            padding: 25px 20px;
-            text-align: center;
-        }
-        .logo-img {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            margin-bottom: 8px;
-            border: 2px solid #fff;
-        }
-        .logo-text {
-            font-size: 28px;
-            font-weight: bold;
-            color: #fff;
-            letter-spacing: 2px;
-        }
-        .tagline {
-            font-size: 11px;
-            color: rgba(255,255,255,0.8);
-            margin-top: 5px;
-        }
-        
-        .screen {
-            padding: 25px 20px;
-        }
-        
-        .input-field {
-            background: #f8f9fa;
-            border: 1px solid #e0e0e0;
-            border-radius: 12px;
-            padding: 12px 15px;
-            width: 100%;
-            color: #1a1a2e;
-            font-size: 15px;
-            margin-bottom: 15px;
-            outline: none;
-        }
-        .input-field:focus {
-            border-color: #e91e63;
-        }
-        .input-field::placeholder {
-            color: #aaa;
-        }
-        .pin-input {
-            font-size: 20px;
-            text-align: center;
-            letter-spacing: 6px;
-        }
-        
-        .btn {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #e91e63, #9c27b0);
-            border: none;
-            border-radius: 12px;
-            color: #fff;
-            font-weight: bold;
-            font-size: 16px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .btn:hover {
-            transform: scale(1.02);
-            opacity: 0.95;
-        }
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .link {
-            text-align: center;
-            margin-top: 12px;
-            color: #e91e63;
-            font-size: 13px;
-            cursor: pointer;
-        }
-        
-        .back-link {
-            text-align: center;
-            margin-top: 12px;
-            color: #888;
-            font-size: 13px;
-            cursor: pointer;
-        }
-        
-        .timer {
-            color: #e91e63;
-            font-size: 18px;
-            font-weight: bold;
-            margin: 15px 0;
-            text-align: center;
-        }
-        
-        .resend-btn {
-            background: none;
-            border: none;
-            color: #e91e63;
-            font-size: 14px;
-            cursor: pointer;
-            margin-top: 10px;
-            text-align: center;
-            width: 100%;
-        }
-        .resend-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .welcome-text {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-        
-        .error-text {
-            color: #ff5252;
-            font-size: 12px;
-            text-align: center;
-            margin-top: 8px;
-        }
-        
-        .success-text {
-            color: #28a745;
-            font-size: 12px;
-            text-align: center;
-            margin-top: 8px;
-        }
-        
-        .footer {
-            text-align: center;
-            padding: 15px;
-            border-top: 1px solid #eee;
-            background: #fff;
-            font-size: 10px;
-            color: #888;
-        }
-        .footer .brand {
-            color: #e91e63;
-            font-weight: bold;
-        }
-        
-        .hidden {
-            display: none;
-        }
+        body { background: #f0f2f5; padding-bottom: 75px; }
+        .app-container { max-width: 480px; margin: 0 auto; background: #f0f2f5; min-height: 100vh; }
         
         /* Loading Animation */
-        .loader-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 9999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .loader-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid #fff;
-            border-top: 4px solid #e91e63;
+        .loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #1a1a2e, #16213e); z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column; }
+        .loader-spinner { width: 60px; height: 60px; border: 4px solid rgba(255,255,255,0.2); border-top: 4px solid #e91e63; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        .loader-text { font-size: 28px; font-weight: bold; color: #e91e63; letter-spacing: 3px; animation: pulse 1.5s ease-in-out infinite; }
+        .loader-sub { font-size: 12px; color: #aaa; margin-top: 10px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        
+        .header { background: #fff; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e0e0e0; }
+        .logo-img { width: 36px; height: 36px; border-radius: 50%; border: 1px solid #e91e63; }
+        .balance { background: #e91e63; padding: 4px 12px; border-radius: 20px; color: #fff; font-weight: bold; font-size: 13px; cursor: pointer; }
+        
+        .profile-row { display: flex; align-items: center; gap: 10px; background: #fff; margin: 8px; padding: 8px 12px; border-radius: 14px; border: 1px solid #e0e0e0; cursor: pointer; }
+        .profile-avatar { width: 40px; height: 40px; background: #e91e63; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; color: #fff; }
+        .profile-info { flex: 1; }
+        .profile-name { color: #1a1a2e; font-size: 14px; font-weight: bold; }
+        .profile-phone { color: #888; font-size: 11px; }
+        .view-profile { color: #e91e63; font-size: 11px; }
+        
+        .notice-board { background: linear-gradient(135deg, #e91e63, #9c27b0); margin: 8px; padding: 8px 12px; border-radius: 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .notice-icon { font-size: 18px; }
+        .notice-text { flex: 1; color: #fff; font-weight: bold; font-size: 11px; }
+        .close-notice { background: none; border: none; color: #fff; font-size: 16px; cursor: pointer; opacity: 0.8; }
+        
+        .live-clock { background: #fff; margin: 8px; padding: 5px 12px; border-radius: 25px; display: flex; justify-content: center; align-items: center; gap: 10px; border: 1px solid #e0e0e0; }
+        .clock-time { font-size: 13px; font-weight: 700; color: #e91e63; font-family: monospace; background: #f8f9fa; padding: 3px 10px; border-radius: 20px; }
+        .clock-date { font-size: 10px; color: #888; background: #f8f9fa; padding: 3px 8px; border-radius: 20px; }
+        
+        .games-row { display: flex; justify-content: space-around; background: #fff; margin: 8px; padding: 8px; border-radius: 14px; border: 1px solid #e0e0e0; }
+        .game-icon { text-align: center; color: #888; font-size: 11px; cursor: pointer; transition: 0.3s; flex: 1; position: relative; }
+        .game-icon:hover { color: #e91e63; transform: translateY(-2px); }
+        .game-icon img { width: 32px; height: 32px; display: block; margin: 0 auto 3px; border-radius: 8px; }
+        
+        .chat-badge {
+            position: absolute;
+            top: -5px;
+            right: 5px;
+            background: #e91e63;
+            color: #fff;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        
+        /* Market Cards - Light Blue Background */
+        .market-card { 
+            background: #e8f4f8; 
+            margin: 10px 12px; 
+            border-radius: 20px; 
+            padding: 14px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: all 0.2s;
         }
+        .market-card:active { transform: scale(0.98); }
+        
+        /* Market Header */
+        .market-header { text-align: center; margin-bottom: 10px; }
+        .market-name { font-size: 20px; font-weight: 800; letter-spacing: 0.5px; display: inline-block; }
+        
+        /* Result Box */
+        .result-box { text-align: center; margin: 10px 0; }
+        .result-numbers { 
+            font-size: 22px; 
+            font-weight: 800; 
+            letter-spacing: 4px; 
+            font-family: monospace;
+            background: rgba(255,255,255,0.7);
+            display: inline-block;
+            padding: 6px 20px;
+            border-radius: 40px;
+            color: #1a1a2e;
+        }
+        
+        /* Timings */
+        .market-timings { 
+            display: flex; 
+            justify-content: center; 
+            gap: 25px; 
+            margin: 10px 0; 
+            padding: 6px; 
+        }
+        .timing-item { display: flex; align-items: center; gap: 6px; font-size: 11px; }
+        .green-dot { width: 8px; height: 8px; background: #28a745; border-radius: 50%; }
+        .orange-dot { width: 8px; height: 8px; background: #ff9800; border-radius: 50%; }
+        .timing-label { color: #555; }
+        .timing-value { color: #1a1a2e; font-weight: 600; }
+        
+        /* Status Badge - No Background, Only Text */
+        .market-status { 
+            font-size: 13px; 
+            padding: 6px 0; 
+            display: block; 
+            font-weight: 700; 
+            text-align: center; 
+            margin: 6px 0;
+            letter-spacing: 0.5px;
+        }
+        .status-open { color: #2e7d32; }
+        .status-close { color: #ef6c00; }
+        .status-closed { color: #c62828; }
+        .status-holiday { color: #6a1b9a; }
+        
+        /* Play Button */
+        .play-btn { 
+            width: auto; 
+            margin: 5px auto 0;
+            padding: 8px 35px; 
+            background: #e91e63; 
+            border: none; 
+            border-radius: 40px; 
+            color: #fff; 
+            font-weight: 700; 
+            cursor: pointer; 
+            font-size: 13px;
+            display: inline-block;
+            text-align: center;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+        }
+        .play-btn:active { transform: scale(0.95); }
+        .play-btn:disabled { opacity: 0.5; cursor: not-allowed; background: #999; transform: none; }
+        
+        .btn-container { text-align: center; margin-top: 5px; }
+        
+        /* Bottom Navigation */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto; background: #fff; display: flex; justify-content: space-around; padding: 10px 8px; border-top: 1px solid #e0e0e0; }
+        .nav-item { text-align: center; color: #888; cursor: pointer; font-size: 11px; flex: 1; padding: 6px 0; position: relative; }
+        .nav-item:hover { color: #e91e63; transform: translateY(-2px); }
+        .nav-item img { width: 28px; height: 28px; display: block; margin: 0 auto 4px; opacity: 0.7; }
+        .nav-item:hover img { opacity: 1; }
+        .nav-item.active { color: #e91e63; }
+        
+        .nav-badge {
+            position: absolute;
+            top: -3px;
+            right: 20px;
+            background: #e91e63;
+            color: #fff;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .hidden { display: none; }
+        
+        /* Modals */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: #fff; border-radius: 20px; padding: 20px; width: 90%; max-width: 340px; max-height: 80vh; overflow-y: auto; }
+        .modal-content h3 { color: #1a1a2e; margin-bottom: 12px; text-align: center; }
+        .modal-btn { width: 100%; padding: 10px; background: #e91e63; border: none; border-radius: 10px; color: #fff; font-weight: bold; cursor: pointer; margin-top: 8px; }
+        .close-modal { background: #e9ecef; color: #1a1a2e; }
+        .logout-btn { background: #dc3545; color: #fff; }
+        .modal-input { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; background: #f8f9fa; border-radius: 10px; }
+        .rate-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #eee; }
+        .support-option { display: flex; align-items: center; gap: 12px; padding: 12px; background: #f8f9fa; border-radius: 12px; margin-bottom: 8px; cursor: pointer; border: 1px solid #eee; }
+        .support-option:hover { background: #fff; border-color: #e91e63; }
+        
+        button, .game-icon, .nav-item, .profile-row, .balance, .notice-board, .play-btn { touch-action: manipulation; }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <div class="header">
-            <img src="https://i.imgur.com/V4pMmxP.jpeg" alt="DURGA" class="logo-img">
-            <div class="logo-text">DURGA</div>
-            <div class="tagline">India's Royal Gaming Platform</div>
-        </div>
-
-        <!-- Phone Screen -->
-        <div id="phoneScreen" class="screen">
-            <input type="tel" id="phoneNumber" class="input-field" placeholder="Enter Mobile Number">
-            <button class="btn" id="sendOtpBtn">Login with OTP</button>
-            <div class="link" id="showPinLoginBtn">Login with MPIN</div>
-            <div id="phoneError" class="error-text"></div>
-        </div>
-
-        <!-- OTP Screen -->
-        <div id="otpScreen" class="screen hidden">
-            <div class="welcome-text">Enter OTP sent to your mobile</div>
-            <div class="timer" id="timer">60 sec remaining</div>
-            <input type="text" id="otpCode" class="input-field" placeholder="Enter OTP" maxlength="6">
-            <button class="btn" id="verifyOtpBtn">VERIFY OTP</button>
-            <button class="resend-btn" id="resendOtpBtn" disabled>Resend OTP (60s)</button>
-            <div id="otpError" class="error-text"></div>
-        </div>
-
-        <!-- PIN Login Screen (for existing users after logout) -->
-        <div id="pinLoginScreen" class="screen hidden">
-            <div class="welcome-text">Enter your 4-digit MPIN</div>
-            <input type="password" id="pinLoginInput" class="input-field pin-input" placeholder="●●●●" maxlength="4" inputmode="numeric">
-            <button class="btn" id="verifyPinLoginBtn">Login with MPIN</button>
-            <div class="link" id="forgotPinBtn">Forgot MPIN?</div>
-            <div class="back-link" id="backToOtpBtn">← Back to OTP Login</div>
-            <div id="pinLoginError" class="error-text"></div>
-        </div>
-
-        <!-- Forgot MPIN - Enter Mobile Screen -->
-        <div id="forgotPinScreen" class="screen hidden">
-            <div class="welcome-text">Reset your MPIN</div>
-            <input type="tel" id="forgotPhone" class="input-field" placeholder="Enter Mobile Number">
-            <button class="btn" id="sendForgotOtpBtn">Send OTP</button>
-            <div class="back-link" id="backToPinLoginBtn">← Back</div>
-            <div id="forgotError" class="error-text"></div>
-        </div>
-
-        <!-- Forgot MPIN - OTP Verification Screen -->
-        <div id="forgotOtpScreen" class="screen hidden">
-            <div class="welcome-text">Enter OTP to reset MPIN</div>
-            <div class="timer" id="forgotTimer">60 sec remaining</div>
-            <input type="text" id="forgotOtpCode" class="input-field" placeholder="Enter OTP" maxlength="6">
-            <input type="password" id="newPin" class="input-field" placeholder="New MPIN (4 digits)" maxlength="4" inputmode="numeric">
-            <input type="password" id="confirmNewPin" class="input-field" placeholder="Confirm New MPIN" maxlength="4" inputmode="numeric">
-            <button class="btn" id="resetPinBtn">Reset MPIN</button>
-            <button class="resend-btn" id="resendForgotOtpBtn" disabled>Resend OTP (60s)</button>
-            <div class="back-link" id="backToForgotMobileBtn">← Back</div>
-            <div id="forgotOtpError" class="error-text"></div>
-            <div id="forgotSuccessMsg" class="success-text"></div>
-        </div>
-
-        <!-- Register Screen (New User) -->
-        <div id="registerScreen" class="screen hidden">
-            <div class="welcome-text">Complete your profile</div>
-            <input type="text" id="regName" class="input-field" placeholder="Full Name">
-            <input type="password" id="regPin" class="input-field" placeholder="Create MPIN (4 digits)" maxlength="4" inputmode="numeric">
-            <input type="password" id="regConfirmPin" class="input-field" placeholder="Confirm MPIN" maxlength="4" inputmode="numeric">
-            <button class="btn" id="registerBtn">Register & Continue</button>
-            <div id="regError" class="error-text"></div>
-        </div>
-        
-        <div class="footer">
-            <span>© 2024 DURGA - India's Royal Gaming Platform</span><br>
-            <span>Trusted by 1,00,000+ Users</span><br>
-            <span class="brand">🌸 24/7 Royal Support 🌸</span>
+<div class="app-container">
+    <div class="header"><img src="https://i.imgur.com/V4pMmxP.jpeg" alt="DURGA" class="logo-img"><div class="balance" onclick="showBalance()">₹<span id="userBalance">0</span></div></div>
+    <div class="profile-row" onclick="showProfileModal()"><div class="profile-avatar">🌸</div><div class="profile-info"><div class="profile-name" id="profileName">Loading...</div><div class="profile-phone" id="profilePhone">Loading...</div></div><div class="view-profile">View →</div></div>
+    <div id="noticeBoard" class="notice-board" onclick="showNoticeModal()"><div class="notice-icon">📜</div><div class="notice-text" id="noticeText">Welcome to DURGA!</div><button class="close-notice" onclick="event.stopPropagation(); closeNotice()">✕</button></div>
+    <div class="live-clock"><span class="clock-time" id="liveClockTime">--:--:--</span><span class="clock-date" id="liveClockDate">--/--/----</span></div>
+    
+    <div class="games-row">
+        <div class="game-icon" onclick="location.href='deposit.html'"><img src="https://i.imgur.com/NvJCTli.png"><span>Deposit</span></div>
+        <div class="game-icon" onclick="location.href='withdraw.html'"><img src="https://i.imgur.com/3ZxjAIp.png"><span>Withdraw</span></div>
+        <div class="game-icon" onclick="location.href='mybids.html'"><img src="https://i.imgur.com/QhfWXLI.jpeg"><span>My Bids</span></div>
+        <div class="game-icon" id="supportIcon" onclick="location.href='chat.html'" style="position:relative;">
+            <img src="https://i.imgur.com/ug9IprL.jpeg"><span>Support</span>
+            <span id="chatBadgeTop" class="chat-badge" style="display:none;">!</span>
         </div>
     </div>
+    
+    <div id="marketsList"><div style="text-align:center; padding:40px; color:#888;">Loading markets...</div></div>
+    
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="location.reload()"><img src="https://i.imgur.com/StGZq3Y.png"><span>Home</span></div>
+        <div class="nav-item" onclick="location.href='mybids.html'"><img src="https://i.imgur.com/rUWwMYm.png"><span>Passbook</span></div>
+        <div class="nav-item" onclick="location.href='mybids.html'"><img src="https://i.imgur.com/QhfWXLI.jpeg"><span>My Bids</span></div>
+        <div class="nav-item" onclick="location.href='funds.html'"><img src="https://i.imgur.com/NvJCTli.png"><span>Fund</span></div>
+        <div class="nav-item" id="supportNavBottom" onclick="location.href='chat.html'" style="position:relative;">
+            <img src="https://i.imgur.com/ug9IprL.jpeg"><span>Support</span>
+            <span id="chatBadgeBottom" class="nav-badge" style="display:none;">!</span>
+        </div>
+    </div>
+</div>
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyBeGpb7V0i5GN1opY9JECHxQIGvHFDPX38",
-            authDomain: "win777-ed482.firebaseapp.com",
-            projectId: "win777-ed482",
-            storageBucket: "win777-ed482.firebasestorage.app",
-            messagingSenderId: "843686112399",
-            appId: "1:843686112399:web:9c20a96831e6a94cd814fa"
-        };
-        
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-        auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-        
-        let confirmationResult = null;
-        let forgotConfirmationResult = null;
-        let currentPhone = null;
-        let forgotPhone = null;
-        let countdown = 0;
-        let timerInterval = null;
-        let recaptchaVerifier = null;
-        
-        function showLoader() {
-            let div = document.createElement('div');
-            div.className = 'loader-overlay';
-            div.id = 'pageLoader';
-            div.innerHTML = '<div class="loader-spinner"></div>';
-            document.body.appendChild(div);
-        }
-        function hideLoader() {
-            let el = document.getElementById('pageLoader');
-            if (el) el.remove();
-        }
-        
-        function showScreen(screen) {
-            document.getElementById('phoneScreen').classList.add('hidden');
-            document.getElementById('otpScreen').classList.add('hidden');
-            document.getElementById('pinLoginScreen').classList.add('hidden');
-            document.getElementById('registerScreen').classList.add('hidden');
-            document.getElementById('forgotPinScreen').classList.add('hidden');
-            document.getElementById('forgotOtpScreen').classList.add('hidden');
-            screen.classList.remove('hidden');
-        }
-        
-        function showError(elementId, message) {
-            const el = document.getElementById(elementId);
-            if (el) {
-                el.innerText = message;
-                setTimeout(() => el.innerText = '', 4000);
-            }
-        }
-        
-        function showSuccess(elementId, message) {
-            const el = document.getElementById(elementId);
-            if (el) {
-                el.innerText = message;
-                setTimeout(() => el.innerText = '', 3000);
-            }
-        }
-        
-        function initRecaptcha() {
-            if (!recaptchaVerifier) {
-                const container = document.createElement('div');
-                container.id = 'recaptcha-container';
-                container.style.position = 'absolute';
-                container.style.left = '-9999px';
-                document.body.appendChild(container);
-                recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { size: 'invisible' });
-            }
-            return recaptchaVerifier;
-        }
-        
-        function startTimer(seconds, timerElementId, onComplete) {
-            countdown = seconds;
-            if (timerInterval) clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                if (countdown <= 1) {
-                    clearInterval(timerInterval);
-                    if (onComplete) onComplete();
-                }
-                const timerEl = document.getElementById(timerElementId);
-                if (timerEl && countdown > 0) {
-                    timerEl.innerText = `${countdown} sec remaining`;
-                }
-                countdown--;
-            }, 1000);
-        }
-        
-        // Check if user is already logged in
-        auth.onAuthStateChanged(async (user) => {
-            if (user) {
-                showLoader();
-                try {
-                    const userDoc = await db.collection('users').doc(user.uid).get();
-                    if (userDoc.exists && userDoc.data().pin) {
-                        window.location.href = 'dashboard.html';
-                    } else if (userDoc.exists && !userDoc.data().pin) {
-                        showScreen(registerScreen);
-                    } else {
-                        showScreen(phoneScreen);
-                    }
-                } catch(e) {
-                    console.error("Error checking user:", e);
-                    showScreen(phoneScreen);
-                }
-                hideLoader();
+<!-- Modals -->
+<div id="profileModal" class="modal"><div class="modal-content"><h3>🌸 My Profile</h3><div id="profileInfo"></div><button class="modal-btn" onclick="showGameRatesModal()">🎲 Game Rates</button><button class="modal-btn" onclick="showChangePinModal()">🔐 Change MPIN</button><button class="modal-btn" onclick="showBankModal()">🏦 Bank Details</button><button class="modal-btn logout-btn" onclick="logout()">🚪 Logout</button><button class="modal-btn close-modal" onclick="closeProfileModal()">Close</button></div></div>
+<div id="noticeModal" class="modal"><div class="modal-content"><h3>📜 Notice</h3><div id="noticeModalText"></div><button class="modal-btn close-modal" onclick="closeNoticeModal()">Close</button></div></div>
+<div id="gameRatesModal" class="modal"><div class="modal-content"><h3>🎲 GAME RATES</h3><div class="rate-row"><span>Single Digit</span><span>10x</span></div><div class="rate-row"><span>Jodi</span><span>100x</span></div><div class="rate-row"><span>Single Pana</span><span>160x</span></div><div class="rate-row"><span>Double Pana</span><span>320x</span></div><div class="rate-row"><span>Triple Pana</span><span>1000x</span></div><div class="rate-row"><span>Half Sangam A</span><span>1000x</span></div><div class="rate-row"><span>Half Sangam B</span><span>1000x</span></div><div class="rate-row"><span>Full Sangam</span><span>10000x</span></div><button class="modal-btn close-modal" onclick="closeGameRatesModal()">Close</button></div></div>
+<div id="changePinModal" class="modal"><div class="modal-content"><h3>🔐 Change MPIN</h3><input type="password" id="oldPin" class="modal-input" placeholder="Current MPIN" maxlength="4"><input type="password" id="newPin" class="modal-input" placeholder="New MPIN (4 digits)" maxlength="4"><input type="password" id="confirmPin" class="modal-input" placeholder="Confirm MPIN" maxlength="4"><button class="modal-btn" onclick="updatePin()">Update</button><button class="modal-btn close-modal" onclick="closeChangePinModal()">Cancel</button><div id="pinMsg"></div></div></div>
+<div id="bankModal" class="modal"><div class="modal-content"><h3>🏦 Bank Details</h3><input type="text" id="bankAccountHolder" class="modal-input" placeholder="Account Holder"><input type="text" id="bankName" class="modal-input" placeholder="Bank Name"><input type="text" id="bankAccountNumber" class="modal-input" placeholder="Account Number"><input type="text" id="bankIfsc" class="modal-input" placeholder="IFSC"><button class="modal-btn" onclick="saveBankDetails()">Save</button><button class="modal-btn close-modal" onclick="closeBankModal()">Cancel</button><div id="bankMsg"></div></div></div>
+<div id="supportModal" class="modal"><div class="modal-content"><h3>💬 Support</h3><div class="support-option" onclick="sendEmail()"><div class="support-icon">📧</div><div><div class="support-title">Email</div><div>durga@support.com</div></div></div><div class="support-option" onclick="sendWhatsApp()"><div class="support-icon">📱</div><div><div class="support-title">WhatsApp</div><div>+91 9113224019</div></div></div><button class="modal-btn close-modal" onclick="closeSupportModal()">Close</button></div></div>
+
+<script>
+    const firebaseConfig = { apiKey: "AIzaSyBeGpb7V0i5GN1opY9JECHxQIGvHFDPX38", authDomain: "win777-ed482.firebaseapp.com", projectId: "win777-ed482", storageBucket: "win777-ed482.firebasestorage.app", messagingSenderId: "843686112399", appId: "1:843686112399:web:9c20a96831e6a94cd814fa" };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    
+    function showLoader() { 
+        let div = document.createElement('div'); 
+        div.className = 'loader-overlay'; 
+        div.id = 'pageLoader'; 
+        div.innerHTML = '<div class="loader-spinner"></div><div class="loader-text">DURGA</div><div class="loader-sub">Loading...</div>'; 
+        document.body.appendChild(div); 
+    }
+    function hideLoader() { let el = document.getElementById('pageLoader'); if(el) el.remove(); }
+    
+    let marketsData = [], currentUserData = null, serverTimeCache = null, lastServerTimeFetch = 0, marketsListener = null, clockInterval = null, statusUpdateInterval = null;
+    let chatUnsubscribe = null;
+    
+    function updateLastActive() { if (auth.currentUser) { db.collection('users').doc(auth.currentUser.uid).update({ lastActive: firebase.firestore.FieldValue.serverTimestamp() }).catch(()=>{}); } }
+    setInterval(updateLastActive, 30000);
+    updateLastActive();
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) updateLastActive(); });
+    
+    function listenToChatNotifications() {
+        if (!auth.currentUser) return;
+        if (chatUnsubscribe) chatUnsubscribe();
+        const chatRoomId = `chat_${auth.currentUser.uid}`;
+        chatUnsubscribe = db.collection('chats').doc(chatRoomId).onSnapshot((doc) => {
+            const hasUnread = doc.exists && doc.data().unread === true;
+            const topBadge = document.getElementById('chatBadgeTop');
+            const bottomBadge = document.getElementById('chatBadgeBottom');
+            if (hasUnread) {
+                if (topBadge) topBadge.style.display = 'flex';
+                if (bottomBadge) bottomBadge.style.display = 'flex';
             } else {
-                showScreen(phoneScreen);
+                if (topBadge) topBadge.style.display = 'none';
+                if (bottomBadge) bottomBadge.style.display = 'none';
             }
         });
-        
-        // Send OTP for login
-        document.getElementById('sendOtpBtn').onclick = function() {
-            const phone = document.getElementById('phoneNumber').value.replace(/\D/g, '');
-            if (!phone || phone.length < 10) {
-                showError('phoneError', 'Enter valid 10-digit number');
-                return;
+    }
+    
+    async function getServerTime() {
+        const now = Date.now();
+        if (serverTimeCache && (now - lastServerTimeFetch) < 2000) { const elapsed = (now - lastServerTimeFetch) / 1000; return new Date(serverTimeCache.getTime() + (elapsed * 1000)); }
+        try { const docRef = db.collection('settings').doc('servertime'); await docRef.set({ timestamp: firebase.firestore.FieldValue.serverTimestamp() }); const doc = await docRef.get(); serverTimeCache = doc.data().timestamp.toDate(); lastServerTimeFetch = now; return serverTimeCache; } catch (error) { return serverTimeCache || new Date(); }
+    }
+    
+    function formatTimeTo12Hour(t) { if (!t) return '--:--'; let [h,m]=t.split(':'); let hr=parseInt(h); let ampm=hr>=12?'PM':'AM'; hr=hr%12||12; return `${hr}:${m} ${ampm}`; }
+    function formatCurrentTimeTo12Hour(d) { let h=d.getHours(); let m=d.getMinutes().toString().padStart(2,'0'); let s=d.getSeconds().toString().padStart(2,'0'); let ampm=h>=12?'PM':'AM'; h=h%12||12; return `${h}:${m}:${s} ${ampm}`; }
+    function timeToMinutes(t) { if(!t) return null; let [h,m]=t.split(':'); return parseInt(h)*60+parseInt(m); }
+    
+    async function calculateMarketStatus(openBidEnd, closeBidEnd, adminStatus) {
+        if (adminStatus === 'holiday') return { status: 'holiday', message: 'HOLIDAY' };
+        const now = await getServerTime();
+        const currentMinutes = now.getHours() * 60 + now.getMinutes();
+        const openEnd = timeToMinutes(openBidEnd);
+        const closeEnd = timeToMinutes(closeBidEnd);
+        if (openEnd && currentMinutes < openEnd) return { status: 'open', message: 'OPEN FOR BIDDING' };
+        else if (openEnd && closeEnd && currentMinutes >= openEnd && currentMinutes < closeEnd) return { status: 'close', message: 'CLOSE BIDDING' };
+        else return { status: 'closed', message: 'MARKET CLOSED' };
+    }
+    
+    async function updateLiveClock() { try { const st = await getServerTime(); document.getElementById('liveClockTime').innerHTML = formatCurrentTimeTo12Hour(st); document.getElementById('liveClockDate').innerHTML = `${st.getDate().toString().padStart(2,'0')}/${(st.getMonth()+1).toString().padStart(2,'0')}/${st.getFullYear()}`; } catch(e) {} }
+    
+    async function updateAllMarketStatuses() {
+        if (!marketsData.length) return;
+        let needsRender = false;
+        for (let i = 0; i < marketsData.length; i++) {
+            const m = marketsData[i];
+            const newStatusData = await calculateMarketStatus(m.openBidEnd, m.closeBidEnd, m.originalStatus);
+            if (m.status !== newStatusData.status) { m.status = newStatusData.status; m.statusMessage = newStatusData.message; needsRender = true; }
+        }
+        if (needsRender) renderMarkets();
+    }
+    
+    function listenToMarkets() {
+        if (marketsListener) marketsListener();
+        marketsListener = db.collection('markets').onSnapshot(async (snapshot) => {
+            const newData = [];
+            for (const doc of snapshot.docs) {
+                const data = doc.data();
+                const statusData = await calculateMarketStatus(data.openBidEnd, data.closeBidEnd, data.status);
+                newData.push({ id: doc.id, name: data.name, numbers: data.numbers, openBidEnd: data.openBidEnd, closeBidEnd: data.closeBidEnd, status: statusData.status, statusMessage: statusData.message, originalStatus: data.status, openPana: data.openPana || '***', openDigit: data.openDigit || '*', closePana: data.closePana || '***', closeDigit: data.closeDigit || '*', jodi: data.jodi || '**', serialNo: data.serialNo || 999 });
             }
-            currentPhone = '+91' + phone;
-            const btn = this;
-            btn.disabled = true;
-            btn.innerText = 'Sending...';
-            
-            const verifier = initRecaptcha();
-            auth.signInWithPhoneNumber(currentPhone, verifier).then(confirmation => {
-                confirmationResult = confirmation;
-                showScreen(otpScreen);
-                startTimer(60, 'timer', () => {
-                    document.getElementById('resendOtpBtn').disabled = false;
-                    document.getElementById('resendOtpBtn').innerText = 'Resend OTP';
-                });
-                btn.disabled = false;
-                btn.innerText = 'Login with OTP';
-                showSuccess('otpError', 'OTP sent successfully!');
-            }).catch(error => {
-                showError('phoneError', error.message);
-                btn.disabled = false;
-                btn.innerText = 'Login with OTP';
-            });
-        };
-        
-        // Resend OTP for login
-        document.getElementById('resendOtpBtn').onclick = function() {
-            if (!currentPhone) return;
-            const btn = this;
-            btn.disabled = true;
-            btn.innerText = 'Sending...';
-            
-            const verifier = initRecaptcha();
-            auth.signInWithPhoneNumber(currentPhone, verifier).then(confirmation => {
-                confirmationResult = confirmation;
-                startTimer(60, 'timer', () => {
-                    document.getElementById('resendOtpBtn').disabled = false;
-                    document.getElementById('resendOtpBtn').innerText = 'Resend OTP';
-                });
-                btn.disabled = true;
-                btn.innerText = 'Resend OTP (60s)';
-                showSuccess('otpError', 'OTP resent!');
-            }).catch(error => {
-                showError('otpError', error.message);
-                btn.disabled = false;
-                btn.innerText = 'Resend OTP';
-            });
-        };
-        
-        // Verify OTP for login
-        document.getElementById('verifyOtpBtn').onclick = function() {
-            const code = document.getElementById('otpCode').value;
-            if (!code || code.length !== 6) {
-                showError('otpError', 'Enter 6-digit OTP');
-                return;
-            }
-            const btn = this;
-            btn.disabled = true;
-            btn.innerText = 'Verifying...';
-            
-            confirmationResult.confirm(code).then(async result => {
-                const user = result.user;
-                const userDoc = await db.collection('users').doc(user.uid).get();
-                
-                if (userDoc.exists && userDoc.data().pin) {
-                    window.location.href = 'dashboard.html';
-                } else if (userDoc.exists && !userDoc.data().pin) {
-                    showScreen(registerScreen);
-                } else {
-                    showScreen(registerScreen);
-                }
-                btn.disabled = false;
-                btn.innerText = 'VERIFY OTP';
-            }).catch(error => {
-                showError('otpError', 'Invalid OTP');
-                btn.disabled = false;
-                btn.innerText = 'VERIFY OTP';
-            });
-        };
-        
-        // Register New User
-        document.getElementById('registerBtn').onclick = function() {
-            const name = document.getElementById('regName').value.trim();
-            const pin = document.getElementById('regPin').value;
-            const confirmPin = document.getElementById('regConfirmPin').value;
-            
-            if (!name) {
-                showError('regError', 'Enter your name');
-                return;
-            }
-            if (!pin || pin.length !== 4 || !/^\d{4}$/.test(pin)) {
-                showError('regError', 'MPIN must be 4 digits');
-                return;
-            }
-            if (pin !== confirmPin) {
-                showError('regError', 'MPINs do not match');
-                return;
-            }
-            
-            const user = auth.currentUser;
-            if (!user) {
-                showError('regError', 'Session expired. Please login again.');
-                showScreen(phoneScreen);
-                return;
-            }
-            
-            const btn = this;
-            btn.disabled = true;
-            btn.innerText = 'Creating...';
-            
-            db.collection('users').doc(user.uid).set({
-                uid: user.uid,
-                phone: user.phoneNumber,
-                name: name,
-                pin: pin,
-                balance: 0,
-                role: 'user',
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                window.location.href = 'dashboard.html';
-            }).catch(error => {
-                showError('regError', error.message);
-                btn.disabled = false;
-                btn.innerText = 'Register & Continue';
-            });
-        };
-        
-        // PIN Login (for existing users after logout)
-        document.getElementById('verifyPinLoginBtn').onclick = async function() {
-            const pin = document.getElementById('pinLoginInput').value;
-            if (!pin || pin.length !== 4 || !/^\d{4}$/.test(pin)) {
-                showError('pinLoginError', 'Enter 4-digit MPIN');
-                return;
-            }
-            
-            const btn = this;
-            btn.disabled = true;
-            btn.innerText = 'Verifying...';
-            
-            try {
-                const user = auth.currentUser;
-                if (!user) {
-                    showError('pinLoginError', 'Session expired. Please login with OTP');
-                    showScreen(phoneScreen);
-                    return;
-                }
-                
-                const userDoc = await db.collection('users').doc(user.uid).get();
-                if (userDoc.exists && userDoc.data().pin === pin) {
-                    window.location.href = 'dashboard.html';
-                } else {
-                    showError('pinLoginError', 'Invalid MPIN');
-                }
-            } catch(e) {
-                showError('pinLoginError', 'Error verifying MPIN');
-            } finally {
-                btn.disabled = false;
-                btn.innerText = 'Login with MPIN';
-            }
-        };
-        
-        // Show PIN Login Screen
-        document.getElementById('showPinLoginBtn').onclick = function() {
-            const user = auth.currentUser;
-            if (user) {
-                db.collection('users').doc(user.uid).get().then(doc => {
-                    if (doc.exists && doc.data().pin) {
-                        showScreen(pinLoginScreen);
-                        document.getElementById('pinLoginInput').value = '';
-                    } else {
-                        showError('phoneError', 'No MPIN set. Please login with OTP first.');
-                    }
-                }).catch(() => {
-                    showError('phoneError', 'Error checking account');
-                });
-            } else {
-                showError('phoneError', 'Please login with OTP first to use MPIN login');
-            }
-        };
-        
-        // Back to OTP from PIN login
-        document.getElementById('backToOtpBtn').onclick = function() {
-            showScreen(phoneScreen);
-        };
-        
-        // ========== FORGOT MPIN FEATURE ==========
-        
-        // Show Forgot MPIN Screen
-        document.getElementById('forgotPinBtn').onclick = function() {
-            showScreen(forgotPinScreen);
-            document.getElementById('forgotPhone').value = '';
-            document.getElementById('forgotError').innerText = '';
-        };
-        
-        // Back to PIN Login from Forgot MPIN
-        document.getElementById('backToPinLoginBtn').onclick = function() {
-            showScreen(pinLoginScreen);
-        };
-        
-        // Back to Forgot Mobile from OTP screen
-        document.getElementById('backToForgotMobileBtn').onclick = function() {
-            showScreen(forgotPinScreen);
-            if (timerInterval) clearInterval(timerInterval);
-        };
-        
-        // Send OTP for Forgot MPIN
-        document.getElementById('sendForgotOtpBtn').onclick = function() {
-            const phone = document.getElementById('forgotPhone').value.replace(/\D/g, '');
-            if (!phone || phone.length < 10) {
-                showError('forgotError', 'Enter valid 10-digit number');
-                return;
-            }
-            
-            // Check if user exists
-            db.collection('users').where('phone', '==', '+91' + phone).get().then(async (snapshot) => {
-                if (snapshot.empty) {
-                    showError('forgotError', 'No account found with this number');
-                    return;
-                }
-                
-                forgotPhone = '+91' + phone;
-                const btn = this;
-                btn.disabled = true;
-                btn.innerText = 'Sending...';
-                
-                const verifier = initRecaptcha();
-                auth.signInWithPhoneNumber(forgotPhone, verifier).then(confirmation => {
-                    forgotConfirmationResult = confirmation;
-                    showScreen(forgotOtpScreen);
-                    startTimer(60, 'forgotTimer', () => {
-                        document.getElementById('resendForgotOtpBtn').disabled = false;
-                        document.getElementById('resendForgotOtpBtn').innerText = 'Resend OTP';
-                    });
-                    btn.disabled = false;
-                    btn.innerText = 'Send OTP';
-                    showSuccess('forgotOtpError', 'OTP sent successfully!');
-                }).catch(error => {
-                    showError('forgotError', error.message);
-                    btn.disabled = false;
-                    btn.innerText = 'Send OTP';
-                });
-            }).catch(() => {
-                showError('forgotError', 'Error checking account');
-            });
-        };
-        
-        // Resend OTP for Forgot MPIN
-        document.getElementById('resendForgotOtpBtn').onclick = function() {
-            if (!forgotPhone) return;
-            const btn = this;
-            btn.disabled = true;
-            btn.innerText = 'Sending...';
-            
-            const verifier = initRecaptcha();
-            auth.signInWithPhoneNumber(forgotPhone, verifier).then(confirmation => {
-                forgotConfirmationResult = confirmation;
-                startTimer(60, 'forgotTimer', () => {
-                    document.getElementById('resendForgotOtpBtn').disabled = false;
-                    document.getElementById('resendForgotOtpBtn').innerText = 'Resend OTP';
-                });
-                btn.disabled = true;
-                btn.innerText = 'Resend OTP (60s)';
-                showSuccess('forgotOtpError', 'OTP resent!');
-            }).catch(error => {
-                showError('forgotOtpError', error.message);
-                btn.disabled = false;
-                btn.innerText = 'Resend OTP';
-            });
-        };
-        
-        // Reset MPIN after OTP verification
-        document.getElementById('resetPinBtn').onclick = function() {
-            const otp = document.getElementById('forgotOtpCode').value;
-            const newPin = document.getElementById('newPin').value;
-            const confirmPin = document.getElementById('confirmNewPin').value;
-            
-            if (!otp || otp.length !== 6) {
-                showError('forgotOtpError', 'Enter 6-digit OTP');
-                return;
-            }
-            if (!newPin || newPin.length !== 4 || !/^\d{4}$/.test(newPin)) {
-                showError('forgotOtpError', 'MPIN must be 4 digits');
-                return;
-            }
-            if (newPin !== confirmPin) {
-                showError('forgotOtpError', 'MPINs do not match');
-                return;
-            }
-            
-            const btn = this;
-            btn.disabled = true;
-            btn.innerText = 'Verifying...';
-            
-            forgotConfirmationResult.confirm(otp).then(async (result) => {
-                const user = result.user;
-                // Update the user's PIN in Firestore
-                await db.collection('users').doc(user.uid).update({ pin: newPin });
-                showSuccess('forgotSuccessMsg', '✅ MPIN reset successfully!');
-                setTimeout(() => {
-                    showScreen(pinLoginScreen);
-                    document.getElementById('pinLoginInput').value = '';
-                    document.getElementById('forgotOtpCode').value = '';
-                    document.getElementById('newPin').value = '';
-                    document.getElementById('confirmNewPin').value = '';
-                    document.getElementById('forgotSuccessMsg').innerText = '';
-                }, 2000);
-                btn.disabled = false;
-                btn.innerText = 'Reset MPIN';
-            }).catch(error => {
-                showError('forgotOtpError', 'Invalid OTP');
-                btn.disabled = false;
-                btn.innerText = 'Reset MPIN';
-            });
-        };
-        
-        // Auto redirect on page load if user already logged in
-        window.addEventListener('load', () => {
-            if (auth.currentUser) {
-                db.collection('users').doc(auth.currentUser.uid).get().then(doc => {
-                    if (doc.exists && doc.data().pin) {
-                        window.location.href = 'dashboard.html';
-                    }
-                }).catch(() => {});
-            }
+            newData.sort((a,b) => (a.serialNo||999) - (b.serialNo||999));
+            marketsData = newData;
+            renderMarkets();
         });
-    </script>
+    }
+    
+    function listenToNotice() { db.collection('settings').doc('notice').onSnapshot(doc => { let text = doc.exists ? doc.data().text : 'Welcome to DURGA!'; document.getElementById('noticeText').innerHTML = text; document.getElementById('noticeModalText').innerHTML = text; }); }
+    
+    function getStatusClass(status) { 
+        if(status==='open') return 'status-open'; 
+        if(status==='close') return 'status-close'; 
+        if(status==='holiday') return 'status-holiday'; 
+        return 'status-closed'; 
+    }
+    
+    function openBetting(market) { location.href = `betting.html?market=${encodeURIComponent(market.name)}&status=${market.originalStatus==='holiday'?'closed':market.status}&marketId=${market.id}`; }
+    
+    const nameColors = ['#e91e63', '#9c27b0', '#3f51b5', '#00bcd4', '#009688', '#4caf50', '#ff9800', '#795548'];
+    
+    function renderMarkets() {
+        const container = document.getElementById('marketsList');
+        if (!marketsData.length) { container.innerHTML = '<div style="text-align:center;color:#888;padding:30px;">No markets available</div>'; return; }
+        let html = '';
+        marketsData.forEach((market, idx) => {
+            const isPlayable = (market.status === 'open' || market.status === 'close') && market.originalStatus !== 'holiday';
+            let resultDisplay = market.closePana && market.closePana !== '***' ? `${market.openPana} - ${market.jodi} - ${market.closePana}` : (market.openPana && market.openPana !== '***' ? `${market.openPana} - ${market.openDigit}* - ***` : `*** - ** - ***`);
+            let numbersDisplay = (market.numbers || '***-***-***').replace('Open Pana','').replace('JODI','').replace('Close Pana','').trim();
+            let nameColor = nameColors[idx % nameColors.length];
+            
+            html += `<div class="market-card">
+                        <div class="market-header">
+                            <span class="market-name" style="color:${nameColor};">🌸 ${market.name}</span>
+                        </div>
+                        <div class="result-box">
+                            <div class="result-numbers">${resultDisplay}</div>
+                        </div>
+                        <div class="market-timings">
+                            <div class="timing-item"><div class="green-dot"></div><span class="timing-label">Open</span><span class="timing-value">${formatTimeTo12Hour(market.openBidEnd)}</span></div>
+                            <div class="timing-item"><div class="orange-dot"></div><span class="timing-label">Close</span><span class="timing-value">${formatTimeTo12Hour(market.closeBidEnd)}</span></div>
+                        </div>
+                        <div class="market-status ${getStatusClass(market.status)}">${market.statusMessage}</div>
+                        <div class="btn-container"><button class="play-btn" onclick='openBetting(${JSON.stringify(market)})' ${!isPlayable ? 'disabled' : ''}>PLAY</button></div>
+                    </div>`;
+        });
+        container.innerHTML = html;
+    }
+    
+    async function loadUserData() {
+        const user = auth.currentUser;
+        if (!user) { location.href = 'index.html'; return; }
+        const doc = await db.collection('users').doc(user.uid).get();
+        if (doc.exists) { currentUserData = doc.data(); document.getElementById('userBalance').innerText = currentUserData.balance || 0; document.getElementById('profileName').innerHTML = currentUserData.name || 'User'; document.getElementById('profilePhone').innerHTML = currentUserData.phone || ''; }
+        listenToChatNotifications();
+    }
+    
+    function showBalance() { alert(`💰 Balance: ₹${currentUserData?.balance || 0}`); }
+    function showProfileModal() { if(currentUserData){ document.getElementById('profileInfo').innerHTML = `<div style="text-align:center;"><div style="font-size:18px;">${currentUserData.name}</div><div style="color:#888;">${currentUserData.phone}</div><div style="font-size:18px;">₹${currentUserData.balance}</div></div>`; document.getElementById('profileModal').style.display='flex'; } }
+    function closeProfileModal() { document.getElementById('profileModal').style.display='none'; }
+    function showGameRatesModal() { closeProfileModal(); document.getElementById('gameRatesModal').style.display='flex'; }
+    function closeGameRatesModal() { document.getElementById('gameRatesModal').style.display='none'; }
+    function logout() { auth.signOut().then(() => { sessionStorage.clear(); location.href='index.html'; }); }
+    function showChangePinModal() { closeProfileModal(); document.getElementById('changePinModal').style.display='flex'; }
+    function closeChangePinModal() { document.getElementById('changePinModal').style.display='none'; document.getElementById('pinMsg').innerHTML=''; }
+    async function updatePin() { let old=document.getElementById('oldPin').value, newP=document.getElementById('newPin').value, confirm=document.getElementById('confirmPin').value; if(!old||!newP||!confirm){ document.getElementById('pinMsg').innerHTML='Fill all fields'; return; } if(newP.length!==4||!/^\d{4}$/.test(newP)){ document.getElementById('pinMsg').innerHTML='MPIN must be 4 digits'; return; } if(newP!==confirm){ document.getElementById('pinMsg').innerHTML='MPINs do not match'; return; } if(old!==currentUserData.pin){ document.getElementById('pinMsg').innerHTML='Current MPIN incorrect'; return; } await db.collection('users').doc(auth.currentUser.uid).update({pin:newP}); currentUserData.pin=newP; document.getElementById('pinMsg').innerHTML='✅ MPIN changed!'; document.getElementById('pinMsg').style.color='#28a745'; setTimeout(()=>closeChangePinModal(),1500); }
+    function showBankModal() { closeProfileModal(); let b=currentUserData?.bankDetails; if(b){ document.getElementById('bankAccountHolder').value=b.accountHolder||''; document.getElementById('bankName').value=b.bankName||''; document.getElementById('bankAccountNumber').value=b.accountNumber||''; document.getElementById('bankIfsc').value=b.ifscCode||''; } document.getElementById('bankModal').style.display='flex'; }
+    function closeBankModal() { document.getElementById('bankModal').style.display='none'; document.getElementById('bankMsg').innerHTML=''; }
+    async function saveBankDetails() { let ah=document.getElementById('bankAccountHolder').value.trim(), bn=document.getElementById('bankName').value.trim(), an=document.getElementById('bankAccountNumber').value.trim(), ifsc=document.getElementById('bankIfsc').value.trim(); if(!ah||!bn||!an||!ifsc){ document.getElementById('bankMsg').innerHTML='Fill all fields'; document.getElementById('bankMsg').style.color='#dc3545'; return; } await db.collection('users').doc(auth.currentUser.uid).update({bankDetails:{accountHolder:ah,bankName:bn,accountNumber:an,ifscCode:ifsc}}); currentUserData.bankDetails={accountHolder:ah,bankName:bn,accountNumber:an,ifscCode:ifsc}; document.getElementById('bankMsg').innerHTML='✅ Saved!'; document.getElementById('bankMsg').style.color='#28a745'; setTimeout(()=>closeBankModal(),1500); }
+    function showSupportModal() { document.getElementById('supportModal').style.display='flex'; }
+    function closeSupportModal() { document.getElementById('supportModal').style.display='none'; }
+    function sendEmail() { location.href='mailto:durga@support.com'; }
+    function sendWhatsApp() { window.open('https://wa.me/919019941895','_blank'); }
+    function showNoticeModal() { document.getElementById('noticeModal').style.display='flex'; }
+    function closeNoticeModal() { document.getElementById('noticeModal').style.display='none'; }
+    function closeNotice() { document.getElementById('noticeBoard').style.display='none'; }
+    
+    async function init() { listenToMarkets(); listenToNotice(); clockInterval = setInterval(updateLiveClock, 1000); statusUpdateInterval = setInterval(updateAllMarketStatuses, 1000); }
+    setInterval(()=>{ if(auth.currentUser) db.collection('users').doc(auth.currentUser.uid).get().then(doc=>{ if(doc.exists){ document.getElementById('userBalance').innerText=doc.data().balance||0; currentUserData=doc.data(); } }); }, 30000);
+    
+    showLoader();
+    auth.onAuthStateChanged(user => { 
+        if(!user) location.href='index.html'; 
+        else { loadUserData(); init(); setTimeout(hideLoader, 1000); } 
+    });
+    
+    window.showBalance=showBalance; window.showProfileModal=showProfileModal; window.closeProfileModal=closeProfileModal; window.showGameRatesModal=showGameRatesModal; window.closeGameRatesModal=closeGameRatesModal; window.showChangePinModal=showChangePinModal; window.closeChangePinModal=closeChangePinModal; window.updatePin=updatePin; window.showBankModal=showBankModal; window.closeBankModal=closeBankModal; window.saveBankDetails=saveBankDetails; window.showSupportModal=showSupportModal; window.closeSupportModal=closeSupportModal; window.sendEmail=sendEmail; window.sendWhatsApp=sendWhatsApp; window.showNoticeModal=showNoticeModal; window.closeNoticeModal=closeNoticeModal; window.closeNotice=closeNotice; window.logout=logout;
+</script>
 </body>
 </html>
