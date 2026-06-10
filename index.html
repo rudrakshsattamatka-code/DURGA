@@ -4,15 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>DURGA - Royal Login</title>
-    <!-- Preconnect for faster Firebase loading -->
+    <!-- Preconnect for faster loading -->
     <link rel="preconnect" href="https://www.gstatic.com">
     <link rel="preconnect" href="https://firebase.googleapis.com">
     <link rel="dns-prefetch" href="https://www.gstatic.com">
     <link rel="dns-prefetch" href="https://firestore.googleapis.com">
-    <!-- Cache Control -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -34,7 +30,6 @@
             min-height: 100vh;
             margin: 0 auto;
             border-radius: 0;
-            box-shadow: none;
         }
         
         .header {
@@ -181,7 +176,7 @@
         
         .hidden { display: none; }
         
-        /* Loading Animation - Minimal */
+        /* Loading Animation */
         .loader-overlay {
             position: fixed;
             top: 0;
@@ -297,6 +292,8 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
+        
+        // IMPORTANT: Set persistence to LOCAL so user stays logged in
         auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
         
         let confirmationResult = null;
@@ -372,27 +369,45 @@
             }, 1000);
         }
         
-        // Check existing session
-        auth.onAuthStateChanged(async (user) => {
-            if (user) {
-                showLoader();
-                try {
-                    const userDoc = await db.collection('users').doc(user.uid).get();
-                    if (userDoc.exists && userDoc.data().pin) {
-                        window.location.href = 'dashboard.html';
-                    } else if (userDoc.exists && !userDoc.data().pin) {
-                        showScreen(registerScreen);
-                    } else {
-                        showScreen(phoneScreen);
-                    }
-                } catch(e) {
+        // Check existing session - DIRECT REDIRECT if already logged in
+        // This runs immediately and is the fastest path
+        const currentUser = auth.currentUser;
+        if (currentUser) {
+            // User already logged in from previous session
+            showLoader();
+            db.collection('users').doc(currentUser.uid).get().then(doc => {
+                if (doc.exists && doc.data().pin) {
+                    window.location.href = 'dashboard.html';
+                } else {
+                    hideLoader();
                     showScreen(phoneScreen);
                 }
+            }).catch(() => {
                 hideLoader();
-            } else {
                 showScreen(phoneScreen);
-            }
-        });
+            });
+        } else {
+            // Listen for auth state changes
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    showLoader();
+                    try {
+                        const userDoc = await db.collection('users').doc(user.uid).get();
+                        if (userDoc.exists && userDoc.data().pin) {
+                            window.location.href = 'dashboard.html';
+                        } else {
+                            hideLoader();
+                            showScreen(phoneScreen);
+                        }
+                    } catch(e) {
+                        hideLoader();
+                        showScreen(phoneScreen);
+                    }
+                } else {
+                    showScreen(phoneScreen);
+                }
+            });
+        }
         
         // Send OTP
         document.getElementById('sendOtpBtn').onclick = function() {
@@ -416,7 +431,7 @@
                 });
                 btn.disabled = false;
                 btn.innerText = 'Login with OTP';
-                showSuccess('otpError', 'OTP sent successfully!');
+                showSuccess('otpError', 'OTP sent!');
             }).catch(error => {
                 showError('phoneError', error.message);
                 btn.disabled = false;
@@ -448,7 +463,7 @@
             });
         };
         
-        // Verify OTP
+        // Verify OTP - Optimized
         document.getElementById('verifyOtpBtn').onclick = function() {
             const code = document.getElementById('otpCode').value;
             if (!code || code.length !== 6) {
@@ -464,8 +479,10 @@
                 const userDoc = await db.collection('users').doc(user.uid).get();
                 
                 if (userDoc.exists && userDoc.data().pin) {
+                    // Existing user - go directly to dashboard
                     window.location.href = 'dashboard.html';
                 } else {
+                    // New user - need to set PIN
                     showScreen(registerScreen);
                 }
                 btn.disabled = false;
@@ -477,7 +494,7 @@
             });
         };
         
-        // Register
+        // Register New User
         document.getElementById('registerBtn').onclick = function() {
             const name = document.getElementById('regName').value.trim();
             const pin = document.getElementById('regPin').value;
@@ -540,7 +557,7 @@
             }
         };
         
-        // Show PIN Login
+        // Show PIN Login Screen
         document.getElementById('showPinLoginBtn').onclick = function() {
             const user = auth.currentUser;
             if (user) {
@@ -650,7 +667,7 @@
             forgotConfirmationResult.confirm(otp).then(async (result) => {
                 const user = result.user;
                 await db.collection('users').doc(user.uid).update({ pin: newPin });
-                showSuccess('forgotSuccessMsg', '✅ MPIN reset successfully!');
+                showSuccess('forgotSuccessMsg', '✅ MPIN reset!');
                 setTimeout(() => {
                     showScreen(pinLoginScreen);
                     document.getElementById('pinLoginInput').value = '';
@@ -667,17 +684,6 @@
                 btn.innerText = 'Reset MPIN';
             });
         };
-        
-        // Auto redirect on load
-        window.addEventListener('load', () => {
-            if (auth.currentUser) {
-                db.collection('users').doc(auth.currentUser.uid).get().then(doc => {
-                    if (doc.exists && doc.data().pin) {
-                        window.location.href = 'dashboard.html';
-                    }
-                }).catch(() => {});
-            }
-        });
     </script>
 </body>
 </html>
