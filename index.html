@@ -108,6 +108,14 @@
             cursor: pointer;
         }
         
+        .back-link {
+            text-align: center;
+            margin-top: 12px;
+            color: #888;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        
         .timer {
             color: #e91e63;
             font-size: 18px;
@@ -227,8 +235,32 @@
             <div class="welcome-text">Enter your 4-digit MPIN</div>
             <input type="password" id="pinLoginInput" class="input-field pin-input" placeholder="●●●●" maxlength="4" inputmode="numeric">
             <button class="btn" id="verifyPinLoginBtn">Login with MPIN</button>
-            <div class="link" id="backToOtpBtn">Login with OTP</div>
+            <div class="link" id="forgotPinBtn">Forgot MPIN?</div>
+            <div class="back-link" id="backToOtpBtn">← Back to OTP Login</div>
             <div id="pinLoginError" class="error-text"></div>
+        </div>
+
+        <!-- Forgot MPIN - Enter Mobile Screen -->
+        <div id="forgotPinScreen" class="screen hidden">
+            <div class="welcome-text">Reset your MPIN</div>
+            <input type="tel" id="forgotPhone" class="input-field" placeholder="Enter Mobile Number">
+            <button class="btn" id="sendForgotOtpBtn">Send OTP</button>
+            <div class="back-link" id="backToPinLoginBtn">← Back</div>
+            <div id="forgotError" class="error-text"></div>
+        </div>
+
+        <!-- Forgot MPIN - OTP Verification Screen -->
+        <div id="forgotOtpScreen" class="screen hidden">
+            <div class="welcome-text">Enter OTP to reset MPIN</div>
+            <div class="timer" id="forgotTimer">60 sec remaining</div>
+            <input type="text" id="forgotOtpCode" class="input-field" placeholder="Enter OTP" maxlength="6">
+            <input type="password" id="newPin" class="input-field" placeholder="New MPIN (4 digits)" maxlength="4" inputmode="numeric">
+            <input type="password" id="confirmNewPin" class="input-field" placeholder="Confirm New MPIN" maxlength="4" inputmode="numeric">
+            <button class="btn" id="resetPinBtn">Reset MPIN</button>
+            <button class="resend-btn" id="resendForgotOtpBtn" disabled>Resend OTP (60s)</button>
+            <div class="back-link" id="backToForgotMobileBtn">← Back</div>
+            <div id="forgotOtpError" class="error-text"></div>
+            <div id="forgotSuccessMsg" class="success-text"></div>
         </div>
 
         <!-- Register Screen (New User) -->
@@ -264,7 +296,9 @@
         auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
         
         let confirmationResult = null;
+        let forgotConfirmationResult = null;
         let currentPhone = null;
+        let forgotPhone = null;
         let countdown = 0;
         let timerInterval = null;
         let recaptchaVerifier = null;
@@ -286,6 +320,8 @@
             document.getElementById('otpScreen').classList.add('hidden');
             document.getElementById('pinLoginScreen').classList.add('hidden');
             document.getElementById('registerScreen').classList.add('hidden');
+            document.getElementById('forgotPinScreen').classList.add('hidden');
+            document.getElementById('forgotOtpScreen').classList.add('hidden');
             screen.classList.remove('hidden');
         }
         
@@ -340,10 +376,8 @@
                 try {
                     const userDoc = await db.collection('users').doc(user.uid).get();
                     if (userDoc.exists && userDoc.data().pin) {
-                        // User has PIN - already logged in, go to dashboard
                         window.location.href = 'dashboard.html';
                     } else if (userDoc.exists && !userDoc.data().pin) {
-                        // User exists but no PIN - need to register
                         showScreen(registerScreen);
                     } else {
                         showScreen(phoneScreen);
@@ -358,7 +392,7 @@
             }
         });
         
-        // Send OTP
+        // Send OTP for login
         document.getElementById('sendOtpBtn').onclick = function() {
             const phone = document.getElementById('phoneNumber').value.replace(/\D/g, '');
             if (!phone || phone.length < 10) {
@@ -388,7 +422,7 @@
             });
         };
         
-        // Resend OTP
+        // Resend OTP for login
         document.getElementById('resendOtpBtn').onclick = function() {
             if (!currentPhone) return;
             const btn = this;
@@ -412,7 +446,7 @@
             });
         };
         
-        // Verify OTP
+        // Verify OTP for login
         document.getElementById('verifyOtpBtn').onclick = function() {
             const code = document.getElementById('otpCode').value;
             if (!code || code.length !== 6) {
@@ -428,13 +462,10 @@
                 const userDoc = await db.collection('users').doc(user.uid).get();
                 
                 if (userDoc.exists && userDoc.data().pin) {
-                    // Existing user with PIN - go to dashboard directly
                     window.location.href = 'dashboard.html';
                 } else if (userDoc.exists && !userDoc.data().pin) {
-                    // Existing user without PIN - need to set PIN
                     showScreen(registerScreen);
                 } else {
-                    // New user - need to register
                     showScreen(registerScreen);
                 }
                 btn.disabled = false;
@@ -527,11 +558,10 @@
             }
         };
         
-        // Show PIN Login Screen (when user clicks "Login with MPIN")
+        // Show PIN Login Screen
         document.getElementById('showPinLoginBtn').onclick = function() {
             const user = auth.currentUser;
             if (user) {
-                // User is already authenticated, check if they have PIN
                 db.collection('users').doc(user.uid).get().then(doc => {
                     if (doc.exists && doc.data().pin) {
                         showScreen(pinLoginScreen);
@@ -550,6 +580,136 @@
         // Back to OTP from PIN login
         document.getElementById('backToOtpBtn').onclick = function() {
             showScreen(phoneScreen);
+        };
+        
+        // ========== FORGOT MPIN FEATURE ==========
+        
+        // Show Forgot MPIN Screen
+        document.getElementById('forgotPinBtn').onclick = function() {
+            showScreen(forgotPinScreen);
+            document.getElementById('forgotPhone').value = '';
+            document.getElementById('forgotError').innerText = '';
+        };
+        
+        // Back to PIN Login from Forgot MPIN
+        document.getElementById('backToPinLoginBtn').onclick = function() {
+            showScreen(pinLoginScreen);
+        };
+        
+        // Back to Forgot Mobile from OTP screen
+        document.getElementById('backToForgotMobileBtn').onclick = function() {
+            showScreen(forgotPinScreen);
+            if (timerInterval) clearInterval(timerInterval);
+        };
+        
+        // Send OTP for Forgot MPIN
+        document.getElementById('sendForgotOtpBtn').onclick = function() {
+            const phone = document.getElementById('forgotPhone').value.replace(/\D/g, '');
+            if (!phone || phone.length < 10) {
+                showError('forgotError', 'Enter valid 10-digit number');
+                return;
+            }
+            
+            // Check if user exists
+            db.collection('users').where('phone', '==', '+91' + phone).get().then(async (snapshot) => {
+                if (snapshot.empty) {
+                    showError('forgotError', 'No account found with this number');
+                    return;
+                }
+                
+                forgotPhone = '+91' + phone;
+                const btn = this;
+                btn.disabled = true;
+                btn.innerText = 'Sending...';
+                
+                const verifier = initRecaptcha();
+                auth.signInWithPhoneNumber(forgotPhone, verifier).then(confirmation => {
+                    forgotConfirmationResult = confirmation;
+                    showScreen(forgotOtpScreen);
+                    startTimer(60, 'forgotTimer', () => {
+                        document.getElementById('resendForgotOtpBtn').disabled = false;
+                        document.getElementById('resendForgotOtpBtn').innerText = 'Resend OTP';
+                    });
+                    btn.disabled = false;
+                    btn.innerText = 'Send OTP';
+                    showSuccess('forgotOtpError', 'OTP sent successfully!');
+                }).catch(error => {
+                    showError('forgotError', error.message);
+                    btn.disabled = false;
+                    btn.innerText = 'Send OTP';
+                });
+            }).catch(() => {
+                showError('forgotError', 'Error checking account');
+            });
+        };
+        
+        // Resend OTP for Forgot MPIN
+        document.getElementById('resendForgotOtpBtn').onclick = function() {
+            if (!forgotPhone) return;
+            const btn = this;
+            btn.disabled = true;
+            btn.innerText = 'Sending...';
+            
+            const verifier = initRecaptcha();
+            auth.signInWithPhoneNumber(forgotPhone, verifier).then(confirmation => {
+                forgotConfirmationResult = confirmation;
+                startTimer(60, 'forgotTimer', () => {
+                    document.getElementById('resendForgotOtpBtn').disabled = false;
+                    document.getElementById('resendForgotOtpBtn').innerText = 'Resend OTP';
+                });
+                btn.disabled = true;
+                btn.innerText = 'Resend OTP (60s)';
+                showSuccess('forgotOtpError', 'OTP resent!');
+            }).catch(error => {
+                showError('forgotOtpError', error.message);
+                btn.disabled = false;
+                btn.innerText = 'Resend OTP';
+            });
+        };
+        
+        // Reset MPIN after OTP verification
+        document.getElementById('resetPinBtn').onclick = function() {
+            const otp = document.getElementById('forgotOtpCode').value;
+            const newPin = document.getElementById('newPin').value;
+            const confirmPin = document.getElementById('confirmNewPin').value;
+            
+            if (!otp || otp.length !== 6) {
+                showError('forgotOtpError', 'Enter 6-digit OTP');
+                return;
+            }
+            if (!newPin || newPin.length !== 4 || !/^\d{4}$/.test(newPin)) {
+                showError('forgotOtpError', 'MPIN must be 4 digits');
+                return;
+            }
+            if (newPin !== confirmPin) {
+                showError('forgotOtpError', 'MPINs do not match');
+                return;
+            }
+            
+            const btn = this;
+            btn.disabled = true;
+            btn.innerText = 'Verifying...';
+            
+            forgotConfirmationResult.confirm(otp).then(async (result) => {
+                const user = result.user;
+                // Update the user's PIN in Firestore
+                await db.collection('users').doc(user.uid).update({ pin: newPin });
+                showSuccess('forgotSuccessMsg', '✅ MPIN reset successfully!');
+                setTimeout(() => {
+                    showScreen(pinLoginScreen);
+                    document.getElementById('pinLoginInput').value = '';
+                    document.getElementById('forgotOtpCode').value = '';
+                    document.getElementById('newPin').value = '';
+                    document.getElementById('confirmNewPin').value = '';
+                    document.getElementById('forgotSuccessMsg').innerText = '';
+                }, 2000);
+                btn.disabled = false;
+                btn.innerText = 'Reset MPIN';
+            }).catch(error => {
+                showError('forgotOtpError', 'Invalid OTP');
+                btn.disabled = false;
+                btn.innerText = 'Reset MPIN';
+            });
         };
         
         // Auto redirect on page load if user already logged in
