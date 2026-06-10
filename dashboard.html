@@ -61,14 +61,13 @@
             font-weight: bold;
         }
         
-        /* Market Cards - Clean Design */
+        /* Market Cards - Light Blue Background */
         .market-card { 
-            background: #fff; 
+            background: #e8f4f8; 
             margin: 10px 12px; 
             border-radius: 20px; 
             padding: 14px; 
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            border: 1px solid #eee;
             transition: all 0.2s;
         }
         .market-card:active { transform: scale(0.98); }
@@ -76,7 +75,6 @@
         /* Market Header */
         .market-header { text-align: center; margin-bottom: 10px; }
         .market-name { font-size: 20px; font-weight: 800; letter-spacing: 0.5px; display: inline-block; }
-        .good-luck { font-size: 10px; color: #888; margin-left: 5px; font-weight: normal; }
         
         /* Result Box */
         .result-box { text-align: center; margin: 10px 0; }
@@ -85,7 +83,7 @@
             font-weight: 800; 
             letter-spacing: 4px; 
             font-family: monospace;
-            background: #f8f9fa;
+            background: rgba(255,255,255,0.7);
             display: inline-block;
             padding: 6px 20px;
             border-radius: 40px;
@@ -103,26 +101,25 @@
         .timing-item { display: flex; align-items: center; gap: 6px; font-size: 11px; }
         .green-dot { width: 8px; height: 8px; background: #28a745; border-radius: 50%; }
         .orange-dot { width: 8px; height: 8px; background: #ff9800; border-radius: 50%; }
-        .timing-label { color: #888; }
+        .timing-label { color: #555; }
         .timing-value { color: #1a1a2e; font-weight: 600; }
         
-        /* Status Badge - Clean & Compact */
+        /* Status Badge - No Background, Only Text */
         .market-status { 
-            font-size: 12px; 
+            font-size: 13px; 
             padding: 6px 0; 
-            border-radius: 30px; 
             display: block; 
             font-weight: 700; 
             text-align: center; 
-            margin: 8px 0;
+            margin: 6px 0;
             letter-spacing: 0.5px;
         }
-        .status-open { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
-        .status-close { background: #fff3e0; color: #ef6c00; border: 1px solid #ffcc80; }
-        .status-closed { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
-        .status-holiday { background: #f3e5f5; color: #6a1b9a; border: 1px solid #ce93d8; }
+        .status-open { color: #2e7d32; }
+        .status-close { color: #ef6c00; }
+        .status-closed { color: #c62828; }
+        .status-holiday { color: #6a1b9a; }
         
-        /* Play Button - Centered Pill */
+        /* Play Button */
         .play-btn { 
             width: auto; 
             margin: 5px auto 0;
@@ -276,7 +273,7 @@
     function timeToMinutes(t) { if(!t) return null; let [h,m]=t.split(':'); return parseInt(h)*60+parseInt(m); }
     
     async function calculateMarketStatus(openBidEnd, closeBidEnd, adminStatus) {
-        if (adminStatus === 'holiday') return { status: 'holiday', message: '🎪 HOLIDAY' };
+        if (adminStatus === 'holiday') return { status: 'holiday', message: 'HOLIDAY' };
         const now = await getServerTime();
         const currentMinutes = now.getHours() * 60 + now.getMinutes();
         const openEnd = timeToMinutes(openBidEnd);
@@ -316,7 +313,12 @@
     
     function listenToNotice() { db.collection('settings').doc('notice').onSnapshot(doc => { let text = doc.exists ? doc.data().text : 'Welcome to DURGA!'; document.getElementById('noticeText').innerHTML = text; document.getElementById('noticeModalText').innerHTML = text; }); }
     
-    function getStatusClass(status) { if(status==='open') return 'status-open'; if(status==='close') return 'status-close'; if(status==='holiday') return 'status-holiday'; return 'status-closed'; }
+    function getStatusClass(status) { 
+        if(status==='open') return 'status-open'; 
+        if(status==='close') return 'status-close'; 
+        if(status==='holiday') return 'status-holiday'; 
+        return 'status-closed'; 
+    }
     
     function openBetting(market) { location.href = `betting.html?market=${encodeURIComponent(market.name)}&status=${market.originalStatus==='holiday'?'closed':market.status}&marketId=${market.id}`; }
     
@@ -331,12 +333,10 @@
             let resultDisplay = market.closePana && market.closePana !== '***' ? `${market.openPana} - ${market.jodi} - ${market.closePana}` : (market.openPana && market.openPana !== '***' ? `${market.openPana} - ${market.openDigit}* - ***` : `*** - ** - ***`);
             let numbersDisplay = (market.numbers || '***-***-***').replace('Open Pana','').replace('JODI','').replace('Close Pana','').trim();
             let nameColor = nameColors[idx % nameColors.length];
-            let goodLuckText = market.name.toLowerCase().includes('night') ? '<span class="good-luck">GOOD LUCK</span>' : '<span class="good-luck">⭐</span>';
             
             html += `<div class="market-card">
                         <div class="market-header">
                             <span class="market-name" style="color:${nameColor};">🌸 ${market.name}</span>
-                            ${goodLuckText}
                         </div>
                         <div class="result-box">
                             <div class="result-numbers">${resultDisplay}</div>
