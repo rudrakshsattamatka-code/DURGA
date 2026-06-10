@@ -20,10 +20,9 @@
             padding-bottom: 70px;
         }
 
-        /* Header */
         .app-header {
             background: #ffffff;
-            padding: 10px 16px;
+            padding: 12px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -51,16 +50,35 @@
             text-align: center;
             flex: 1;
         }
-        .balance {
+        .bid-badge {
             background: #e91e63;
-            padding: 4px 12px;
-            border-radius: 20px;
             color: #fff;
-            font-size: 13px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 10px;
             font-weight: 600;
         }
 
-        /* Game Selection Screen */
+        .balance-card {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            margin: 12px;
+            padding: 12px 16px;
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .balance-label {
+            color: #a0a4b0;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .balance-amount {
+            color: #e91e63;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
         .game-selection-screen {
             padding: 12px;
         }
@@ -97,7 +115,6 @@
             color: #1a1a2e;
         }
 
-        /* Bidding Panel */
         .bidding-panel {
             display: none;
         }
@@ -126,7 +143,6 @@
             flex: 1;
         }
 
-        /* Game Panel Content */
         .game-panel-content {
             background: #fff;
             margin: 10px;
@@ -134,7 +150,6 @@
             padding: 12px;
         }
 
-        /* Points + Number in ONE ROW */
         .bid-row {
             display: flex;
             gap: 10px;
@@ -169,7 +184,6 @@
             border-color: #e91e63;
         }
 
-        /* Toggle Section (Open/Close) */
         .toggle-section {
             display: flex;
             justify-content: center;
@@ -197,7 +211,6 @@
             accent-color: #e91e63;
         }
 
-        /* Manual Entry (for Pana, Sangam games) */
         .manual-entry {
             display: flex;
             flex-direction: column;
@@ -231,12 +244,10 @@
             border-color: #e91e63;
         }
 
-        /* Hide grids - manual entry only */
         .number-grid, .jodi-grid, .digit-grid {
             display: none;
         }
 
-        /* Add Button */
         .add-btn {
             width: 100%;
             padding: 12px;
@@ -250,7 +261,6 @@
             margin-top: 10px;
         }
 
-        /* Selected Bids Section */
         .bids-section {
             background: #f8f9fa;
             border-radius: 12px;
@@ -300,7 +310,6 @@
             font-size: 18px;
         }
 
-        /* Summary Bar */
         .summary-bar {
             background: #fff;
             margin: 10px;
@@ -325,7 +334,6 @@
             color: #e91e63;
         }
 
-        /* Submit Button */
         .submit-btn {
             width: calc(100% - 20px);
             margin: 10px;
@@ -388,13 +396,12 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Bottom Nav */
         .bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            max-width: 500px;
+            max-width: 480px;
             margin: 0 auto;
             background: #fff;
             display: flex;
@@ -428,16 +435,19 @@
     <div class="app-header">
         <button class="back-btn" onclick="goBack()">←</button>
         <div class="market-title" id="marketName">Loading...</div>
-        <div class="balance" id="balance">₹<span id="userBalance">0</span></div>
+        <div class="bid-badge" id="bidTypeBadge"></div>
     </div>
 
-    <!-- Game Selection Screen -->
+    <div class="balance-card">
+        <span class="balance-label">Your Balance</span>
+        <span class="balance-amount">₹<span id="userBalance">0</span></span>
+    </div>
+
     <div id="gameSelectionScreen" class="game-selection-screen">
         <div class="selection-title">Select Game Type</div>
         <div class="game-types-grid" id="gameTypesGrid"></div>
     </div>
 
-    <!-- Bidding Panel -->
     <div id="biddingPanel" class="bidding-panel">
         <div class="bidding-header">
             <button class="back-to-games" onclick="showGameSelection()">←</button>
@@ -461,25 +471,14 @@
 </div>
 
 <div class="bottom-nav">
-    <div class="nav-item" onclick="location.href='dashboard.html'">
-        <img src="https://i.imgur.com/StGZq3Y.png" alt="Home"><span>Home</span>
-    </div>
-    <div class="nav-item" onclick="location.href='mybids.html'">
-        <img src="https://i.imgur.com/rUWwMYm.png" alt="Passbook"><span>Passbook</span>
-    </div>
-    <div class="nav-item" onclick="location.href='mybids.html'">
-        <img src="https://i.imgur.com/QhfWXLI.jpeg" alt="Bids"><span>My Bids</span>
-    </div>
-    <div class="nav-item" onclick="location.href='funds.html'">
-        <img src="https://i.imgur.com/NvJCTli.png" alt="Fund"><span>Fund</span>
-    </div>
-    <div class="nav-item" onclick="location.href='chat.html'">
-        <img src="https://i.imgur.com/ug9IprL.jpeg" alt="Support"><span>Support</span>
-    </div>
+    <div class="nav-item" onclick="location.href='dashboard.html'"><img src="https://i.imgur.com/StGZq3Y.png"><span>Home</span></div>
+    <div class="nav-item" onclick="location.href='mybids.html'"><img src="https://i.imgur.com/rUWwMYm.png"><span>Passbook</span></div>
+    <div class="nav-item" onclick="location.href='mybids.html'"><img src="https://i.imgur.com/QhfWXLI.jpeg"><span>My Bids</span></div>
+    <div class="nav-item" onclick="location.href='funds.html'"><img src="https://i.imgur.com/NvJCTli.png"><span>Fund</span></div>
+    <div class="nav-item" onclick="location.href='chat.html'"><img src="https://i.imgur.com/ug9IprL.jpeg"><span>Support</span></div>
 </div>
 
 <script>
-    // ==================== ALL ORIGINAL JAVASCRIPT LOGIC - PRESERVED ====================
     const firebaseConfig = {
         apiKey: "AIzaSyBeGpb7V0i5GN1opY9JECHxQIGvHFDPX38",
         authDomain: "win777-ed482.firebaseapp.com",
@@ -503,17 +502,6 @@
         'Single Digit': 10, 'Jodi': 100, 'Single Pana': 160,
         'Double Pana': 320, 'Triple Pana': 1000,
         'Half Sangam A': 1000, 'Half Sangam B': 1000, 'Full Sangam': 10000
-    };
-    
-    const gameBadges = {
-        'Single Digit': { open: 'OPEN BID', close: 'CLOSE BID' },
-        'Jodi': { open: 'CLOSE BID ONLY', close: 'CLOSE BID' },
-        'Single Pana': { open: 'OPEN BID', close: 'CLOSE BID' },
-        'Double Pana': { open: 'OPEN BID', close: 'CLOSE BID' },
-        'Triple Pana': { open: 'OPEN BID', close: 'CLOSE BID' },
-        'Half Sangam A': { open: 'CLOSE BID ONLY', close: 'CLOSE BID' },
-        'Half Sangam B': { open: 'CLOSE BID ONLY', close: 'CLOSE BID' },
-        'Full Sangam': { open: 'CLOSE BID ONLY', close: 'CLOSE BID' }
     };
     
     const allGameTypes = [
@@ -724,7 +712,7 @@
         
         addToBids(currentGameType, digit, points);
         document.getElementById('digitInput').value = '';
-        document.getElementById('pointsInput').value = '';
+        // DO NOT clear points input - keep amount for next bid
         updateSummary();
         renderGamePanel();
     }
@@ -746,7 +734,7 @@
         
         addToBids(currentGameType, jodi, points);
         document.getElementById('jodiInput').value = '';
-        document.getElementById('pointsInput').value = '';
+        // DO NOT clear points input - keep amount for next bid
         updateSummary();
         renderGamePanel();
     }
@@ -781,7 +769,7 @@
         
         addToBids(currentGameType, pana, points);
         document.getElementById('panaInput').value = '';
-        document.getElementById('pointsInput').value = '';
+        // DO NOT clear points input - keep amount for next bid
         updateSummary();
         renderGamePanel();
     }
@@ -810,7 +798,7 @@
         addToBids(currentGameType, `${openPana}-${closeDigit}`, points);
         document.getElementById('openPanaInput').value = '';
         document.getElementById('closeDigitInput').value = '';
-        document.getElementById('pointsInput').value = '';
+        // DO NOT clear points input - keep amount for next bid
         updateSummary();
         renderGamePanel();
     }
@@ -839,7 +827,7 @@
         addToBids(currentGameType, `${openDigit}-${closePana}`, points);
         document.getElementById('openDigitInput').value = '';
         document.getElementById('closePanaInput').value = '';
-        document.getElementById('pointsInput').value = '';
+        // DO NOT clear points input - keep amount for next bid
         updateSummary();
         renderGamePanel();
     }
@@ -868,7 +856,7 @@
         addToBids(currentGameType, `${openPana}-${closePana}`, points);
         document.getElementById('fullOpenPanaInput').value = '';
         document.getElementById('fullClosePanaInput').value = '';
-        document.getElementById('pointsInput').value = '';
+        // DO NOT clear points input - keep amount for next bid
         updateSummary();
         renderGamePanel();
     }
@@ -1007,6 +995,9 @@
         const showOpenClose = gameType ? gameType.hasOpenClose : false;
         const isCloseOnlyGame = (currentGameType === 'Jodi' || currentGameType === 'Half Sangam A' || currentGameType === 'Half Sangam B' || currentGameType === 'Full Sangam');
         
+        // Get current points value to preserve it
+        const currentPointsValue = document.getElementById('pointsInput')?.value || '';
+        
         if(currentGameType === 'Single Digit') {
             panel.innerHTML = `
                 <div class="game-panel-content">
@@ -1018,7 +1009,7 @@
                     <div class="bid-row">
                         <div class="bid-field">
                             <label class="bid-label">Points (₹)</label>
-                            <input type="number" id="pointsInput" class="bid-input" placeholder="Min ₹5" step="1" inputmode="numeric">
+                            <input type="number" id="pointsInput" class="bid-input" placeholder="Min ₹5" step="1" inputmode="numeric" value="${currentPointsValue}">
                         </div>
                         <div class="bid-field">
                             <label class="bid-label">Digit</label>
@@ -1036,7 +1027,7 @@
                     <div class="bid-row">
                         <div class="bid-field">
                             <label class="bid-label">Points (₹)</label>
-                            <input type="number" id="pointsInput" class="bid-input" placeholder="Min ₹5" step="1" inputmode="numeric">
+                            <input type="number" id="pointsInput" class="bid-input" placeholder="Min ₹5" step="1" inputmode="numeric" value="${currentPointsValue}">
                         </div>
                         <div class="bid-field">
                             <label class="bid-label">Jodi</label>
@@ -1059,7 +1050,7 @@
                     <div class="bid-row">
                         <div class="bid-field">
                             <label class="bid-label">Points (₹)</label>
-                            <input type="number" id="pointsInput" class="bid-input" placeholder="Min ₹5" step="1" inputmode="numeric">
+                            <input type="number" id="pointsInput" class="bid-input" placeholder="Min ₹5" step="1" inputmode="numeric" value="${currentPointsValue}">
                         </div>
                         <div class="bid-field">
                             <label class="bid-label">Pana</label>
@@ -1077,7 +1068,7 @@
                     <div class="bid-row">
                         <div class="bid-field">
                             <label class="bid-label">Points (₹)</label>
-                            <input type="number" id="pointsInput" class="bid-input" placeholder="Min ₹5" step="1" inputmode="numeric">
+                            <input type="number" id="pointsInput" class="bid-input" placeholder="Min ₹5" step="1" inputmode="numeric" value="${currentPointsValue}">
                         </div>
                     </div>
                     <div class="manual-entry">
@@ -1101,7 +1092,7 @@
                     <div class="bid-row">
                         <div class="bid-field">
                             <label class="bid-label">Points (₹)</label>
-                            <input type="number" id="pointsInput" class="bid-input" placeholder="Min ₹5" step="1" inputmode="numeric">
+                            <input type="number" id="pointsInput" class="bid-input" placeholder="Min ₹5" step="1" inputmode="numeric" value="${currentPointsValue}">
                         </div>
                     </div>
                     <div class="manual-entry">
@@ -1125,7 +1116,7 @@
                     <div class="bid-row">
                         <div class="bid-field">
                             <label class="bid-label">Points (₹)</label>
-                            <input type="number" id="pointsInput" class="bid-input" placeholder="Min ₹5" step="1" inputmode="numeric">
+                            <input type="number" id="pointsInput" class="bid-input" placeholder="Min ₹5" step="1" inputmode="numeric" value="${currentPointsValue}">
                         </div>
                     </div>
                     <div class="manual-entry">
@@ -1144,8 +1135,11 @@
             `;
         }
         
-        const pointsInput = document.getElementById('pointsInput');
-        if (pointsInput && currentPoints) pointsInput.value = currentPoints;
+        // Restore points input value if it was set
+        const newPointsInput = document.getElementById('pointsInput');
+        if (newPointsInput && currentPointsValue) {
+            newPointsInput.value = currentPointsValue;
+        }
     }
     
     async function loadMarketData() {
@@ -1173,6 +1167,7 @@
     currentMarketId = urlParams.get('marketId') || '';
     currentStatus = urlParams.get('status') || 'open';
     document.getElementById('marketName').innerHTML = currentMarket;
+    document.getElementById('bidTypeBadge').innerHTML = currentStatus === 'open' ? 'OPEN BIDDING' : 'CLOSE BIDDING';
     
     loadMarketData();
     renderGameTypeSelection();
