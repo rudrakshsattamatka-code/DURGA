@@ -9,13 +9,16 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #f0f2f5; padding-bottom: 65px; }
+        body { background: #f0f2f5; padding-bottom: 75px; }
         .app-container { max-width: 480px; margin: 0 auto; background: #f0f2f5; min-height: 100vh; }
         
         /* Loading Animation */
-        .loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; display: flex; justify-content: center; align-items: center; }
-        .loader-spinner { width: 50px; height: 50px; border: 4px solid #fff; border-top: 4px solid #e91e63; border-radius: 50%; animation: spin 1s linear infinite; }
+        .loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #1a1a2e, #16213e); z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column; }
+        .loader-spinner { width: 60px; height: 60px; border: 4px solid rgba(255,255,255,0.2); border-top: 4px solid #e91e63; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        .loader-text { font-size: 28px; font-weight: bold; color: #e91e63; letter-spacing: 3px; animation: pulse 1.5s ease-in-out infinite; }
+        .loader-sub { font-size: 12px; color: #aaa; margin-top: 10px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         
         .header { background: #fff; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e0e0e0; }
         .logo-img { width: 36px; height: 36px; border-radius: 50%; border: 1px solid #e91e63; }
@@ -37,19 +40,18 @@
         .clock-time { font-size: 13px; font-weight: 700; color: #e91e63; font-family: monospace; background: #f8f9fa; padding: 3px 10px; border-radius: 20px; }
         .clock-date { font-size: 10px; color: #888; background: #f8f9fa; padding: 3px 8px; border-radius: 20px; }
         
-        .games-row { display: flex; justify-content: space-around; background: #fff; margin: 8px; padding: 6px; border-radius: 14px; border: 1px solid #e0e0e0; }
-        .game-icon { text-align: center; color: #888; font-size: 10px; cursor: pointer; transition: 0.3s; }
+        /* Games Row - Only Deposit, Withdraw, My Bids */
+        .games-row { display: flex; justify-content: space-around; background: #fff; margin: 8px; padding: 8px; border-radius: 14px; border: 1px solid #e0e0e0; }
+        .game-icon { text-align: center; color: #888; font-size: 11px; cursor: pointer; transition: 0.3s; flex: 1; }
         .game-icon:hover { color: #e91e63; transform: translateY(-2px); }
         .game-icon img { width: 32px; height: 32px; display: block; margin: 0 auto 3px; border-radius: 8px; }
         
-        /* Market Cards - Reduced Space, Different Border Colors */
+        /* Market Cards */
         .market-card { background: #fff; margin: 8px; border-radius: 12px; padding: 10px; transition: 0.2s; border-left: 4px solid; }
-        .market-card:nth-child(odd) { border-left-color: #e91e63; }
-        .market-card:nth-child(even) { border-left-color: #9c27b0; }
-        .market-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 5px; }
-        .market-name { color: #1a1a2e; font-size: 14px; font-weight: bold; }
-        .market-numbers { color: #888; font-size: 10px; font-family: monospace; background: #f8f9fa; padding: 2px 6px; border-radius: 5px; }
-        .result-box { background: #f8f9fa; border-radius: 10px; padding: 8px; margin: 6px 0; text-align: center; }
+        .market-header { display: flex; justify-content: center; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 5px; }
+        .market-name { font-size: 15px; font-weight: bold; text-align: center; }
+        .market-numbers { color: #888; font-size: 10px; font-family: monospace; background: #f8f9fa; padding: 2px 6px; border-radius: 5px; display: inline-block; margin-left: 8px; }
+        .result-box { background: #f8f9fa; border-radius: 10px; padding: 6px; margin: 6px 0; text-align: center; }
         .result-numbers { color: #1a1a2e; font-size: 16px; font-weight: bold; letter-spacing: 2px; font-family: monospace; }
         .market-timings { display: flex; justify-content: center; gap: 15px; margin: 6px 0; padding: 4px; background: #f8f9fa; border-radius: 20px; }
         .timing-item { display: flex; align-items: center; gap: 5px; font-size: 10px; }
@@ -57,18 +59,23 @@
         .orange-dot { width: 6px; height: 6px; background: #ff9800; border-radius: 50%; }
         .timing-label { color: #888; }
         .timing-value { color: #1a1a2e; font-weight: bold; }
-        .market-status { font-size: 9px; padding: 2px 8px; border-radius: 15px; display: inline-block; font-weight: 600; }
-        .status-closed { background: #ffe0e0; color: #dc3545; }
-        .status-close { background: #fff3cd; color: #ff9800; }
+        
+        /* Status Messages */
+        .market-status { font-size: 11px; padding: 4px 10px; border-radius: 20px; display: inline-block; font-weight: 600; text-align: center; width: 100%; margin-top: 5px; }
         .status-open { background: #d4edda; color: #28a745; }
+        .status-close { background: #fff3cd; color: #ff9800; }
+        .status-closed { background: #ffe0e0; color: #dc3545; }
         .status-holiday { background: #e0d5c1; color: #8B4513; }
-        .play-btn { width: 100%; margin-top: 8px; padding: 8px; background: #e91e63; border: none; border-radius: 25px; color: #fff; font-weight: bold; cursor: pointer; font-size: 12px; }
+        
+        /* Small Play Button */
+        .play-btn { width: 100%; margin-top: 8px; padding: 6px; background: #e91e63; border: none; border-radius: 25px; color: #fff; font-weight: bold; cursor: pointer; font-size: 11px; }
         .play-btn:disabled { opacity: 0.5; cursor: not-allowed; background: #ccc; }
         
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto; background: #fff; display: flex; justify-content: space-around; padding: 6px 8px; border-top: 1px solid #e0e0e0; }
-        .nav-item { text-align: center; color: #888; cursor: pointer; font-size: 9px; flex: 1; }
+        /* Bottom Navigation - Larger Buttons */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto; background: #fff; display: flex; justify-content: space-around; padding: 10px 8px; border-top: 1px solid #e0e0e0; }
+        .nav-item { text-align: center; color: #888; cursor: pointer; font-size: 11px; flex: 1; padding: 6px 0; }
         .nav-item:hover { color: #e91e63; transform: translateY(-2px); }
-        .nav-item img { width: 22px; height: 22px; display: block; margin: 0 auto 2px; opacity: 0.7; }
+        .nav-item img { width: 28px; height: 28px; display: block; margin: 0 auto 4px; opacity: 0.7; }
         .nav-item:hover img { opacity: 1; }
         .nav-item.active { color: #e91e63; }
         
@@ -83,10 +90,7 @@
         .rate-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #eee; }
         .support-option { display: flex; align-items: center; gap: 12px; padding: 12px; background: #f8f9fa; border-radius: 12px; margin-bottom: 8px; cursor: pointer; border: 1px solid #eee; }
         .support-option:hover { background: #fff; border-color: #e91e63; }
-        .loader { display: flex; justify-content: center; padding: 30px; }
-        .spinner { width: 35px; height: 35px; border: 3px solid #eee; border-top: 3px solid #e91e63; border-radius: 50%; animation: spin 1s linear infinite; }
         
-        /* Remove touch points */
         button, .game-icon, .nav-item, .profile-row, .balance, .notice-board, .play-btn { touch-action: manipulation; }
     </style>
 </head>
@@ -96,11 +100,26 @@
     <div class="profile-row" onclick="showProfileModal()"><div class="profile-avatar">🌸</div><div class="profile-info"><div class="profile-name" id="profileName">Loading...</div><div class="profile-phone" id="profilePhone">Loading...</div></div><div class="view-profile">View →</div></div>
     <div id="noticeBoard" class="notice-board" onclick="showNoticeModal()"><div class="notice-icon">📜</div><div class="notice-text" id="noticeText">Welcome to DURGA!</div><button class="close-notice" onclick="event.stopPropagation(); closeNotice()">✕</button></div>
     <div class="live-clock"><span class="clock-time" id="liveClockTime">--:--:--</span><span class="clock-date" id="liveClockDate">--/--/----</span></div>
-    <div class="games-row"><div class="game-icon" onclick="showGames()"><img src="https://i.imgur.com/xaMlRtU.jpeg"><span>Games</span></div><div class="game-icon" onclick="location.href='deposit.html'"><img src="https://i.imgur.com/NvJCTli.png"><span>Deposit</span></div><div class="game-icon" onclick="location.href='withdraw.html'"><img src="https://i.imgur.com/3ZxjAIp.png"><span>Withdraw</span></div><div class="game-icon" onclick="location.href='mybids.html'"><img src="https://i.imgur.com/QhfWXLI.jpeg"><span>My Bids</span></div></div>
-    <div id="marketsList"><div class="loader"><div class="spinner"></div></div></div>
-    <div class="bottom-nav"><div class="nav-item active" onclick="location.reload()"><img src="https://i.imgur.com/StGZq3Y.png"><span>Home</span></div><div class="nav-item" onclick="location.href='mybids.html'"><img src="https://i.imgur.com/rUWwMYm.png"><span>Passbook</span></div><div class="nav-item" onclick="location.href='mybids.html'"><img src="https://i.imgur.com/QhfWXLI.jpeg"><span>My Bids</span></div><div class="nav-item" onclick="location.href='funds.html'"><img src="https://i.imgur.com/NvJCTli.png"><span>Fund</span></div><div class="nav-item" onclick="location.href='chat.html'"><img src="https://i.imgur.com/ug9IprL.jpeg"><span>Support</span></div></div>
+    
+    <!-- Games Row - Only Deposit, Withdraw, My Bids (No Games button) -->
+    <div class="games-row">
+        <div class="game-icon" onclick="location.href='deposit.html'"><img src="https://i.imgur.com/NvJCTli.png"><span>Deposit</span></div>
+        <div class="game-icon" onclick="location.href='withdraw.html'"><img src="https://i.imgur.com/3ZxjAIp.png"><span>Withdraw</span></div>
+        <div class="game-icon" onclick="location.href='mybids.html'"><img src="https://i.imgur.com/QhfWXLI.jpeg"><span>My Bids</span></div>
+    </div>
+    
+    <div id="marketsList"><div style="text-align:center; padding:40px; color:#888;">Loading markets...</div></div>
+    
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="location.reload()"><img src="https://i.imgur.com/StGZq3Y.png"><span>Home</span></div>
+        <div class="nav-item" onclick="location.href='mybids.html'"><img src="https://i.imgur.com/rUWwMYm.png"><span>Passbook</span></div>
+        <div class="nav-item" onclick="location.href='mybids.html'"><img src="https://i.imgur.com/QhfWXLI.jpeg"><span>My Bids</span></div>
+        <div class="nav-item" onclick="location.href='funds.html'"><img src="https://i.imgur.com/NvJCTli.png"><span>Fund</span></div>
+        <div class="nav-item" onclick="location.href='chat.html'"><img src="https://i.imgur.com/ug9IprL.jpeg"><span>Support</span></div>
+    </div>
 </div>
 
+<!-- Modals -->
 <div id="profileModal" class="modal"><div class="modal-content"><h3>🌸 My Profile</h3><div id="profileInfo"></div><button class="modal-btn" onclick="showGameRatesModal()">🎲 Game Rates</button><button class="modal-btn" onclick="showChangePinModal()">🔐 Change MPIN</button><button class="modal-btn" onclick="showBankModal()">🏦 Bank Details</button><button class="modal-btn logout-btn" onclick="logout()">🚪 Logout</button><button class="modal-btn close-modal" onclick="closeProfileModal()">Close</button></div></div>
 <div id="noticeModal" class="modal"><div class="modal-content"><h3>📜 Notice</h3><div id="noticeModalText"></div><button class="modal-btn close-modal" onclick="closeNoticeModal()">Close</button></div></div>
 <div id="gameRatesModal" class="modal"><div class="modal-content"><h3>🎲 GAME RATES</h3><div class="rate-row"><span>Single Digit</span><span>10x</span></div><div class="rate-row"><span>Jodi</span><span>100x</span></div><div class="rate-row"><span>Single Pana</span><span>160x</span></div><div class="rate-row"><span>Double Pana</span><span>320x</span></div><div class="rate-row"><span>Triple Pana</span><span>1000x</span></div><div class="rate-row"><span>Half Sangam A</span><span>1000x</span></div><div class="rate-row"><span>Half Sangam B</span><span>1000x</span></div><div class="rate-row"><span>Full Sangam</span><span>10000x</span></div><button class="modal-btn close-modal" onclick="closeGameRatesModal()">Close</button></div></div>
@@ -114,8 +133,14 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
     
-    // Show loading animation
-    function showLoader() { let div = document.createElement('div'); div.className = 'loader-overlay'; div.id = 'pageLoader'; div.innerHTML = '<div class="loader-spinner"></div>'; document.body.appendChild(div); }
+    // Show loading animation with DURGA text
+    function showLoader() { 
+        let div = document.createElement('div'); 
+        div.className = 'loader-overlay'; 
+        div.id = 'pageLoader'; 
+        div.innerHTML = '<div class="loader-spinner"></div><div class="loader-text">DURGA</div><div class="loader-sub">Loading...</div>'; 
+        document.body.appendChild(div); 
+    }
     function hideLoader() { let el = document.getElementById('pageLoader'); if(el) el.remove(); }
     
     let marketsData = [], currentUserData = null, serverTimeCache = null, lastServerTimeFetch = 0, marketsListener = null, clockInterval = null, statusUpdateInterval = null;
@@ -136,14 +161,14 @@
     function timeToMinutes(t) { if(!t) return null; let [h,m]=t.split(':'); return parseInt(h)*60+parseInt(m); }
     
     async function calculateMarketStatus(openBidEnd, closeBidEnd, adminStatus) {
-        if (adminStatus === 'holiday') return 'holiday';
+        if (adminStatus === 'holiday') return { status: 'holiday', message: '🎪 HOLIDAY - Market closed for today' };
         const now = await getServerTime();
         const currentMinutes = now.getHours() * 60 + now.getMinutes();
         const openEnd = timeToMinutes(openBidEnd);
         const closeEnd = timeToMinutes(closeBidEnd);
-        if (openEnd && currentMinutes < openEnd) return 'open';
-        else if (openEnd && closeEnd && currentMinutes >= openEnd && currentMinutes < closeEnd) return 'close';
-        else return 'closed';
+        if (openEnd && currentMinutes < openEnd) return { status: 'open', message: '🟢 OPEN FOR BIDDING' };
+        else if (openEnd && closeEnd && currentMinutes >= openEnd && currentMinutes < closeEnd) return { status: 'close', message: '🟡 BIDDING FOR CLOSE ONLY' };
+        else return { status: 'closed', message: '🔴 MARKET CLOSED FOR TODAY' };
     }
     
     async function updateLiveClock() { try { const st = await getServerTime(); document.getElementById('liveClockTime').innerHTML = formatCurrentTimeTo12Hour(st); document.getElementById('liveClockDate').innerHTML = `${st.getDate().toString().padStart(2,'0')}/${(st.getMonth()+1).toString().padStart(2,'0')}/${st.getFullYear()}`; } catch(e) {} }
@@ -153,8 +178,8 @@
         let needsRender = false;
         for (let i = 0; i < marketsData.length; i++) {
             const m = marketsData[i];
-            const newStatus = await calculateMarketStatus(m.openBidEnd, m.closeBidEnd, m.originalStatus);
-            if (m.status !== newStatus) { m.status = newStatus; needsRender = true; }
+            const newStatusData = await calculateMarketStatus(m.openBidEnd, m.closeBidEnd, m.originalStatus);
+            if (m.status !== newStatusData.status) { m.status = newStatusData.status; m.statusMessage = newStatusData.message; needsRender = true; }
         }
         if (needsRender) renderMarkets();
     }
@@ -165,8 +190,8 @@
             const newData = [];
             for (const doc of snapshot.docs) {
                 const data = doc.data();
-                const calcStatus = await calculateMarketStatus(data.openBidEnd, data.closeBidEnd, data.status);
-                newData.push({ id: doc.id, name: data.name, numbers: data.numbers, openBidEnd: data.openBidEnd, closeBidEnd: data.closeBidEnd, status: calcStatus, originalStatus: data.status, openPana: data.openPana || '***', openDigit: data.openDigit || '*', closePana: data.closePana || '***', closeDigit: data.closeDigit || '*', jodi: data.jodi || '**', serialNo: data.serialNo || 999 });
+                const statusData = await calculateMarketStatus(data.openBidEnd, data.closeBidEnd, data.status);
+                newData.push({ id: doc.id, name: data.name, numbers: data.numbers, openBidEnd: data.openBidEnd, closeBidEnd: data.closeBidEnd, status: statusData.status, statusMessage: statusData.message, originalStatus: data.status, openPana: data.openPana || '***', openDigit: data.openDigit || '*', closePana: data.closePana || '***', closeDigit: data.closeDigit || '*', jodi: data.jodi || '**', serialNo: data.serialNo || 999 });
             }
             newData.sort((a,b) => (a.serialNo||999) - (b.serialNo||999));
             marketsData = newData;
@@ -175,9 +200,13 @@
     }
     
     function listenToNotice() { db.collection('settings').doc('notice').onSnapshot(doc => { let text = doc.exists ? doc.data().text : 'Welcome to DURGA!'; document.getElementById('noticeText').innerHTML = text; document.getElementById('noticeModalText').innerHTML = text; }); }
-    function getStatusText(s) { if(s==='open') return 'OPEN'; if(s==='close') return 'CLOSE'; if(s==='holiday') return 'HOLIDAY'; return 'CLOSED'; }
-    function getStatusClass(s) { if(s==='open') return 'status-open'; if(s==='close') return 'status-close'; if(s==='holiday') return 'status-holiday'; return 'status-closed'; }
+    
+    function getStatusClass(status) { if(status==='open') return 'status-open'; if(status==='close') return 'status-close'; if(status==='holiday') return 'status-holiday'; return 'status-closed'; }
+    
     function openBetting(market) { location.href = `betting.html?market=${encodeURIComponent(market.name)}&status=${market.originalStatus==='holiday'?'closed':market.status}&marketId=${market.id}`; }
+    
+    // Mixed colors for market names
+    const nameColors = ['#e91e63', '#9c27b0', '#3f51b5', '#00bcd4', '#009688', '#4caf50', '#ff9800', '#795548'];
     
     function renderMarkets() {
         const container = document.getElementById('marketsList');
@@ -188,7 +217,8 @@
             let resultDisplay = market.closePana && market.closePana !== '***' ? `${market.openPana} - ${market.jodi} - ${market.closePana}` : (market.openPana && market.openPana !== '***' ? `${market.openPana} - ${market.openDigit}* - ***` : `*** - ** - ***`);
             let numbersDisplay = (market.numbers || '***-***-***').replace('Open Pana','').replace('JODI','').replace('Close Pana','').trim();
             let borderColor = idx % 2 === 0 ? '#e91e63' : '#9c27b0';
-            html += `<div class="market-card" style="border-left-color: ${borderColor};"><div class="market-header"><span class="market-name">🌸 ${market.name}</span><span class="market-numbers">${numbersDisplay}</span></div><div class="result-box"><div class="result-numbers">${resultDisplay}</div></div><div class="market-timings"><div class="timing-item"><div class="green-dot"></div><span>Open ${formatTimeTo12Hour(market.openBidEnd)}</span></div><div class="timing-item"><div class="orange-dot"></div><span>Close ${formatTimeTo12Hour(market.closeBidEnd)}</span></div></div><div><span class="market-status ${getStatusClass(market.status)}">${getStatusText(market.status)}</span></div><button class="play-btn" onclick='openBetting(${JSON.stringify(market)})' ${!isPlayable ? 'disabled' : ''}>🎲 ${isPlayable ? 'PLAY' : 'CLOSED'}</button></div>`;
+            let nameColor = nameColors[idx % nameColors.length];
+            html += `<div class="market-card" style="border-left-color: ${borderColor};"><div class="market-header"><span class="market-name" style="color:${nameColor};">🌸 ${market.name}</span><span class="market-numbers">${numbersDisplay}</span></div><div class="result-box"><div class="result-numbers">${resultDisplay}</div></div><div class="market-timings"><div class="timing-item"><div class="green-dot"></div><span>Open ${formatTimeTo12Hour(market.openBidEnd)}</span></div><div class="timing-item"><div class="orange-dot"></div><span>Close ${formatTimeTo12Hour(market.closeBidEnd)}</span></div></div><div class="market-status ${getStatusClass(market.status)}">${market.statusMessage}</div><button class="play-btn" onclick='openBetting(${JSON.stringify(market)})' ${!isPlayable ? 'disabled' : ''}>🎲 PLAY</button></div>`;
         });
         container.innerHTML = html;
     }
@@ -219,7 +249,6 @@
     function showNoticeModal() { document.getElementById('noticeModal').style.display='flex'; }
     function closeNoticeModal() { document.getElementById('noticeModal').style.display='none'; }
     function closeNotice() { document.getElementById('noticeBoard').style.display='none'; }
-    function showGames() { alert('Games coming soon!'); }
     
     async function init() { listenToMarkets(); listenToNotice(); clockInterval = setInterval(updateLiveClock, 1000); statusUpdateInterval = setInterval(updateAllMarketStatuses, 1000); }
     setInterval(()=>{ if(auth.currentUser) db.collection('users').doc(auth.currentUser.uid).get().then(doc=>{ if(doc.exists){ document.getElementById('userBalance').innerText=doc.data().balance||0; currentUserData=doc.data(); } }); }, 30000);
@@ -227,10 +256,10 @@
     showLoader();
     auth.onAuthStateChanged(user => { 
         if(!user) location.href='index.html'; 
-        else { loadUserData(); init(); hideLoader(); } 
+        else { loadUserData(); init(); setTimeout(hideLoader, 1000); } 
     });
     
-    window.showBalance=showBalance; window.showProfileModal=showProfileModal; window.closeProfileModal=closeProfileModal; window.showGameRatesModal=showGameRatesModal; window.closeGameRatesModal=closeGameRatesModal; window.showChangePinModal=showChangePinModal; window.closeChangePinModal=closeChangePinModal; window.updatePin=updatePin; window.showBankModal=showBankModal; window.closeBankModal=closeBankModal; window.saveBankDetails=saveBankDetails; window.showSupportModal=showSupportModal; window.closeSupportModal=closeSupportModal; window.sendEmail=sendEmail; window.sendWhatsApp=sendWhatsApp; window.showNoticeModal=showNoticeModal; window.closeNoticeModal=closeNoticeModal; window.closeNotice=closeNotice; window.showGames=showGames; window.logout=logout;
+    window.showBalance=showBalance; window.showProfileModal=showProfileModal; window.closeProfileModal=closeProfileModal; window.showGameRatesModal=showGameRatesModal; window.closeGameRatesModal=closeGameRatesModal; window.showChangePinModal=showChangePinModal; window.closeChangePinModal=closeChangePinModal; window.updatePin=updatePin; window.showBankModal=showBankModal; window.closeBankModal=closeBankModal; window.saveBankDetails=saveBankDetails; window.showSupportModal=showSupportModal; window.closeSupportModal=closeSupportModal; window.sendEmail=sendEmail; window.sendWhatsApp=sendWhatsApp; window.showNoticeModal=showNoticeModal; window.closeNoticeModal=closeNoticeModal; window.closeNotice=closeNotice; window.logout=logout;
 </script>
 </body>
 </html>
