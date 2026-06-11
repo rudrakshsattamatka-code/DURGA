@@ -211,7 +211,7 @@
             accent-color: #e91e63;
         }
 
-        /* Grid Styles */
+        /* Grid Styles - Only for Single Digit and Jodi */
         .digit-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -260,32 +260,8 @@
             color: #fff;
             border-color: #e91e63;
         }
-        
-        .pana-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin: 15px 0;
-            max-height: 280px;
-            overflow-y: auto;
-        }
-        .pana-btn {
-            background: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            padding: 8px;
-            text-align: center;
-            font-size: 12px;
-            font-weight: 600;
-            color: #1a1a2e;
-            cursor: pointer;
-        }
-        .pana-btn.selected {
-            background: #e91e63;
-            color: #fff;
-            border-color: #e91e63;
-        }
 
+        /* Manual Entry for Pana Games */
         .manual-entry {
             display: flex;
             flex-direction: column;
@@ -570,7 +546,6 @@
     let isSubmitting = false;
     let selectedDigits = [];
     let selectedJodis = [];
-    let selectedPanas = [];
     
     const gameRates = {
         'Single Digit': 10, 'Jodi': 100, 'Single Pana': 160,
@@ -578,7 +553,7 @@
         'Half Sangam A': 1000, 'Half Sangam B': 1000, 'Full Sangam': 10000
     };
     
-    // Valid Pana Lists
+    // Valid Pana Lists for validation
     const validSinglePanaList = [
         '128','137','146','236','245','290','380','470','489','560','579','678',
         '129','138','147','156','237','246','345','390','480','570','589','679',
@@ -606,9 +581,9 @@
     const allGameTypes = [
         { name: 'Single Digit', rate: 10, hasOpenClose: true, availableInOpen: true, availableInClose: true, hasGrid: true },
         { name: 'Jodi', rate: 100, hasOpenClose: false, availableInOpen: true, availableInClose: false, hasGrid: true },
-        { name: 'Single Pana', rate: 160, hasOpenClose: true, availableInOpen: true, availableInClose: true, hasGrid: true },
-        { name: 'Double Pana', rate: 320, hasOpenClose: true, availableInOpen: true, availableInClose: true, hasGrid: true },
-        { name: 'Triple Pana', rate: 1000, hasOpenClose: true, availableInOpen: true, availableInClose: true, hasGrid: true },
+        { name: 'Single Pana', rate: 160, hasOpenClose: true, availableInOpen: true, availableInClose: true, hasGrid: false },
+        { name: 'Double Pana', rate: 320, hasOpenClose: true, availableInOpen: true, availableInClose: true, hasGrid: false },
+        { name: 'Triple Pana', rate: 1000, hasOpenClose: true, availableInOpen: true, availableInClose: true, hasGrid: false },
         { name: 'Half Sangam A', rate: 1000, hasOpenClose: false, availableInOpen: true, availableInClose: false, hasGrid: false },
         { name: 'Half Sangam B', rate: 1000, hasOpenClose: false, availableInOpen: true, availableInClose: false, hasGrid: false },
         { name: 'Full Sangam', rate: 10000, hasOpenClose: false, availableInOpen: true, availableInClose: false, hasGrid: false }
@@ -698,7 +673,6 @@
         currentGameType = type;
         selectedDigits = [];
         selectedJodis = [];
-        selectedPanas = [];
         document.getElementById('selectedGameTitle').innerHTML = currentGameType;
         
         document.getElementById('gameSelectionScreen').style.display = 'none';
@@ -722,7 +696,6 @@
         bids = [];
         selectedDigits = [];
         selectedJodis = [];
-        selectedPanas = [];
         updateSummary();
         renderGameTypeSelection();
     }
@@ -776,7 +749,7 @@
         renderGamePanel();
     }
     
-    // Grid selection functions
+    // Grid selection functions (Only for Single Digit and Jodi)
     function toggleDigit(digit) {
         const index = selectedDigits.indexOf(digit);
         if (index === -1) {
@@ -818,29 +791,6 @@
         }
     }
     
-    function togglePana(pana) {
-        const index = selectedPanas.indexOf(pana);
-        if (index === -1) {
-            selectedPanas.push(pana);
-        } else {
-            selectedPanas.splice(index, 1);
-        }
-        updatePanaButtons();
-    }
-    
-    function updatePanaButtons() {
-        const panaList = currentGameType === 'Single Pana' ? validSinglePanaList : 
-                        (currentGameType === 'Double Pana' ? validDoublePanaList : validTriplePanaList);
-        
-        panaList.forEach(pana => {
-            const btn = document.getElementById(`pana_${pana}`);
-            if(btn) {
-                if(selectedPanas.includes(pana)) btn.classList.add('selected');
-                else btn.classList.remove('selected');
-            }
-        });
-    }
-    
     async function addSelectedGridItems() {
         const bettingAllowed = await isBettingAllowed();
         if (!bettingAllowed.allowed) {
@@ -861,7 +811,6 @@
             }
             selectedDigits = [];
             updateDigitButtons();
-            showMessage(`Added ${selectedDigits.length} digits with ₹${points} each`, 'success');
         }
         else if(currentGameType === 'Jodi') {
             if(selectedJodis.length === 0) {
@@ -873,26 +822,49 @@
             }
             selectedJodis = [];
             updateJodiButtons();
-            showMessage(`Added ${selectedJodis.length} Jodis with ₹${points} each`, 'success');
-        }
-        else if(currentGameType === 'Single Pana' || currentGameType === 'Double Pana' || currentGameType === 'Triple Pana') {
-            if(selectedPanas.length === 0) {
-                alert('Please select at least one Pana');
-                return;
-            }
-            for(const pana of selectedPanas) {
-                addToBids(currentGameType, pana, points);
-            }
-            selectedPanas = [];
-            updatePanaButtons();
-            showMessage(`Added ${selectedPanas.length} Panas with ₹${points} each`, 'success');
         }
         
         updateSummary();
         renderGamePanel();
     }
     
-    // Manual entry functions (for Half Sangam and Full Sangam)
+    // Manual entry for Pana games
+    async function addManualPana() {
+        const bettingAllowed = await isBettingAllowed();
+        if (!bettingAllowed.allowed) {
+            showMessage(bettingAllowed.message, true);
+            return;
+        }
+        
+        const points = getCurrentPoints();
+        if(points === null) return;
+        const panaValue = document.getElementById('panaInput')?.value.trim();
+        
+        if(!panaValue || !/^\d{3}$/.test(panaValue)) {
+            alert('Please enter a valid 3-digit Pana');
+            return;
+        }
+        
+        if(currentGameType === 'Single Pana' && !validSinglePanaList.includes(panaValue)) {
+            alert('❌ Invalid Single Pana!');
+            return;
+        }
+        if(currentGameType === 'Double Pana' && !validDoublePanaList.includes(panaValue)) {
+            alert('❌ Invalid Double Pana!');
+            return;
+        }
+        if(currentGameType === 'Triple Pana' && !validTriplePanaList.includes(panaValue)) {
+            alert('❌ Invalid Triple Pana!');
+            return;
+        }
+        
+        addToBids(currentGameType, panaValue, points);
+        document.getElementById('panaInput').value = '';
+        updateSummary();
+        renderGamePanel();
+    }
+    
+    // Manual entry for Half Sangam A
     async function addHalfSangamA() {
         const bettingAllowed = await isBettingAllowed();
         if (!bettingAllowed.allowed) {
@@ -1089,7 +1061,6 @@
             bids = [];
             selectedDigits = [];
             selectedJodis = [];
-            selectedPanas = [];
             updateSummary();
             renderGamePanel();
             
@@ -1116,7 +1087,7 @@
         const isCloseOnlyGame = (currentGameType === 'Jodi' || currentGameType === 'Half Sangam A' || currentGameType === 'Half Sangam B' || currentGameType === 'Full Sangam');
         const currentPointsValue = document.getElementById('pointsInput')?.value || '';
         
-        // GRID BASED GAMES
+        // GRID BASED GAMES (Single Digit and Jodi only)
         if(currentGameType === 'Single Digit' && hasGrid) {
             let digitsHtml = '';
             for(let i = 0; i <= 9; i++) {
@@ -1161,13 +1132,9 @@
                 </div>
             `;
         }
-        else if((currentGameType === 'Single Pana' || currentGameType === 'Double Pana' || currentGameType === 'Triple Pana') && hasGrid) {
-            let panaList = currentGameType === 'Single Pana' ? validSinglePanaList : 
-                          (currentGameType === 'Double Pana' ? validDoublePanaList : validTriplePanaList);
-            let panaHtml = '';
-            panaList.forEach(pana => {
-                panaHtml += `<div class="pana-btn ${selectedPanas.includes(pana) ? 'selected' : ''}" id="pana_${pana}" onclick="togglePana('${pana}')">${pana}</div>`;
-            });
+        // MANUAL ENTRY GAMES (Single Pana, Double Pana, Triple Pana)
+        else if(currentGameType === 'Single Pana' || currentGameType === 'Double Pana' || currentGameType === 'Triple Pana') {
+            let panaLabel = currentGameType;
             panel.innerHTML = `
                 <div class="game-panel-content">
                     ${showOpenClose && currentStatus === 'open' && !isCloseOnlyGame ? `
@@ -1181,8 +1148,13 @@
                             <input type="number" id="pointsInput" class="bid-input" placeholder="Min ₹5" step="1" inputmode="numeric" value="${currentPointsValue}">
                         </div>
                     </div>
-                    <div class="pana-grid">${panaHtml}</div>
-                    <button class="add-btn" onclick="addSelectedGridItems()">+ ADD SELECTED (${selectedPanas.length})</button>
+                    <div class="manual-entry">
+                        <div class="manual-row">
+                            <span class="manual-label">${panaLabel}:</span>
+                            <input type="number" id="panaInput" placeholder="Enter 3-digit number" inputmode="numeric">
+                        </div>
+                    </div>
+                    <button class="add-btn" onclick="addManualPana()">+ ADD</button>
                     ${renderBidItems()}
                 </div>
             `;
@@ -1302,8 +1274,8 @@
     window.setOpenClose = setOpenClose;
     window.toggleDigit = toggleDigit;
     window.toggleJodi = toggleJodi;
-    window.togglePana = togglePana;
     window.addSelectedGridItems = addSelectedGridItems;
+    window.addManualPana = addManualPana;
     window.addHalfSangamA = addHalfSangamA;
     window.addHalfSangamB = addHalfSangamB;
     window.addFullSangam = addFullSangam;
