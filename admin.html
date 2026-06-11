@@ -57,47 +57,9 @@
         .market-detail-row.open { display: block; }
         .chat-iframe { width: 100%; height: 60vh; border: none; border-radius: 12px; }
         
-        /* Online/Offline Status Styles */
-        .user-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 10px;
-            margin-left: 8px;
-        }
-        .status-online {
-            color: #28a745;
-        }
-        .status-online::before {
-            content: "●";
-            font-size: 10px;
-            margin-right: 3px;
-        }
-        .status-offline {
-            color: #888;
-        }
-        .status-offline::before {
-            content: "○";
-            font-size: 10px;
-            margin-right: 3px;
-        }
-        .last-login {
-            font-size: 10px;
-            color: #888;
-            margin-top: 3px;
-        }
-        .delete-all-btn {
-            background: #8B0000;
-            margin-left: 10px;
-        }
-        .delete-all-btn:hover {
-            background: #a00000;
-        }
-        .warning-text {
-            color: #dc3545;
-            font-size: 11px;
-            margin-top: 5px;
-        }
+        /* Bank Details Styles */
+        .bank-details-box { background: #f8f9fa; border-radius: 8px; padding: 8px; margin-top: 5px; font-size: 11px; }
+        .bank-details-box span { font-weight: bold; color: #1a1a2e; }
         
         @media (max-width: 768px) { .sidebar { width: 70px; } .sidebar h2 { font-size: 10px; padding: 15px 5px; } .sidebar-item { padding: 12px; text-align: center; font-size: 10px; } .main-content { margin-left: 70px; } .results-container { justify-content: center; } }
     </style>
@@ -146,7 +108,7 @@
             <div class="card"><h3>👥 Users Management 
                 <button onclick="deleteAllUsers()" class="btn-delete delete-all-btn" style="float:right;">🗑️ DELETE ALL USERS</button>
             </h3>
-                <div class="warning-text" style="margin-bottom:10px;">⚠️ Warning: Deleting users will remove all their bids, transactions, and chat history permanently!</div>
+                <div class="warning-text" style="margin-bottom:10px; color:#dc3545; font-size:11px;">⚠️ Warning: Deleting users will remove all their bids, transactions, and chat history permanently!</div>
                 <div class="search-container"><input type="text" id="searchInput" class="search-input" placeholder="🔍 Search by name or mobile..."><button onclick="searchUsers()" class="btn-info">Search</button><button onclick="clearSearch()" class="btn-reset">Clear</button></div>
                 <div class="sort-bar"><label>📊 Sort By:</label><select id="sortUsersSelect" class="sort-select" onchange="applyUserSort()"><option value="todayBidders">📈 Today Bidders</option><option value="newest">🕒 Newest First</option><option value="balanceHigh">💰 Balance High-Low</option><option value="balanceLow">💰 Balance Low-High</option><option value="lastActive">⏰ Last Active</option></select><button onclick="refreshTodayBidsForUsers()" class="btn-info">🔄 Refresh Today's Bids</button></div>
                 <div id="userCount" class="user-count"></div>
@@ -160,7 +122,7 @@
         
         <div id="noticeSection" class="hidden"><div class="card"><h3>📢 Notice Board</h3><textarea id="noticeText" rows="3" style="width:100%; padding:10px;"></textarea><button onclick="updateNotice()">Update Notice</button><div id="noticeMsg"></div></div></div>
         
-        <div id="settingsSection" class="hidden"><div class="card"><h3>🔐 Change Password</h3><input type="password" id="oldPass" placeholder="Old Password"><input type="password" id="newPass" placeholder="New Password"><button onclick="changePassword()">Update</button><div id="passMsg"></div></div><div class="card"><h3>🏧 UPI ID Settings</h3><input type="text" id="upiId" placeholder="UPI ID" value="durga@axl"><button onclick="updateUPI()">Update UPI ID</button><div id="upiMsg"></div></div><div class="card"><h3>👤 Payee Name</h3><input type="text" id="payeeName" placeholder="Payee Name" value="DURGA Services"><button onclick="updatePayeeName()">Update</button><div id="payeeMsg"></div></div></div>
+        <div id="settingsSection" class="hidden"><div class="card"><h3>🔐 Change Password</h3><input type="password" id="oldPass" placeholder="Old Password"><input type="password" id="newPass" placeholder="New Password"><button onclick="changePassword()">Update</button><div id="passMsg"></div></div><div class="card"><h3>🏧 UPI ID Settings</h3><input type="text" id="upiId" placeholder="UPI ID" value="durga@axl"><button onclick="updateUPI()">Update UPI ID</button><div id="upiMsg"></div></div></div>
         
         <div id="livechatSection" class="hidden"><div class="card"><h3>💬 Live Support Chat</h3><iframe src="admin-chat.html" class="chat-iframe" id="chatIframe"></iframe><div><button onclick="clearAllChats()" class="btn-danger">🗑️ Delete All Chat History</button><button onclick="refreshChat()" class="btn-info">🔄 Refresh Chat</button></div></div></div>
     </div>
@@ -174,8 +136,6 @@
     
     let adminPassword = "Gani99@@", allUsers = [], currentSearchTerm = "", currentSortType = "todayBidders", todayBidMap = new Map(), userLastBidTime = new Map();
     let depositCount = 0, withdrawalCount = 0, chatUnreadCount = 0, depositListener = null, withdrawalListener = null, chatListener = null, currentDepositTab = "pending", currentWithdrawalTab = "pending", openMarketId = null;
-    
-    // Track online users (store last active timestamps)
     let userLastActive = new Map();
     let onlineStatusListener = null;
     
@@ -183,11 +143,8 @@
     
     if (sessionStorage.getItem('adminLoggedIn') === 'true') { document.getElementById('loginScreen').style.display = 'none'; document.getElementById('adminPanel').style.display = 'block'; loadMarkets(); loadUsersWithTodayBids(); loadDeposits(); loadWithdrawals(); loadNotice(); loadSettings(); startNotificationListeners(); startAutoCleanup(); startOnlineStatusTracking(); }
     
-    // Track user online status using presence system
     function startOnlineStatusTracking() {
         if (onlineStatusListener) onlineStatusListener();
-        
-        // Listen to all users' lastActive field
         onlineStatusListener = db.collection('users').onSnapshot((snapshot) => {
             snapshot.forEach(doc => {
                 const data = doc.data();
@@ -196,23 +153,20 @@
                     userLastActive.set(doc.id, lastActive);
                 }
             });
-            // Re-render users list if currently on users section
             if (!document.getElementById('usersSection').classList.contains('hidden')) {
                 displayFilteredUsers();
             }
         });
     }
     
-    // Check if user is online (last active within last 2 minutes)
     function isUserOnline(userId) {
         const lastActive = userLastActive.get(userId);
         if (!lastActive) return false;
         const now = new Date();
         const diffMinutes = (now - lastActive) / (1000 * 60);
-        return diffMinutes < 2; // Online if active in last 2 minutes
+        return diffMinutes < 2;
     }
     
-    // Format last login time
     function formatLastLogin(userId) {
         const lastActive = userLastActive.get(userId);
         if (!lastActive) return 'Never';
@@ -220,7 +174,6 @@
         const diffMinutes = Math.floor((now - lastActive) / (1000 * 60));
         const diffHours = Math.floor(diffMinutes / 60);
         const diffDays = Math.floor(diffHours / 24);
-        
         if (diffMinutes < 1) return 'Just now';
         if (diffMinutes < 60) return `${diffMinutes} min ago`;
         if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
@@ -236,41 +189,29 @@
     function showDepositTab(tab){ currentDepositTab=tab; document.querySelectorAll('#depositsSection .request-tab').forEach(t=>t.classList.remove('active')); event.target.classList.add('active'); loadDeposits(); }
     function showWithdrawalTab(tab){ currentWithdrawalTab=tab; document.querySelectorAll('#withdrawalsSection .request-tab').forEach(t=>t.classList.remove('active')); event.target.classList.add('active'); loadWithdrawals(); }
     
-    // DELETE ALL USERS FUNCTION
     async function deleteAllUsers() {
         if (confirm("⚠️⚠️⚠️ DANGER: This will DELETE ALL USERS permanently!\n\nThis includes:\n- All user accounts\n- All bid history\n- All transaction history\n- All withdrawal requests\n- All chat history\n\nThis action CANNOT be undone!\n\nType 'DELETE ALL USERS' to confirm:")) {
             const confirmText = prompt('Type "DELETE ALL USERS" to confirm this action:');
             if (confirmText === 'DELETE ALL USERS') {
                 const loadingMsg = document.getElementById('usersList');
                 loadingMsg.innerHTML = '<div style="text-align:center;padding:40px;">🗑️ Deleting all users...</div>';
-                
                 try {
-                    // Get all users
                     const usersSnapshot = await db.collection('users').get();
                     let totalDeleted = 0;
-                    
                     for (const userDoc of usersSnapshot.docs) {
                         const userId = userDoc.id;
-                        
-                        // Delete all bids for this user
                         const bidsSnapshot = await db.collection('bids').where('userId', '==', userId).get();
                         const bidsBatch = db.batch();
                         bidsSnapshot.forEach(bid => bidsBatch.delete(bid.ref));
                         await bidsBatch.commit();
-                        
-                        // Delete all transactions for this user
                         const transSnapshot = await db.collection('transactions').where('userId', '==', userId).get();
                         const transBatch = db.batch();
                         transSnapshot.forEach(trans => transBatch.delete(trans.ref));
                         await transBatch.commit();
-                        
-                        // Delete all withdrawal requests for this user
                         const withdrawSnapshot = await db.collection('withdrawRequests').where('userId', '==', userId).get();
                         const withdrawBatch = db.batch();
                         withdrawSnapshot.forEach(withdraw => withdrawBatch.delete(withdraw.ref));
                         await withdrawBatch.commit();
-                        
-                        // Delete chat room and messages for this user
                         const chatRoomId = `chat_${userId}`;
                         const chatDoc = await db.collection('chats').doc(chatRoomId).get();
                         if (chatDoc.exists) {
@@ -280,22 +221,15 @@
                             chatBatch.delete(db.collection('chats').doc(chatRoomId));
                             await chatBatch.commit();
                         }
-                        
-                        // Delete the user document
                         await db.collection('users').doc(userId).delete();
                         totalDeleted++;
                     }
-                    
                     alert(`✅ Successfully deleted ${totalDeleted} users and all associated data!`);
-                    loadUsersWithTodayBids(); // Refresh the users list
-                    
+                    loadUsersWithTodayBids();
                 } catch (error) {
-                    console.error("Error deleting users:", error);
                     alert("❌ Error deleting users: " + error.message);
                 }
-            } else {
-                alert("❌ Confirmation failed. No users were deleted.");
-            }
+            } else { alert("❌ Confirmation failed. No users were deleted."); }
         }
     }
     
@@ -314,7 +248,7 @@
     function escapeHtml(s){ if(!s) return ''; return s.replace(/[&<>]/g,m=>m==='&'?'&amp;':(m==='<'?'&lt;':'&gt;')); }
     function openUserBidsPage(uid,name){ window.open(`user-bids.html?uid=${uid}&name=${encodeURIComponent(name)}`,'_blank'); }
     function toggleMarketDetails(mid){ let div=document.getElementById(`market_detail_${mid}`); if(div){ if(openMarketId===mid){ div.classList.remove('open'); openMarketId=null; }else{ if(openMarketId){ let prev=document.getElementById(`market_detail_${openMarketId}`); if(prev) prev.classList.remove('open'); } div.classList.add('open'); openMarketId=mid; } } }
-    function formatTimeTo12Hour(t){ if(!t) return '--:--'; let [h,m]=t.split(':'); let hr=parseInt(h), ampm=hr>=12?'PM':'AM'; hr=hr%12||12; return `${hr}:${m} ${ampm}`; }
+    function formatTimeTo12Hour(t){ if(!t) return '--:--'; let [h,m]=t.split(':'); let hr=parseInt(h); let ampm=hr>=12?'PM':'AM'; hr=hr%12||12; return `${hr}:${m} ${ampm}`; }
     function loadMarkets(){ db.collection('markets').orderBy('serialNo','asc').onSnapshot(s=>{ let html=''; s.forEach(d=>{ let m=d.data(); let statusClass='',statusText=''; if(m.status==='open'){ statusClass='status-open'; statusText='OPEN'; }else if(m.status==='close'){ statusClass='status-close'; statusText='CLOSE'; }else if(m.status==='holiday'){ statusClass='status-holiday'; statusText='HOLIDAY'; }else{ statusClass='status-closed'; statusText='CLOSED'; } let openPana=m.openPana||'***', openDigit=m.openDigit||'*', closePana=m.closePana||'***', closeDigit=m.closeDigit||'*', jodi=m.jodi||'**', isCloseDeclared=m.closeDeclared||false; let jodiDisplay=(!isCloseDeclared && openPana!=='***')?openDigit+'*':jodi; html+=`<div class="market-item"><div class="market-header-row" onclick="toggleMarketDetails('${d.id}')"><span class="toggle-icon">${openMarketId===d.id?'▼':'▶'}</span><span><span class="market-serial" onclick="event.stopPropagation(); changeSerialNumber('${d.id}',${m.serialNo||0})">#${m.serialNo||'?'}</span> ${m.name||'No name'}</span><span class="status-badge ${statusClass}">${statusText}</span><button onclick="event.stopPropagation(); deleteMarket('${d.id}')" class="btn-danger">🗑️</button></div><div id="market_detail_${d.id}" class="market-detail-row"><div><div>🎲 Numbers: ${m.numbers||'***'}</div><div>⏰ Open End: ${formatTimeTo12Hour(m.openBidEnd)} | Close End: ${formatTimeTo12Hour(m.closeBidEnd)}</div><div class="results-container"><div class="result-card"><div class="result-pana">${openPana}</div><div>Open: ${openDigit}</div></div><div class="result-card"><div class="result-pana">${closePana}</div><div>Close: ${closeDigit}</div></div></div><div class="jodi-display">JODI: <strong>${jodiDisplay}</strong></div><div><input type="time" id="openBidEnd_${d.id}" value="${m.openBidEnd||''}" step="60"><button onclick="updateMarketTime('${d.id}','openBidEnd',document.getElementById('openBidEnd_${d.id}').value)">Save Open</button></div><div><input type="time" id="closeBidEnd_${d.id}" value="${m.closeBidEnd||''}" step="60"><button onclick="updateMarketTime('${d.id}','closeBidEnd',document.getElementById('closeBidEnd_${d.id}').value)">Save Close</button></div><div><button onclick="setMarketStatus('${d.id}','open')" class="btn-success">🟢 OPEN</button><button onclick="setMarketStatus('${d.id}','close')" class="btn-warning">🟡 CLOSE</button><button onclick="setMarketStatus('${d.id}','closed')" class="btn-danger">🔴 CLOSED</button><button onclick="setMarketHoliday('${d.id}','${m.name}','${m.status}')" class="btn-warning">🎪 ${m.status==='holiday'?'Remove Holiday':'Set Holiday'}</button></div><div><input type="text" id="openPana_${d.id}" placeholder="Open Pana" maxlength="3" value="${openPana!=='***'?openPana:''}"><input type="text" id="openDigit_${d.id}" placeholder="Digit" maxlength="1" value="${openDigit!=='*'?openDigit:''}"><button onclick="declareOpenResult('${d.id}','${m.name}')">Declare OPEN</button></div><div><input type="text" id="closePana_${d.id}" placeholder="Close Pana" maxlength="3" value="${closePana!=='***'?closePana:''}"><input type="text" id="closeDigit_${d.id}" placeholder="Digit" maxlength="1" value="${closeDigit!=='*'?closeDigit:''}"><button onclick="declareCloseResult('${d.id}','${m.name}')">Declare CLOSE</button></div><div><button onclick="editMarket('${d.id}','${m.name}','${m.numbers||''}')">✏️ Edit</button><button onclick="resetMarketResult('${d.id}','${m.name}')" class="btn-reset">⟳ Reset</button></div></div></div></div>`; }); if(s.empty) html='<p style="color:#888; text-align:center; padding:30px;">No markets. Add one above!</p>'; document.getElementById('marketsList').innerHTML=html; }); }
     async function setMarketStatus(mid,st){ await db.collection('markets').doc(mid).update({status:st,isHoliday:st==='holiday'}); alert(`✅ Status changed to ${st.toUpperCase()}`); }
     async function updateMarketTime(mid,fld,val){ await db.collection('markets').doc(mid).update({[fld]:val}); alert(`✅ ${fld} updated`); }
@@ -335,7 +269,25 @@
     async function rejectDeposit(id){ if(confirm('Reject this deposit?')){ await db.collection('transactions').doc(id).update({status:'Rejected'}); alert('❌ Deposit rejected!'); loadDeposits(); } }
     async function deleteDepositRecord(id){ if(confirm('⚠️ Permanently delete this deposit record?')){ await db.collection('transactions').doc(id).delete(); alert('✅ Deleted!'); loadDeposits(); } }
     
-    async function loadWithdrawals(){ let status=currentWithdrawalTab==='pending'?'Pending':(currentWithdrawalTab==='completed'?'Completed':'Rejected'); let snap=await db.collection('withdrawRequests').where('status','==',status).get(); let withdrawals=[]; for(let d of snap.docs){ let w=d.data(); let user=await db.collection('users').doc(w.userId).get(); withdrawals.push({id:d.id,userId:w.userId,amount:w.amount,bankDetails:w.bankDetails||{},date:w.date?.toDate()||new Date(0),userName:user.data()?.name||'Unknown'}); } withdrawals.sort((a,b)=>b.date-a.date); let html=''; for(let w of withdrawals){ let isPending=currentWithdrawalTab==='pending'; html+=`<div class="request-item"><div><b>👤 ${w.userName}</b><br><b>💰 Amount:</b> ₹${w.amount}<br><b>📅 ${w.date.toLocaleString()}</b><br><div><b>🏦 Bank:</b> ${w.bankDetails?.bankName||'N/A'}<br><b>Account:</b> ${w.bankDetails?.accountNumber||'N/A'}</div></div><div>${isPending?`<button onclick="approveWithdraw('${w.id}',${w.amount},'${w.userId}')" class="btn-success">Approve</button><button onclick="rejectWithdraw('${w.id}')" class="btn-danger">Reject</button>`:`<button onclick="deleteWithdrawalRecord('${w.id}')" class="btn-delete">🗑️ Delete</button>`}</div></div>`; } document.getElementById('withdrawalsList').innerHTML=html||'<p style="color:#888;">No withdrawals found</p>'; }
+    async function loadWithdrawals(){ 
+        let status=currentWithdrawalTab==='pending'?'Pending':(currentWithdrawalTab==='completed'?'Completed':'Rejected'); 
+        let snap=await db.collection('withdrawRequests').where('status','==',status).get(); 
+        let withdrawals=[]; 
+        for(let d of snap.docs){ 
+            let w=d.data(); 
+            let user=await db.collection('users').doc(w.userId).get(); 
+            let bankDetails = w.bankDetails || {};
+            withdrawals.push({id:d.id, userId:w.userId, amount:w.amount, bankDetails:bankDetails, date:w.date?.toDate()||new Date(0), userName:user.data()?.name||'Unknown', userPhone:user.data()?.phone||'N/A'}); 
+        } 
+        withdrawals.sort((a,b)=>b.date-a.date); 
+        let html=''; 
+        for(let w of withdrawals){ 
+            let isPending=currentWithdrawalTab==='pending'; 
+            html+=`<div class="request-item"><div><b>👤 ${w.userName}</b><br><b>📞 Phone:</b> ${w.userPhone}<br><b>💰 Amount:</b> ₹${w.amount}<br><div class="bank-details-box"><span>🏦 BANK DETAILS:</span><br><span>Account Holder:</span> ${w.bankDetails.accountHolder || 'N/A'}<br><span>Bank Name:</span> ${w.bankDetails.bankName || 'N/A'}<br><span>Account Number:</span> ${w.bankDetails.accountNumber || 'N/A'}<br><span>IFSC Code:</span> ${w.bankDetails.ifscCode || 'N/A'}</div><b>📅 ${w.date.toLocaleString()}</b></div><div>${isPending?`<button onclick="approveWithdraw('${w.id}',${w.amount},'${w.userId}')" class="btn-success">Approve</button><button onclick="rejectWithdraw('${w.id}')" class="btn-danger">Reject</button>`:`<button onclick="deleteWithdrawalRecord('${w.id}')" class="btn-delete">🗑️ Delete</button>`}</div></div>`; 
+        } 
+        document.getElementById('withdrawalsList').innerHTML=html||'<p style="color:#888;">No withdrawals found</p>'; 
+    }
+    
     async function approveWithdraw(id,amount,uid){ if(confirm(`Approve withdrawal of ₹${amount}?`)){ let user=await db.collection('users').doc(uid).get(); if((user.data().balance||0)<amount){ alert('Insufficient balance!'); return; } await db.collection('users').doc(uid).update({balance:(user.data().balance||0)-amount}); await db.collection('withdrawRequests').doc(id).update({status:'Completed'}); await db.collection('transactions').add({userId:uid,type:'debit',amount:amount,status:'Completed',description:'Withdrawal Approved',date:new Date()}); alert('✅ Withdrawal approved!'); loadWithdrawals(); } }
     async function rejectWithdraw(id){ if(confirm('Reject this withdrawal?')){ await db.collection('withdrawRequests').doc(id).update({status:'Rejected'}); alert('❌ Withdrawal rejected!'); loadWithdrawals(); } }
     async function deleteWithdrawalRecord(id){ if(confirm('⚠️ Permanently delete this withdrawal record?')){ await db.collection('withdrawRequests').doc(id).delete(); alert('✅ Deleted!'); loadWithdrawals(); } }
@@ -346,9 +298,8 @@
     async function clearUserTransactions(uid,name){ if(confirm(`Clear ALL transaction history for "${name}"?`)){ let trans=await db.collection('transactions').where('userId','==',uid).get(); let batch=db.batch(); trans.forEach(d=>batch.delete(d.ref)); await batch.commit(); alert(`✅ Cleared ${trans.size} transactions`); } }
     async function deleteUser(uid,name){ if(confirm(`Delete user "${name}" permanently? Type "${name}" to confirm:`)){ if(prompt(`Type "${name}" to confirm:`)===name){ let bids=await db.collection('bids').where('userId','==',uid).get(); bids.forEach(d=>d.ref.delete()); let trans=await db.collection('transactions').where('userId','==',uid).get(); trans.forEach(d=>d.ref.delete()); let withdraws=await db.collection('withdrawRequests').where('userId','==',uid).get(); withdraws.forEach(d=>d.ref.delete()); let chatRoomId=`chat_${uid}`; let chatDoc=await db.collection('chats').doc(chatRoomId).get(); if(chatDoc.exists){ let msgs=await db.collection('chats').doc(chatRoomId).collection('messages').get(); msgs.forEach(m=>m.ref.delete()); await db.collection('chats').doc(chatRoomId).delete(); } await db.collection('users').doc(uid).delete(); alert(`✅ User "${name}" deleted!`); }else{ alert('❌ Confirmation failed.'); } } }
     
-    function loadSettings(){ db.collection('settings').doc('upi').get().then(d=>{ if(d.exists) document.getElementById('upiId').value=d.data().upiId; }); db.collection('settings').doc('payee').get().then(d=>{ if(d.exists) document.getElementById('payeeName').value=d.data().name; }); }
+    function loadSettings(){ db.collection('settings').doc('upi').get().then(d=>{ if(d.exists) document.getElementById('upiId').value=d.data().upiId; }); }
     async function updateUPI(){ await db.collection('settings').doc('upi').set({upiId:document.getElementById('upiId').value}); alert("UPI Updated"); }
-    async function updatePayeeName(){ await db.collection('settings').doc('payee').set({name:document.getElementById('payeeName').value}); alert("Payee Updated"); }
     function loadNotice(){ db.collection('settings').doc('notice').onSnapshot(d=>{ document.getElementById('noticeText').value=d.exists?d.data().text:'Welcome to DURGA!'; }); }
     async function updateNotice(){ await db.collection('settings').doc('notice').set({text:document.getElementById('noticeText').value,updatedAt:new Date()}); document.getElementById('noticeMsg').innerHTML='✅ Notice updated!'; setTimeout(()=>document.getElementById('noticeMsg').innerHTML='',3000); }
     function changePassword(){ let old=document.getElementById('oldPass').value, newP=document.getElementById('newPass').value; if(old===adminPassword){ adminPassword=newP; document.getElementById('passMsg').innerHTML='✅ Password changed!'; } else { document.getElementById('passMsg').innerHTML='❌ Wrong password!'; } setTimeout(()=>document.getElementById('passMsg').innerHTML='',3000); }
@@ -356,7 +307,7 @@
     async function markAllChatsAsRead(){ let unread=await db.collection('chats').where('unread','==',true).get(); let batch=db.batch(); unread.forEach(d=>batch.update(d.ref,{unread:false})); await batch.commit(); updateChatBadge(); }
     function logout(){ sessionStorage.removeItem('adminLoggedIn'); document.getElementById('loginScreen').style.display='flex'; document.getElementById('adminPanel').style.display='none'; document.getElementById('adminPass').value=''; }
     
-    window.login=login; window.searchUsers=searchUsers; window.clearSearch=clearSearch; window.openUserBidsPage=openUserBidsPage; window.updateUPI=updateUPI; window.updatePayeeName=updatePayeeName; window.changeSerialNumber=changeSerialNumber; window.deleteAllMarkets=deleteAllMarkets; window.resetAllMarketsResults=resetAllMarketsResults; window.setMarketStatus=setMarketStatus; window.setMarketHoliday=setMarketHoliday; window.declareOpenResult=declareOpenResult; window.declareCloseResult=declareCloseResult; window.resetMarketResult=resetMarketResult; window.addMarket=addMarket; window.editMarket=editMarket; window.deleteMarket=deleteMarket; window.updateMarketTime=updateMarketTime; window.updateBalance=updateBalance; window.toggleBlockUser=toggleBlockUser; window.clearUserBids=clearUserBids; window.clearUserTransactions=clearUserTransactions; window.deleteUser=deleteUser; window.approveDeposit=approveDeposit; window.rejectDeposit=rejectDeposit; window.deleteDepositRecord=deleteDepositRecord; window.approveWithdraw=approveWithdraw; window.rejectWithdraw=rejectWithdraw; window.deleteWithdrawalRecord=deleteWithdrawalRecord; window.updateNotice=updateNotice; window.changePassword=changePassword; window.showSection=showSection; window.logout=logout; window.toggleMarketDetails=toggleMarketDetails; window.applyUserSort=applyUserSort; window.refreshTodayBidsForUsers=refreshTodayBidsForUsers; window.clearAllChats=clearAllChats; window.refreshChat=refreshChat; window.showDepositTab=showDepositTab; window.showWithdrawalTab=showWithdrawalTab; window.deleteAllUsers=deleteAllUsers;
+    window.login=login; window.searchUsers=searchUsers; window.clearSearch=clearSearch; window.openUserBidsPage=openUserBidsPage; window.updateUPI=updateUPI; window.changeSerialNumber=changeSerialNumber; window.deleteAllMarkets=deleteAllMarkets; window.resetAllMarketsResults=resetAllMarketsResults; window.setMarketStatus=setMarketStatus; window.setMarketHoliday=setMarketHoliday; window.declareOpenResult=declareOpenResult; window.declareCloseResult=declareCloseResult; window.resetMarketResult=resetMarketResult; window.addMarket=addMarket; window.editMarket=editMarket; window.deleteMarket=deleteMarket; window.updateMarketTime=updateMarketTime; window.updateBalance=updateBalance; window.toggleBlockUser=toggleBlockUser; window.clearUserBids=clearUserBids; window.clearUserTransactions=clearUserTransactions; window.deleteUser=deleteUser; window.approveDeposit=approveDeposit; window.rejectDeposit=rejectDeposit; window.deleteDepositRecord=deleteDepositRecord; window.approveWithdraw=approveWithdraw; window.rejectWithdraw=rejectWithdraw; window.deleteWithdrawalRecord=deleteWithdrawalRecord; window.updateNotice=updateNotice; window.changePassword=changePassword; window.showSection=showSection; window.logout=logout; window.toggleMarketDetails=toggleMarketDetails; window.applyUserSort=applyUserSort; window.refreshTodayBidsForUsers=refreshTodayBidsForUsers; window.clearAllChats=clearAllChats; window.refreshChat=refreshChat; window.showDepositTab=showDepositTab; window.showWithdrawalTab=showWithdrawalTab; window.deleteAllUsers=deleteAllUsers;
 </script>
 </body>
 </html>
