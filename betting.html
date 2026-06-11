@@ -211,54 +211,61 @@
             accent-color: #e91e63;
         }
 
-        /* Grid Styles - Only for Single Digit and Jodi */
+        /* Digit Grid - No Borders */
         .digit-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
+            gap: 8px;
             margin: 15px 0;
         }
         .digit-btn {
             background: #f8f9fa;
-            border: 1px solid #ddd;
+            border: none;
             border-radius: 12px;
-            padding: 12px;
+            padding: 14px;
             text-align: center;
             font-size: 18px;
             font-weight: 700;
             color: #1a1a2e;
             cursor: pointer;
             transition: all 0.2s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
         .digit-btn.selected {
             background: #e91e63;
             color: #fff;
-            border-color: #e91e63;
+        }
+        .digit-btn:active {
+            transform: scale(0.95);
         }
         
+        /* Jodi Grid - No Borders, Full Grid (10x10) */
         .jodi-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 4px;
             margin: 15px 0;
-            max-height: 280px;
-            overflow-y: auto;
+            max-height: none;
+            overflow-y: visible;
         }
         .jodi-btn {
             background: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            padding: 10px 5px;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 3px;
             text-align: center;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             color: #1a1a2e;
             cursor: pointer;
+            transition: all 0.2s;
         }
         .jodi-btn.selected {
             background: #e91e63;
             color: #fff;
-            border-color: #e91e63;
+        }
+        .jodi-btn:active {
+            transform: scale(0.95);
         }
 
         /* Manual Entry for Pana Games */
@@ -293,19 +300,6 @@
         .manual-row input:focus {
             outline: none;
             border-color: #e91e63;
-        }
-
-        .add-btn {
-            width: 100%;
-            padding: 12px;
-            background: #e91e63;
-            border: none;
-            border-radius: 30px;
-            color: #fff;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 10px;
         }
 
         .bids-section {
@@ -747,51 +741,11 @@
         
         updateSummary();
         renderGamePanel();
+        showMessage(`✅ Added ${value} with ₹${points}`, 'success');
     }
     
-    // Grid selection functions (Only for Single Digit and Jodi)
-    function toggleDigit(digit) {
-        const index = selectedDigits.indexOf(digit);
-        if (index === -1) {
-            selectedDigits.push(digit);
-        } else {
-            selectedDigits.splice(index, 1);
-        }
-        updateDigitButtons();
-    }
-    
-    function updateDigitButtons() {
-        for(let i = 0; i <= 9; i++) {
-            const btn = document.getElementById(`digit_${i}`);
-            if(btn) {
-                if(selectedDigits.includes(i.toString())) btn.classList.add('selected');
-                else btn.classList.remove('selected');
-            }
-        }
-    }
-    
-    function toggleJodi(jodi) {
-        const index = selectedJodis.indexOf(jodi);
-        if (index === -1) {
-            selectedJodis.push(jodi);
-        } else {
-            selectedJodis.splice(index, 1);
-        }
-        updateJodiButtons();
-    }
-    
-    function updateJodiButtons() {
-        for(let i = 0; i <= 99; i++) {
-            const jodiStr = i.toString().padStart(2, '0');
-            const btn = document.getElementById(`jodi_${jodiStr}`);
-            if(btn) {
-                if(selectedJodis.includes(jodiStr)) btn.classList.add('selected');
-                else btn.classList.remove('selected');
-            }
-        }
-    }
-    
-    async function addSelectedGridItems() {
+    // Grid selection functions - DIRECT ADD (no separate add button)
+    async function onDigitClick(digit) {
         const bettingAllowed = await isBettingAllowed();
         if (!bettingAllowed.allowed) {
             showMessage(bettingAllowed.message, true);
@@ -801,31 +755,32 @@
         const points = getCurrentPoints();
         if(points === null) return;
         
-        if(currentGameType === 'Single Digit') {
-            if(selectedDigits.length === 0) {
-                alert('Please select at least one digit');
-                return;
-            }
-            for(const digit of selectedDigits) {
-                addToBids(currentGameType, digit, points);
-            }
-            selectedDigits = [];
-            updateDigitButtons();
+        addToBids(currentGameType, digit, points);
+        // Visual feedback - blink effect
+        const btn = document.getElementById(`digit_${digit}`);
+        if(btn) {
+            btn.style.transform = 'scale(0.95)';
+            setTimeout(() => { if(btn) btn.style.transform = 'scale(1)'; }, 150);
         }
-        else if(currentGameType === 'Jodi') {
-            if(selectedJodis.length === 0) {
-                alert('Please select at least one Jodi');
-                return;
-            }
-            for(const jodi of selectedJodis) {
-                addToBids(currentGameType, jodi, points);
-            }
-            selectedJodis = [];
-            updateJodiButtons();
+    }
+    
+    async function onJodiClick(jodi) {
+        const bettingAllowed = await isBettingAllowed();
+        if (!bettingAllowed.allowed) {
+            showMessage(bettingAllowed.message, true);
+            return;
         }
         
-        updateSummary();
-        renderGamePanel();
+        const points = getCurrentPoints();
+        if(points === null) return;
+        
+        addToBids(currentGameType, jodi, points);
+        // Visual feedback - blink effect
+        const btn = document.getElementById(`jodi_${jodi}`);
+        if(btn) {
+            btn.style.transform = 'scale(0.95)';
+            setTimeout(() => { if(btn) btn.style.transform = 'scale(1)'; }, 150);
+        }
     }
     
     // Manual entry for Pana games
@@ -973,6 +928,7 @@
         bids.splice(i,1); 
         updateSummary(); 
         renderGamePanel(); 
+        showMessage('Bet removed', 'success');
     }
     
     function showMessage(msg, isError) {
@@ -980,7 +936,7 @@
         d.innerText = msg;
         d.className = `message ${isError ? 'error' : 'success'}`;
         d.classList.remove('hidden');
-        setTimeout(() => d.classList.add('hidden'), 3000);
+        setTimeout(() => d.classList.add('hidden'), 2000);
     }
     
     async function submitBids() {
@@ -1087,11 +1043,11 @@
         const isCloseOnlyGame = (currentGameType === 'Jodi' || currentGameType === 'Half Sangam A' || currentGameType === 'Half Sangam B' || currentGameType === 'Full Sangam');
         const currentPointsValue = document.getElementById('pointsInput')?.value || '';
         
-        // GRID BASED GAMES (Single Digit and Jodi only)
+        // GRID BASED GAMES (Single Digit and Jodi only) - DIRECT CLICK = ADD BET
         if(currentGameType === 'Single Digit' && hasGrid) {
             let digitsHtml = '';
             for(let i = 0; i <= 9; i++) {
-                digitsHtml += `<div class="digit-btn ${selectedDigits.includes(i.toString()) ? 'selected' : ''}" id="digit_${i}" onclick="toggleDigit('${i}')">${i}</div>`;
+                digitsHtml += `<div class="digit-btn" id="digit_${i}" onclick="onDigitClick('${i}')">${i}</div>`;
             }
             panel.innerHTML = `
                 <div class="game-panel-content">
@@ -1107,7 +1063,6 @@
                         </div>
                     </div>
                     <div class="digit-grid">${digitsHtml}</div>
-                    <button class="add-btn" onclick="addSelectedGridItems()">+ ADD SELECTED (${selectedDigits.length})</button>
                     ${renderBidItems()}
                 </div>
             `;
@@ -1116,7 +1071,7 @@
             let jodiHtml = '';
             for(let i = 0; i <= 99; i++) {
                 const jodiStr = i.toString().padStart(2, '0');
-                jodiHtml += `<div class="jodi-btn ${selectedJodis.includes(jodiStr) ? 'selected' : ''}" id="jodi_${jodiStr}" onclick="toggleJodi('${jodiStr}')">${jodiStr}</div>`;
+                jodiHtml += `<div class="jodi-btn" id="jodi_${jodiStr}" onclick="onJodiClick('${jodiStr}')">${jodiStr}</div>`;
             }
             panel.innerHTML = `
                 <div class="game-panel-content">
@@ -1127,7 +1082,6 @@
                         </div>
                     </div>
                     <div class="jodi-grid">${jodiHtml}</div>
-                    <button class="add-btn" onclick="addSelectedGridItems()">+ ADD SELECTED (${selectedJodis.length})</button>
                     ${renderBidItems()}
                 </div>
             `;
@@ -1272,9 +1226,8 @@
     window.selectGameTypeFromCard = selectGameTypeFromCard;
     window.showGameSelection = showGameSelection;
     window.setOpenClose = setOpenClose;
-    window.toggleDigit = toggleDigit;
-    window.toggleJodi = toggleJodi;
-    window.addSelectedGridItems = addSelectedGridItems;
+    window.onDigitClick = onDigitClick;
+    window.onJodiClick = onJodiClick;
     window.addManualPana = addManualPana;
     window.addHalfSangamA = addHalfSangamA;
     window.addHalfSangamB = addHalfSangamB;
