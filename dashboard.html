@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>DURGA - Dashboard</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f5f5f5;
+            padding-bottom: 65px;
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        /* Loading Animation */
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .loader-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255,255,255,0.2);
+            border-top: 4px solid #e91e63;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        .loader-text {
+            font-size: 28px;
+            font-weight: bold;
+            color: #e91e63;
+            letter-spacing: 3px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        .loader-sub {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Header */
+        .header {
+            background: #fff;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .logo-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid #e91e63;
+        }
+        .balance {
+            background: #e91e63;
+            padding: 5px 14px;
+            border-radius: 20px;
+            color: #fff;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        /* Welcome Section */
+        .welcome-section {
+            padding: 12px 16px;
+            background: #fff;
+            margin: 10px 12px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #eee;
+        }
+        .welcome-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+        .welcome-text span {
+            font-weight: bold;
+            color: #e91e63;
+        }
+        .refresh-icon {
+            font-size: 18px;
+            color: #e91e63;
+            cursor: pointer;
+        }
+
+        /* Add/Withdraw Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin: 10px 12px;
+        }
+        .action-btn {
+            flex: 1;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 30px;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .action-btn:active {
+            transform: scale(0.98);
+            background: #f0f0f0;
+        }
+
+        /* Market Cards - Like Reference Image */
+        .market-card {
+            background: #fff;
+            margin: 10px 12px;
+            border-radius: 16px;
+            padding: 14px;
+            border: 1px solid #eee;
+            transition: 0.2s;
+        }
+        .market-card:active {
+            transform: scale(0.99);
+        }
+
+        .market-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 10px;
+        }
+        .market-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+        .market-status-badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+            background: #f0f0f0;
+            color: #666;
+        }
+        .status-open {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        .status-close {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+        .status-closed {
+            background: #ffebee;
+            color: #c62828;
+        }
+        .status-holiday {
+            background: #f3e5f5;
+            color: #6a1b9a;
+        }
+
+        /* Result Numbers */
+        .result-numbers {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            font-family: monospace;
+            color: #1a1a2e;
+            text-align: center;
+            margin: 10px 0;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        /* Timings */
+        .timings {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 8px 0;
+            border-top: 1px solid #f0f0f0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .timing-item {
+            font-size: 12px;
+            color: #666;
+        }
+        .timing-label {
+            font-weight: 500;
+        }
+        .timing-value {
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-left: 5px;
+        }
+
+        /* Play Button */
+        .play-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #e91e63, #9c27b0);
+            border: none;
+            border-radius: 30px;
+            padding: 10px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.2s;
+        }
+        .play-btn:active {
+            transform: scale(0.98);
+            opacity: 0.9;
+        }
+        .play-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-width: 480px;
+            margin: 0 auto;
+            background: #fff;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 8px;
+            border-top: 1px solid #e0e0e0;
+        }
+        .nav-item {
+            text-align: center;
+            color: #888;
+            cursor: pointer;
+            font-size: 11px;
+            flex: 1;
+            padding: 6px 0;
+            position: relative;
+        }
+        .nav-item:hover {
+            color: #e91e63;
+        }
+        .nav-item img {
+            width: 24px;
+            height: 24px;
+            display: block;
+            margin: 0 auto 4px;
+            opacity: 0.7;
+        }
+        .nav-item.active {
+            color: #e91e63;
+        }
+        .nav-item.active img {
+            opacity: 1;
+        }
+
+        /* Chat Badge */
+        .chat-badge {
+            position: absolute;
+            top: -5px;
+            right: 20px;
+            background: #e91e63;
+            color: #fff;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            font-size: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #fff;
+            border-radius: 20px;
+            padding: 20px;
+            width: 90%;
+            max-width: 340px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .modal-content h3 {
+            color: #1a1a2e;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .modal-btn {
+            width: 100%;
+            padding: 10px;
+            background: #e91e63;
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .close-modal {
+            background: #e9ecef;
+            color: #1a1a2e;
+        }
+        .logout-btn {
+            background: #dc3545;
+            color: #fff;
+        }
+        .modal-input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        .rate-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .support-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            border: 1px solid #eee;
+        }
+        .support-option:hover {
+            background: #fff;
+            border-color: #e91e63;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        button, .action-btn, .nav-item, .play-btn {
+            touch-action: manipulation;
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <!-- Header -->
+    <div class="header">
+        <img src="https://i.imgur.com/V4pMmxP.jpeg" alt="DURGA" class="logo-img">
+        <div class="balance" onclick="showBalance()">₹<span id="userBalance">0</span></div>
+    </div>
+
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+        <div class="welcome-text">
+            Welcome to <span id="profileName">DURGA</span> | Fast Result
+        </div>
+        <div class="refresh-icon" onclick="refreshPage()">🔄</div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <button class="action-btn" onclick="location.href='deposit.html'">➕ Add Fund</button>
+        <button class="action-btn" onclick="location.href='withdraw.html'">💸 Withdraw Fund</button>
+    </div>
+
+    <!-- Markets List -->
+    <div id="marketsList">
+        <div style="text-align:center; padding:30px; color:#888;">Loading markets...</div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="location.reload()">
+            <img src="https://i.imgur.com/StGZq3Y.png"><span>Home</span>
+        </div>
+        <div class="nav-item" onclick="location.href='mybids.html'">
+            <img src="https://i.imgur.com/rUWwMYm.png"><span>Passbook</span>
+        </div>
+        <div class="nav-item" onclick="location.href='mybids.html'">
+            <img src="https://i.imgur.com/QhfWXLI.jpeg"><span>My Bids</span>
+        </div>
+        <div class="nav-item" onclick="location.href='funds.html'">
+            <img src="https://i.imgur.com/NvJCTli.png"><span>Funds</span>
+        </div>
+        <div class="nav-item" id="supportNav" onclick="location.href='chat.html'" style="position:relative;">
+            <img src="https://i.imgur.com/ug9IprL.jpeg"><span>Support</span>
+            <span id="chatBadge" class="chat-badge" style="display:none;">!</span>
+        </div>
+    </div>
+</div>
+
+<!-- Profile Modal -->
+<div id="profileModal" class="modal">
+    <div class="modal-content">
+        <h3>🌸 My Profile</h3>
+        <div id="profileInfo"></div>
+        <button class="modal-btn" onclick="showGameRatesModal()">🎲 Game Rates</button>
+        <button class="modal-btn" onclick="showChangePinModal()">🔐 Change MPIN</button>
+        <button class="modal-btn" onclick="showBankModal()">🏦 Bank Details</button>
+        <button class="modal-btn logout-btn" onclick="logout()">🚪 Logout</button>
+        <button class="modal-btn close-modal" onclick="closeProfileModal()">Close</button>
+    </div>
+</div>
+
+<!-- Game Rates Modal -->
+<div id="gameRatesModal" class="modal">
+    <div class="modal-content">
+        <h3>🎲 GAME RATES</h3>
+        <div class="rate-row"><span>Single Digit</span><span>10x</span></div>
+        <div class="rate-row"><span>Jodi</span><span>100x</span></div>
+        <div class="rate-row"><span>Single Pana</span><span>160x</span></div>
+        <div class="rate-row"><span>Double Pana</span><span>320x</span></div>
+        <div class="rate-row"><span>Triple Pana</span><span>1000x</span></div>
+        <div class="rate-row"><span>Half Sangam A</span><span>1000x</span></div>
+        <div class="rate-row"><span>Half Sangam B</span><span>1000x</span></div>
+        <div class="rate-row"><span>Full Sangam</span><span>10000x</span></div>
+        <button class="modal-btn close-modal" onclick="closeGameRatesModal()">Close</button>
+    </div>
+</div>
+
+<!-- Change PIN Modal -->
+<div id="changePinModal" class="modal">
+    <div class="modal-content">
+        <h3>🔐 Change MPIN</h3>
+        <input type="password" id="oldPin" class="modal-input" placeholder="Current MPIN" maxlength="4">
+        <input type="password" id="newPin" class="modal-input" placeholder="New MPIN (4 digits)" maxlength="4">
+        <input type="password" id="confirmPin" class="modal-input" placeholder="Confirm MPIN" maxlength="4">
+        <button class="modal-btn" onclick="updatePin()">Update</button>
+        <button class="modal-btn close-modal" onclick="closeChangePinModal()">Cancel</button>
+        <div id="pinMsg"></div>
+    </div>
+</div>
+
+<!-- Bank Details Modal -->
+<div id="bankModal" class="modal">
+    <div class="modal-content">
+        <h3>🏦 Bank Details</h3>
+        <input type="text" id="bankAccountHolder" class="modal-input" placeholder="Account Holder">
+        <input type="text" id="bankName" class="modal-input" placeholder="Bank Name">
+        <input type="text" id="bankAccountNumber" class="modal-input" placeholder="Account Number">
+        <input type="text" id="bankIfsc" class="modal-input" placeholder="IFSC">
+        <button class="modal-btn" onclick="saveBankDetails()">Save</button>
+        <button class="modal-btn close-modal" onclick="closeBankModal()">Cancel</button>
+        <div id="bankMsg"></div>
+    </div>
+</div>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyBeGpb7V0i5GN1opY9JECHxQIGvHFDPX38",
+        authDomain: "win777-ed482.firebaseapp.com",
+        projectId: "win777-ed482",
+        storageBucket: "win777-ed482.firebasestorage.app",
+        messagingSenderId: "843686112399",
+        appId: "1:843686112399:web:9c20a96831e6a94cd814fa"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    function showLoader() {
+        let div = document.createElement('div');
+        div.className = 'loader-overlay';
+        div.id = 'pageLoader';
+        div.innerHTML = '<div class="loader-spinner"></div><div class="loader-text">DURGA</div><div class="loader-sub">Loading...</div>';
+        document.body.appendChild(div);
+    }
+    function hideLoader() {
+        let el = document.getElementById('pageLoader');
+        if (el) el.remove();
+    }
+
+    function refreshPage() {
+        location.reload();
+    }
+
+    let marketsData = [], currentUserData = null, serverTimeCache = null, lastServerTimeFetch = 0, marketsListener = null;
+    let chatUnsubscribe = null;
+
+    function updateLastActive() {
+        if (auth.currentUser) {
+            db.collection('users').doc(auth.currentUser.uid).update({ lastActive: firebase.firestore.FieldValue.serverTimestamp() }).catch(() => {});
+        }
+    }
+    setInterval(updateLastActive, 30000);
+    updateLastActive();
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) updateLastActive();
+    });
+
+    function listenToChatNotifications() {
+        if (!auth.currentUser) return;
+        if (chatUnsubscribe) chatUnsubscribe();
+        const chatRoomId = `chat_${auth.currentUser.uid}`;
+        chatUnsubscribe = db.collection('chats').doc(chatRoomId).onSnapshot((doc) => {
+            const hasUnread = doc.exists && doc.data().unread === true;
+            const badge = document.getElementById('chatBadge');
+            if (hasUnread) {
+                if (badge) badge.style.display = 'flex';
+            } else {
+                if (badge) badge.style.display = 'none';
+            }
+        });
+    }
+
+    async function getServerTime() {
+        const now = Date.now();
+        if (serverTimeCache && (now - lastServerTimeFetch) < 2000) {
+            const elapsed = (now - lastServerTimeFetch) / 1000;
+            return new Date(serverTimeCache.getTime() + (elapsed * 1000));
+        }
+        try {
+            const docRef = db.collection('settings').doc('servertime');
+            await docRef.set({ timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+            const doc = await docRef.get();
+            serverTimeCache = doc.data().timestamp.toDate();
+            lastServerTimeFetch = now;
+            return serverTimeCache;
+        } catch (error) {
+            return serverTimeCache || new Date();
+        }
+    }
+
+    function formatTimeTo12Hour(t) {
+        if (!t) return '--:--';
+        let [h, m] = t.split(':');
+        let hr = parseInt(h);
+        let ampm = hr >= 12 ? 'PM' : 'AM';
+        hr = hr % 12 || 12;
+        return `${hr}:${m} ${ampm}`;
+    }
+
+    function timeToMinutes(t) {
+        if (!t) return null;
+        let [h, m] = t.split(':');
+        return parseInt(h) * 60 + parseInt(m);
+    }
+
+    async function calculateMarketStatus(openBidEnd, closeBidEnd, adminStatus) {
+        if (adminStatus === 'holiday') return { status: 'holiday', message: 'HOLIDAY' };
+        const now = await getServerTime();
+        const currentMinutes = now.getHours() * 60 + now.getMinutes();
+        const openEnd = timeToMinutes(openBidEnd);
+        const closeEnd = timeToMinutes(closeBidEnd);
+        if (openEnd && currentMinutes < openEnd) return { status: 'open', message: 'Playing for Open' };
+        else if (openEnd && closeEnd && currentMinutes >= openEnd && currentMinutes < closeEnd) return { status: 'close', message: 'Playing for Close' };
+        else return { status: 'closed', message: 'Market Closed' };
+    }
+
+    function listenToMarkets() {
+        if (marketsListener) marketsListener();
+        marketsListener = db.collection('markets').onSnapshot(async (snapshot) => {
+            const newData = [];
+            for (const doc of snapshot.docs) {
+                const data = doc.data();
+                const statusData = await calculateMarketStatus(data.openBidEnd, data.closeBidEnd, data.status);
+                newData.push({
+                    id: doc.id,
+                    name: data.name,
+                    numbers: data.numbers,
+                    openBidEnd: data.openBidEnd,
+                    closeBidEnd: data.closeBidEnd,
+                    status: statusData.status,
+                    statusMessage: statusData.message,
+                    originalStatus: data.status,
+                    openPana: data.openPana || '***',
+                    openDigit: data.openDigit || '*',
+                    closePana: data.closePana || '***',
+                    closeDigit: data.closeDigit || '*',
+                    jodi: data.jodi || '**',
+                    serialNo: data.serialNo || 999
+                });
+            }
+            newData.sort((a, b) => (a.serialNo || 999) - (b.serialNo || 999));
+            marketsData = newData;
+            renderMarkets();
+        });
+    }
+
+    function getStatusClass(status) {
+        if (status === 'open') return 'status-open';
+        if (status === 'close') return 'status-close';
+        if (status === 'holiday') return 'status-holiday';
+        return 'status-closed';
+    }
+
+    function openBetting(market) {
+        location.href = `betting.html?market=${encodeURIComponent(market.name)}&status=${market.status}&marketId=${market.id}`;
+    }
+
+    function renderMarkets() {
+        const container = document.getElementById('marketsList');
+        if (!marketsData.length) {
+            container.innerHTML = '<div style="text-align:center;color:#888;padding:30px;">No markets available</div>';
+            return;
+        }
+        let html = '';
+        marketsData.forEach((market) => {
+            const isPlayable = (market.status === 'open' || market.status === 'close') && market.originalStatus !== 'holiday';
+            let resultDisplay = market.closePana && market.closePana !== '***' ? `${market.openPana}_${market.jodi}_${market.closePana}` : (market.openPana && market.openPana !== '***' ? `${market.openPana}_${market.openDigit}*_***` : `***_***_***`);
+            
+            html += `
+                <div class="market-card">
+                    <div class="market-header">
+                        <span class="market-name">${market.name}</span>
+                        <span class="market-status-badge ${getStatusClass(market.status)}">${market.statusMessage}</span>
+                    </div>
+                    <div class="result-numbers">${resultDisplay}</div>
+                    <div class="timings">
+                        <div class="timing-item">
+                            <span class="timing-label">Open Bids:</span>
+                            <span class="timing-value">${formatTimeTo12Hour(market.openBidEnd)}</span>
+                        </div>
+                        <div class="timing-item">
+                            <span class="timing-label">Close Bids:</span>
+                            <span class="timing-value">${formatTimeTo12Hour(market.closeBidEnd)}</span>
+                        </div>
+                    </div>
+                    <button class="play-btn" onclick='openBetting(${JSON.stringify(market)})' ${!isPlayable ? 'disabled' : ''}>${market.status === 'open' ? 'PLAYING FOR OPEN' : (market.status === 'close' ? 'PLAYING FOR CLOSE' : 'MARKET CLOSED')}</button>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
+    async function loadUserData() {
+        const user = auth.currentUser;
+        if (!user) {
+            window.location.href = 'index.html';
+            return;
+        }
+        const doc = await db.collection('users').doc(user.uid).get();
+        if (doc.exists) {
+            currentUserData = doc.data();
+            document.getElementById('userBalance').innerText = currentUserData.balance || 0;
+            document.getElementById('profileName').innerHTML = currentUserData.name || 'User';
+        }
+        listenToChatNotifications();
+    }
+
+    function showBalance() {
+        alert(`💰 Balance: ₹${currentUserData?.balance || 0}`);
+    }
+
+    function showProfileModal() {
+        if (currentUserData) {
+            document.getElementById('profileInfo').innerHTML = `<div style="text-align:center;"><div style="font-size:18px;">${currentUserData.name}</div><div style="color:#888;">${currentUserData.phone}</div><div style="font-size:18px;">₹${currentUserData.balance}</div></div>`;
+            document.getElementById('profileModal').style.display = 'flex';
+        }
+    }
+    function closeProfileModal() { document.getElementById('profileModal').style.display = 'none'; }
+    function showGameRatesModal() { closeProfileModal(); document.getElementById('gameRatesModal').style.display = 'flex'; }
+    function closeGameRatesModal() { document.getElementById('gameRatesModal').style.display = 'none'; }
+    function logout() { auth.signOut().then(() => { sessionStorage.clear(); window.location.href = 'index.html'; }); }
+    function showChangePinModal() { closeProfileModal(); document.getElementById('changePinModal').style.display = 'flex'; }
+    function closeChangePinModal() { document.getElementById('changePinModal').style.display = 'none'; document.getElementById('pinMsg').innerHTML = ''; }
+    async function updatePin() {
+        let old = document.getElementById('oldPin').value, newP = document.getElementById('newPin').value, confirm = document.getElementById('confirmPin').value;
+        if (!old || !newP || !confirm) { document.getElementById('pinMsg').innerHTML = 'Fill all fields'; return; }
+        if (newP.length !== 4 || !/^\d{4}$/.test(newP)) { document.getElementById('pinMsg').innerHTML = 'MPIN must be 4 digits'; return; }
+        if (newP !== confirm) { document.getElementById('pinMsg').innerHTML = 'MPINs do not match'; return; }
+        if (old !== currentUserData.pin) { document.getElementById('pinMsg').innerHTML = 'Current MPIN incorrect'; return; }
+        await db.collection('users').doc(auth.currentUser.uid).update({ pin: newP });
+        currentUserData.pin = newP;
+        document.getElementById('pinMsg').innerHTML = '✅ MPIN changed!';
+        document.getElementById('pinMsg').style.color = '#28a745';
+        setTimeout(() => closeChangePinModal(), 1500);
+    }
+    function showBankModal() {
+        closeProfileModal();
+        let b = currentUserData?.bankDetails;
+        if (b) {
+            document.getElementById('bankAccountHolder').value = b.accountHolder || '';
+            document.getElementById('bankName').value = b.bankName || '';
+            document.getElementById('bankAccountNumber').value = b.accountNumber || '';
+            document.getElementById('bankIfsc').value = b.ifscCode || '';
+        }
+        document.getElementById('bankModal').style.display = 'flex';
+    }
+    function closeBankModal() { document.getElementById('bankModal').style.display = 'none'; document.getElementById('bankMsg').innerHTML = ''; }
+    async function saveBankDetails() {
+        let ah = document.getElementById('bankAccountHolder').value.trim(), bn = document.getElementById('bankName').value.trim(), an = document.getElementById('bankAccountNumber').value.trim(), ifsc = document.getElementById('bankIfsc').value.trim();
+        if (!ah || !bn || !an || !ifsc) { document.getElementById('bankMsg').innerHTML = 'Fill all fields'; document.getElementById('bankMsg').style.color = '#dc3545'; return; }
+        await db.collection('users').doc(auth.currentUser.uid).update({ bankDetails: { accountHolder: ah, bankName: bn, accountNumber: an, ifscCode: ifsc } });
+        currentUserData.bankDetails = { accountHolder: ah, bankName: bn, accountNumber: an, ifscCode: ifsc };
+        document.getElementById('bankMsg').innerHTML = '✅ Saved!';
+        document.getElementById('bankMsg').style.color = '#28a745';
+        setTimeout(() => closeBankModal(), 1500);
+    }
+
+    async function init() {
+        listenToMarkets();
+    }
+
+    setInterval(() => {
+        if (auth.currentUser) db.collection('users').doc(auth.currentUser.uid).get().then(doc => {
+            if (doc.exists) {
+                document.getElementById('userBalance').innerText = doc.data().balance || 0;
+                currentUserData = doc.data();
+            }
+        });
+    }, 30000);
+
+    showLoader();
+    auth.onAuthStateChanged(user => {
+        if (!user) window.location.href = 'index.html';
+        else { loadUserData(); init(); setTimeout(hideLoader, 1000); }
+    });
+
+    window.showBalance = showBalance;
+    window.showProfileModal = showProfileModal;
+    window.closeProfileModal = closeProfileModal;
+    window.showGameRatesModal = showGameRatesModal;
+    window.closeGameRatesModal = closeGameRatesModal;
+    window.showChangePinModal = showChangePinModal;
+    window.closeChangePinModal = closeChangePinModal;
+    window.updatePin = updatePin;
+    window.showBankModal = showBankModal;
+    window.closeBankModal = closeBankModal;
+    window.saveBankDetails = saveBankDetails;
+    window.logout = logout;
+    window.refreshPage = refreshPage;
+</script>
+</body>
+</html>
