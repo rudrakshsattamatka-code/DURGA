@@ -19,219 +19,74 @@
         
         /* Fixed Top 30% Panel Container */
         .sticky-top-panel {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            max-width: 480px;
-            margin: 0 auto;
-            height: 30vh;
-            background: #0f172a;
-            color: #fff;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 14px 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            position: fixed; top: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto;
+            height: 30vh; background: #0f172a; color: #fff; z-index: 1000;
+            display: flex; flex-direction: column; justify-content: space-between;
+            padding: 14px 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
-
-        /* Combined Single-Line Action Header */
-        .header-action-line {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-            width: 100%;
-        }
-        .menu-btn {
-            background: none;
-            border: none;
-            color: #fff;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 4px;
-            display: flex;
-            align-items: center;
-        }
+        .header-action-line { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; }
+        .menu-btn { background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; padding: 4px; display: flex; align-items: center; }
         
         /* DURGA Animated Color Title */
         .app-title {
-            font-weight: 800;
-            font-size: 18px;
-            letter-spacing: 1.5px;
+            font-weight: 800; font-size: 18px; letter-spacing: 1.5px;
             background: linear-gradient(45deg, #3b82f6, #ef4444, #10b981, #f59e0b, #3b82f6);
-            background-size: 400% 400%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            background-size: 400% 400%; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             animation: gradientShift 8s ease infinite;
         }
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+        @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-        .action-shortcuts {
-            display: flex;
-            gap: 6px;
-        }
-        .shortcut-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #fff;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            text-decoration: none;
-        }
-        .balance-box {
-            background: #22c55e;
-            padding: 6px 12px;
-            border-radius: 6px;
-            color: #fff;
-            font-weight: 700;
-            font-size: 13px;
-            cursor: pointer;
-        }
+        .action-shortcuts { display: flex; gap: 6px; }
+        .shortcut-btn { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; text-decoration: none; }
+        .balance-box { background: #22c55e; padding: 6px 12px; border-radius: 6px; color: #fff; font-weight: 700; font-size: 13px; cursor: pointer; }
+        .banner-container { flex: 1; display: flex; align-items: center; justify-content: center; margin: 6px 0; overflow: hidden; border-radius: 6px; }
+        .banner-img { max-width: 100%; max-height: 100%; object-fit: contain; }
 
-        /* Banner Graphics Container in Center of Panel */
-        .banner-container {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 6px 0;
-            overflow: hidden;
-            border-radius: 6px;
-        }
-        .banner-img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-
-        /* Info Display Row inside Fixed Panel */
-        .panel-info-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            border-top: 1px solid rgba(255,255,255,0.08);
-            padding-top: 6px;
-        }
-        .user-meta {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
+        .panel-info-row { display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 6px; }
+        .user-meta { display: flex; flex-direction: column; gap: 2px; }
         .user-meta .name { font-size: 14px; font-weight: 600; color: #f8fafc; }
         .user-meta .phone { font-size: 11px; color: #94a3b8; }
         .funds-header-label { font-size: 12px; font-weight: 700; color: #3b82f6; text-transform: uppercase; letter-spacing: 0.5px; }
 
         /* Scrollable Content Container */
-        .main-scroll-content {
-            margin-top: 30vh;
-            padding: 12px;
-        }
+        .main-scroll-content { margin-top: 30vh; padding: 12px; }
+        .section-title { font-size: 13px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin: 16px 4px 10px 4px; }
 
-        .section-title {
-            font-size: 13px;
-            font-weight: 700;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin: 8px 4px 12px 4px;
-        }
-
-        /* Native Android Card Portals */
-        .fund-card {
-            background: #fff;
-            border-radius: 12px;
-            padding: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-            border: 1px solid #e2e8f0;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            margin-bottom: 14px;
-        }
-        .fund-row-details {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        /* Android Native Cards Layout Framework */
+        .fund-card { background: #fff; border-radius: 12px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); border: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 14px; margin-bottom: 14px; }
+        .fund-row-details { display: flex; justify-content: space-between; align-items: center; }
         .fund-title { font-size: 15px; font-weight: 700; color: #0f172a; }
         .fund-subtitle { font-size: 12px; color: #64748b; margin-top: 2px; font-weight: 500; }
         
-        .fund-action-btn {
-            padding: 10px 24px;
-            background: #3b82f6;
-            border: none;
-            border-radius: 8px;
-            color: #fff;
-            font-weight: 700;
-            cursor: pointer;
-            font-size: 13px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            text-decoration: none;
-            text-align: center;
-        }
-        .fund-action-btn:active { background: #2563eb; }
+        .fund-action-btn { padding: 10px 24px; background: #3b82f6; border: none; border-radius: 8px; color: #fff; font-weight: 700; cursor: pointer; font-size: 13px; letter-spacing: 0.5px; text-transform: uppercase; text-decoration: none; text-align: center; }
         .btn-withdraw-theme { background: #0f172a; }
-        .btn-withdraw-theme:active { background: #1e293b; }
 
-        /* Enlarged Bottom Navigation & Styled Floating Middle Home Button */
-        .bottom-nav { 
-            position: fixed; 
-            bottom: 0; 
-            left: 0; 
-            right: 0; 
-            max-width: 480px; 
-            margin: 0 auto; 
-            background: #fff; 
-            display: flex; 
-            justify-content: space-around; 
-            align-items: center;
-            padding: 10px 6px 14px 6px; 
-            border-top: 1px solid #e2e8f0; 
-            z-index: 1000; 
-            height: 75px;
-        }
-        .nav-item { 
-            text-align: center; 
-            color: #64748b; 
-            cursor: pointer; 
-            font-size: 13px; 
-            flex: 1; 
-            font-weight: 600; 
-            text-decoration: none; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-        }
+        /* Borderless Form Input Element Overrides */
+        .form-row { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+        .form-row:last-child { margin-bottom: 0; }
+        .form-label { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; }
+        .form-input-field { background: #f1f5f9; border-radius: 8px; padding: 10px 14px; }
+        .form-input { width: 100%; padding: 2px 0; background: transparent; border: none; outline: none; font-size: 14px; font-weight: 600; color: #0f172a; }
+
+        /* Borderless History List Grid Layout Elements */
+        .history-list { display: flex; flex-direction: column; gap: 8px; }
+        .history-item { background: #fff; border-radius: 10px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #e2e8f0; }
+        .history-meta { display: flex; flex-direction: column; gap: 2px; }
+        .history-desc { font-size: 13px; font-weight: 700; color: #0f172a; }
+        .history-date { font-size: 11px; color: #94a3b8; font-weight: 500; }
+        .history-amount { font-size: 15px; font-weight: 700; text-align: right; }
+        .amount-credit { color: #10b981; }
+        .amount-debit { color: #ef4444; }
+
+        /* Bottom Nav Panel Framework */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto; background: #fff; display: flex; justify-content: space-around; align-items: center; padding: 10px 6px 14px 6px; border-top: 1px solid #e2e8f0; z-index: 1000; height: 75px; }
+        .nav-item { text-align: center; color: #64748b; cursor: pointer; font-size: 13px; flex: 1; font-weight: 600; text-decoration: none; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; }
         .nav-item.active { color: #3b82f6; }
-        
-        /* Circular Floating Home Design */
-        .nav-item-home {
-            position: relative;
-            top: -20px;
-            background: #3b82f6;
-            color: #fff !important;
-            width: 64px;
-            height: 64px;
-            max-width: 64px;
-            border-radius: 50%;
-            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);
-            border: 4px solid #f4f6f9;
-        }
+        .nav-item-home { position: relative; top: -20px; background: #3b82f6; color: #fff !important; width: 64px; height: 64px; max-width: 64px; border-radius: 50%; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4); border: 4px solid #f4f6f9; }
         .nav-item-home span { font-size: 12px; font-weight: 700; }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 2000; justify-content: center; align-items: center; }
-        .modal-content { background: #fff; border-radius: 16px; padding: 24px; width: 90%; max-width: 340px; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .modal-content { background: #fff; border-radius: 16px; padding: 24px; width: 90%; max-width: 340px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
         .modal-content h3 { color: #0f172a; margin-bottom: 16px; text-align: center; font-size: 18px; font-weight: 700; }
         .modal-btn { width: 100%; padding: 11px; background: #3b82f6; border: none; border-radius: 8px; color: #fff; font-weight: 600; cursor: pointer; margin-top: 10px; font-size: 14px; }
         .close-modal { background: #f1f5f9; color: #334155; }
@@ -241,89 +96,105 @@
 <body>
 <div class="app-container">
     
-    <!-- Fixed Top 30% Panel Container -->
+    <!-- Fixed Top Panel Layout -->
     <div class="sticky-top-panel">
         <div class="header-action-line">
             <button class="menu-btn" onclick="showProfileModal()">☰</button>
             <span class="app-title">DURGA</span>
-            
             <div class="action-shortcuts">
                 <a href="deposit.html" class="shortcut-btn">Deposit</a>
                 <a href="withdraw.html" class="shortcut-btn">Withdraw</a>
                 <div class="balance-box" onclick="showBalance()">₹<span id="userBalance">0</span></div>
             </div>
         </div>
-
-        <!-- Banner Container Section -->
         <div class="banner-container">
             <img src="https://i.imgur.com/n48xdmM.png" alt="Banner" class="banner-img">
         </div>
-        
         <div class="panel-info-row">
             <div class="user-meta">
                 <div class="name" id="profileName">Loading...</div>
                 <div class="phone" id="profilePhone">Loading...</div>
             </div>
-            <div class="funds-header-label">Wallet Portals</div>
+            <div class="funds-header-label">Wallet Engine</div>
         </div>
     </div>
     
-    <!-- Scrollable Bottom Section Container -->
+    <!-- Scrollable Base Layout Frame -->
     <div class="main-scroll-content">
-        <div class="section-title">Account Funding Options</div>
+        <div class="section-title">Funding Shortcuts</div>
         
-        <!-- Deposit Panel -->
         <div class="fund-card">
             <div class="fund-row-details">
                 <div>
                     <div class="fund-title">Add Cash Gateway</div>
-                    <div class="fund-subtitle">Instant automatic UPI deposit options</div>
+                    <div class="fund-subtitle">Instant automatic UPI transfers</div>
                 </div>
                 <a href="deposit.html" class="fund-action-btn">Deposit</a>
             </div>
         </div>
 
-        <!-- Withdrawal Panel -->
         <div class="fund-card">
             <div class="fund-row-details">
                 <div>
                     <div class="fund-title">Request Cash Out</div>
-                    <div class="fund-subtitle">Direct safe settlements to bank accounts</div>
+                    <div class="fund-subtitle">Direct safe bank settlements</div>
                 </div>
                 <a href="withdraw.html" class="fund-action-btn btn-withdraw-theme">Withdraw</a>
             </div>
         </div>
+
+        <!-- Bank Details Form Card -->
+        <div class="section-title">Bank Account Details</div>
+        <div class="fund-card">
+            <div class="form-row">
+                <label class="form-label">Account Holder Name</label>
+                <div class="form-input-field"><input type="text" id="bankAccountHolder" class="form-input" placeholder="Enter holder name"></div>
+            </div>
+            <div class="form-row">
+                <label class="form-label">Bank Name</label>
+                <div class="form-input-field"><input type="text" id="bankName" class="form-input" placeholder="Enter bank name"></div>
+            </div>
+            <div class="form-row">
+                <label class="form-label">Account Number</label>
+                <div class="form-input-field"><input type="number" id="bankAccountNumber" class="form-input" placeholder="Enter account number" inputmode="numeric"></div>
+            </div>
+            <div class="form-row">
+                <label class="form-label">IFSC Code</label>
+                <div class="form-input-field"><input type="text" id="bankIfsc" class="form-input" placeholder="Enter 11-digit IFSC"></div>
+            </div>
+            <button class="add-btn fund-action-btn" style="width:100%; margin-top:4px;" onclick="saveBankDetails()">Update Bank Details</button>
+        </div>
+
+        <!-- Transaction Logs Integration Component -->
+        <div class="section-title">Recent Transaction History</div>
+        <div class="history-list" id="transactionHistoryList">
+            <div style="text-align:center; padding:20px; color:#64748b; font-size:13px; font-weight:500;">Loading statement entries...</div>
+        </div>
     </div>
     
-    <!-- Enlarged Navigation Options Bottom Deck with Large Central Home Item -->
+    <!-- Pinned Lower Navigation Bar -->
     <div class="bottom-nav">
         <a href="mybids.html" class="nav-item"><span>Passbook</span></a>
         <a href="mybids.html" class="nav-item"><span>My Bids</span></a>
-        
-        <a href="dashboard.html" class="nav-item nav-item-home">
-            <span>Home</span>
-        </a>
-        
+        <a href="dashboard.html" class="nav-item nav-item-home"><span>Home</span></a>
         <a href="funds.html" class="nav-item active"><span>Fund</span></a>
         <a href="chat.html" class="nav-item"><span>Support</span></a>
     </div>
 </div>
 
-<!-- Modals Context Stack -->
-<div id="profileModal" class="modal"><div class="modal-content"><h3>My Profile</h3><div id="profileInfo"></div><button class="modal-btn" onclick="showGameRatesModal()">🎲 Game Rates</button><button class="modal-btn logout-btn" onclick="logout()">🚪 Logout</button><button class="modal-btn close-modal" onclick="closeProfileModal()">Close</button></div></div>
-<div id="gameRatesModal" class="modal"><div class="modal-content"><h3>🎲 GAME RATES</h3><div class="rate-row" style="display:flex; justify-content:space-between; padding:6px 0;"><span>Single Digit</span><span>10x</span></div><div class="rate-row" style="display:flex; justify-content:space-between; padding:6px 0;"><span>Jodi</span><span>100x</span></div><button class="modal-btn close-modal" onclick="closeGameRatesModal()">Close</button></div></div>
+<!-- Modal Dialog Boxes -->
+<div id="profileModal" class="modal"><div class="modal-content"><h3>My Profile</h3><div id="profileInfo"></div><button class="modal-btn logout-btn" onclick="logout()">🚪 Logout</button><button class="modal-btn close-modal" onclick="closeProfileModal()">Close</button></div></div>
 
 <script>
     const firebaseConfig = { apiKey: "AIzaSyBeGpb7V0i5GN1opY9JECHxQIGvHFDPX38", authDomain: "win777-ed482.firebaseapp.com", projectId: "win777-ed482", storageBucket: "win777-ed482.firebasestorage.app", messagingSenderId: "843686112399", appId: "1:843686112399:web:9c20a96831e6a94cd814fa" };
     firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+    const auth = firebase.auth(), db = firebase.firestore();
     
     let currentUserData = null;
 
     function showLoader() { 
         let div = document.createElement('div'); div.className = 'loader-overlay'; div.id = 'pageLoader'; 
-        div.innerHTML = '<div class="loader-spinner"></div><div class="loader-text">DURGA</div>'; document.body.appendChild(div); 
+        div.innerHTML = '<div class="loader-spinner"></div>'; document.body.appendChild(div); 
     }
     function hideLoader() { let el = document.getElementById('pageLoader'); if(el) el.remove(); }
     
@@ -336,20 +207,74 @@
             document.getElementById('userBalance').innerText = currentUserData.balance || 0; 
             document.getElementById('profileName').innerHTML = currentUserData.name || 'User'; 
             document.getElementById('profilePhone').innerHTML = currentUserData.phone || ''; 
+            
+            // Populates structural input values safely if data exists inside document parameters
+            let b = currentUserData.bankDetails;
+            if (b) {
+                document.getElementById('bankAccountHolder').value = b.accountHolder || '';
+                document.getElementById('bankName').value = b.bankName || '';
+                document.getElementById('bankAccountNumber').value = b.accountNumber || '';
+                document.getElementById('bankIfsc').value = b.ifscCode || '';
+            }
+            loadTransactionHistory(user.uid);
         }
+    }
+
+    async function saveBankDetails() {
+        let ah = document.getElementById('bankAccountHolder').value.trim();
+        let bn = document.getElementById('bankName').value.trim();
+        let an = document.getElementById('bankAccountNumber').value.trim();
+        let ifsc = document.getElementById('bankIfsc').value.trim();
+        
+        if(!ah || !bn || !an || !ifsc) { alert('⚠️ Please fill out all required banking fields.'); return; }
+        
+        try {
+            await db.collection('users').doc(auth.currentUser.uid).update({
+                bankDetails: { accountHolder: ah, bankName: bn, accountNumber: an, ifscCode: ifsc }
+            });
+            alert('✅ Banking registration details updated successfully!');
+        } catch(e) { alert('Error updating data references.'); }
+    }
+
+    async function loadTransactionHistory(uid) {
+        const container = document.getElementById('transactionHistoryList');
+        try {
+            const snapshot = await db.collection('transactions').where('userId', '==', uid).get();
+            if (snapshot.empty) { container.innerHTML = '<div style="text-align:center; padding:20px; color:#64748b; font-size:13px;">No history records found.</div>'; return; }
+            
+            let list = [];
+            snapshot.forEach(doc => {
+                let data = doc.data();
+                let date = data.date?.toDate ? data.date.toDate() : (data.date?.seconds ? new Date(data.date.seconds * 1000) : new Date());
+                list.push({ ...data, ts: date });
+            });
+            list.sort((a,b) => b.ts - a.ts);
+
+            container.innerHTML = list.map(t => {
+                let isCredit = t.type === 'credit';
+                return `
+                    <div class="history-item">
+                        <div class="history-meta">
+                            <span class="history-desc">${t.description || (isCredit ? 'Deposit' : 'Withdrawal')}</span>
+                            <span class="history-date">${t.ts.toLocaleString()}</span>
+                        </div>
+                        <span class="history-amount ${isCredit ? 'amount-credit' : 'amount-debit'}">
+                            ${isCredit ? '+' : '-'} ₹${t.amount}
+                        </span>
+                    </div>`;
+            }).join('');
+        } catch(e) { container.innerHTML = '<div style="text-align:center; padding:20px; color:#ef4444; font-size:13px;">Failed to parse logs.</div>'; }
     }
     
     function showBalance() { alert(`💰 Balance: ₹${currentUserData?.balance || 0}`); }
     function showProfileModal() { if(currentUserData){ document.getElementById('profileInfo').innerHTML = `<div style="text-align:center; margin-bottom:14px;"><div style="font-size:18px; font-weight:700; color:#0f172a;">${currentUserData.name}</div><div style="color:#64748b; font-size:13px; margin:2px 0 6px 0;">${currentUserData.phone}</div><div style="font-size:20px; font-weight:800; color:#10b981;">₹${currentUserData.balance}</div></div>`; document.getElementById('profileModal').style.display='flex'; } }
     function closeProfileModal() { document.getElementById('profileModal').style.display='none'; }
-    function showGameRatesModal() { closeProfileModal(); document.getElementById('gameRatesModal').style.display='flex'; }
-    function closeGameRatesModal() { document.getElementById('gameRatesModal').style.display='none'; }
     function logout() { auth.signOut().then(() => { sessionStorage.clear(); window.location.href='index.html'; }); }
     
     showLoader();
     auth.onAuthStateChanged(user => { 
         if(!user) window.location.href='index.html'; 
-        else { loadUserData(); setTimeout(hideLoader, 800); } 
+        else { loadUserData(); setTimeout(hideLoader, 600); } 
     });
 </script>
 </body>
