@@ -57,10 +57,11 @@
         .manual-row input { flex: 1; padding: 2px 0; background: transparent; border: none; outline: none; font-size: 16px; color: #0f172a; font-weight: 700; }
 
         .bids-section { background: #f8fafc; border-radius: 8px; margin: 14px 0; padding: 8px; border: 1px dashed #cbd5e1; }
-        .bid-item { background: #fff; padding: 10px 12px; border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .bid-info { display: flex; flex-direction: column; }
-        .bid-type { font-weight: 700; color: #64748b; font-size: 10px; text-transform: uppercase; }
-        .bid-value { font-size: 15px; font-weight: 700; color: #0f172a; }
+        .bid-item { background: #fff; padding: 10px 12px; border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #e2e8f0; }
+        .bid-info { display: flex; flex-direction: column; gap: 2px; }
+        .bid-type { font-weight: 700; color: #3b82f6; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .bid-game-title { font-size: 12px; font-weight: 600; color: #64748b; }
+        .bid-value { font-size: 16px; font-weight: 700; color: #0f172a; font-family: monospace; }
         .bid-points { font-size: 13px; color: #10b981; font-weight: 700; }
         .remove-bid { background: #fee2e2; border: none; width: 26px; height: 26px; border-radius: 6px; color: #ef4444; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
@@ -151,6 +152,7 @@
     }
 
     async function isBettingAllowed() {
+        if (currentStatus === 'holiday') return { allowed: false, message: '⚠️ Market Closed due to holiday.' };
         const serverTime = await getServerTime();
         const curMin = serverTime.getHours() * 60 + serverTime.getMinutes();
         if (currentStatus === 'open' && marketOpenEndTime && curMin >= marketOpenEndTime) return { allowed: false, message: '⚠️ Open bidding time is over.' };
@@ -185,7 +187,6 @@
         if (!check.allowed) { alert(check.message); return; }
         if (!pts || pts < 5) { alert('Min ₹5 required'); return; }
         
-        // Pana Validation
         if(currentGameType === 'Single Pana' && !validSinglePanaList.includes(val)) { alert('Invalid Single Pana'); return; }
         if(currentGameType === 'Double Pana' && !validDoublePanaList.includes(val)) { alert('Invalid Double Pana'); return; }
         if(currentGameType === 'Triple Pana' && !validTriplePanaList.includes(val)) { alert('Invalid Triple Pana'); return; }
@@ -260,7 +261,19 @@
         }
     }
 
-    function renderBids() { return bids.length ? `<div class="bids-section">${bids.map((b,i)=>`<div class="bid-item"><div class="bid-info"><span class="bid-type">${b.type} (${b.bidType})</span><span class="bid-value">${b.value}</span><span class="bid-points">₹${b.points}</span></div><button class="remove-bid" onclick="removeBid(${i})">✕</button></div>`).join('')}</div>` : ''; }
+    function renderBids() { 
+        return bids.length ? `<div class="bids-section">${bids.map((b,i)=>`
+            <div class="bid-item">
+                <div class="bid-info">
+                    <span class="bid-type">${b.bidType} Session</span>
+                    <span class="bid-game-title">${b.type}</span>
+                    <span class="bid-value">Number: ${b.value}</span>
+                    <span class="bid-points">Amt: ₹${b.points}</span>
+                </div>
+                <button class="remove-bid" onclick="removeBid(${i})">✕</button>
+            </div>`).join('')}</div>` : ''; 
+    }
+    
     function showMsg(m, e) { const d = document.getElementById('message'); d.innerText = m; d.className = `message ${e?'error':'success'}`; d.classList.remove('hidden'); setTimeout(()=>d.classList.add('hidden'), 2000); }
     function goBack() { window.location.href = 'dashboard.html'; }
 
