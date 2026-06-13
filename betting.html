@@ -9,7 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        body { background: #f4f6f9; color: #1e293b; padding-top: 60px; padding-bottom: 90px; }
+        body { background: #f4f6f9; color: #1e293b; padding-top: 60px; padding-bottom: 100px; }
         .app-container { max-width: 480px; margin: 0 auto; background: #f4f6f9; min-height: 100vh; position: relative; }
         
         .sticky-top-panel {
@@ -28,7 +28,6 @@
 
         .game-types-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
         .game-type-card { background: #fff; border-radius: 12px; padding: 22px 12px; text-align: center; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
-        .game-type-card:active { background: #e2e8f0; }
         .game-card-name { font-size: 14px; font-weight: 700; color: #0f172a; }
 
         .bidding-panel { display: none; }
@@ -48,13 +47,14 @@
 
         .digit-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 14px 0; }
         .digit-btn { background: #f8fafc; border: none; border-radius: 8px; padding: 14px; text-align: center; font-size: 18px; font-weight: 700; color: #0f172a; cursor: pointer; }
+        
+        .jodi-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; margin: 14px 0; }
+        .jodi-btn { background: #f8fafc; border: none; border-radius: 4px; padding: 8px 0; text-align: center; font-size: 11px; font-weight: 700; color: #0f172a; cursor: pointer; }
 
         .manual-entry { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
         .manual-row { display: flex; align-items: center; background: #f1f5f9; padding: 10px 14px; border-radius: 8px; gap: 10px; }
         .manual-label { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; white-space: nowrap; width: 85px; }
         .manual-row input { flex: 1; padding: 2px 0; background: transparent; border: none; outline: none; font-size: 16px; color: #0f172a; font-weight: 700; }
-
-        .add-btn { width: 100%; padding: 12px; background: #0f172a; border: none; border-radius: 8px; color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 4px; }
 
         .bids-section { background: #f8fafc; border-radius: 8px; margin: 14px 0; padding: 8px; border: 1px dashed #cbd5e1; }
         .bid-item { background: #fff; padding: 10px 12px; border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
@@ -128,9 +128,13 @@
     let currentUser = null, currentMarket = '', currentMarketId = '', currentStatus = 'open', currentGameType = 'Single Digit', bids = [];
     let marketOpenEndTime = null, marketCloseEndTime = null, isSubmitting = false, selectedOpenClose = 'Open';
 
+    const validSinglePanaList = ['128','137','146','236','245','290','380','470','489','560','579','678','129','138','147','156','237','246','345','390','480','570','589','679','120','139','148','157','238','247','256','346','490','580','670','689','130','149','158','167','239','248','257','347','356','590','680','789','140','159','168','230','249','258','267','348','357','456','690','780','123','150','169','178','240','259','268','349','358','367','457','790','124','160','278','179','250','269','340','359','368','458','467','890','125','134','170','189','260','279','350','369','468','378','459','567','126','135','180','234','270','289','360','379','450','469','478','568','127','136','145','190','235','280','370','389','460','479','569','578'];
+    const validDoublePanaList = ['100','119','155','227','335','344','399','588','669','110','200','228','255','366','499','660','688','778','166','229','300','337','355','445','599','779','788','112','220','266','338','400','446','455','699','770','113','122','177','339','366','447','500','799','889','600','114','277','330','448','466','556','880','899','115','133','188','223','377','449','557','566','700','116','224','233','288','440','477','558','800','990','117','144','199','225','388','559','577','667','900','118','226','244','299','334','488','550','668','677'];
+    const validTriplePanaList = ['111','222','333','444','555','666','777','888','999','000'];
+
     const allGameTypes = [
         { name: 'Single Digit', hasOpenClose: true, availableInOpen: true, availableInClose: true, hasGrid: true },
-        { name: 'Jodi', hasOpenClose: false, availableInOpen: true, availableInClose: false, hasGrid: false },
+        { name: 'Jodi', hasOpenClose: false, availableInOpen: true, availableInClose: false, hasGrid: true },
         { name: 'Single Pana', hasOpenClose: true, availableInOpen: true, availableInClose: true, hasGrid: false },
         { name: 'Double Pana', hasOpenClose: true, availableInOpen: true, availableInClose: true, hasGrid: false },
         { name: 'Triple Pana', hasOpenClose: true, availableInOpen: true, availableInClose: true, hasGrid: false },
@@ -176,11 +180,29 @@
         bids = []; updateSummary();
     }
 
-    function addToBids(val, pts) {
+    async function addToBids(val, pts) {
+        const check = await isBettingAllowed(); 
+        if (!check.allowed) { alert(check.message); return; }
         if (!pts || pts < 5) { alert('Min ₹5 required'); return; }
+        
+        // Pana Validation
+        if(currentGameType === 'Single Pana' && !validSinglePanaList.includes(val)) { alert('Invalid Single Pana'); return; }
+        if(currentGameType === 'Double Pana' && !validDoublePanaList.includes(val)) { alert('Invalid Double Pana'); return; }
+        if(currentGameType === 'Triple Pana' && !validTriplePanaList.includes(val)) { alert('Invalid Triple Pana'); return; }
+
         let type = (currentGameType === 'Jodi' || currentGameType.includes('Sangam')) ? 'Close' : ((currentStatus === 'close') ? 'Close' : selectedOpenClose);
         bids.push({ type: currentGameType, bidType: type, value: val, points: pts, market: currentMarket, marketId: currentMarketId });
-        updateSummary(); renderPanel(); showMsg(`Added ${val}`, false);
+        updateSummary(); renderPanel();
+    }
+
+    function handleAutoAdd(el) {
+        const val = el.value;
+        const pts = parseInt(document.getElementById('pointsInput').value);
+        if(currentGameType === 'Jodi' && val.length === 2) {
+            addToBids(val, pts);
+        } else if(currentGameType.includes('Pana') && val.length === 3) {
+            addToBids(val, pts);
+        }
     }
 
     function updateSummary() {
@@ -228,15 +250,13 @@
             let grid = ''; for(let i=0;i<=9;i++) grid += `<div class="digit-btn" onclick="addToBids('${i}', parseInt(document.getElementById('pointsInput').value))">${i}</div>`;
             p.innerHTML = `<div class="game-panel-content">${top}<div class="digit-grid">${grid}</div>${renderBids()}</div>`;
         } else if (currentGameType === 'Jodi') {
-            p.innerHTML = `<div class="game-panel-content">${top}<div class="manual-entry"><div class="manual-row"><span class="manual-label">Enter Jodi:</span><input type="number" id="v1" placeholder="00-99"></div></div><button class="add-btn" onclick="addToBids(document.getElementById('v1').value, parseInt(document.getElementById('pointsInput').value))">ADD</button>${renderBids()}</div>`;
+            let grid = ''; for(let i=0;i<=99;i++) { let v = i.toString().padStart(2,'0'); grid += `<div class="jodi-btn" onclick="addToBids('${v}', parseInt(document.getElementById('pointsInput').value))">${v}</div>`; }
+            p.innerHTML = `<div class="game-panel-content">${top}<div class="manual-entry"><div class="manual-row"><span class="manual-label">Jodi:</span><input type="number" id="v1" placeholder="00-99" oninput="handleAutoAdd(this)"></div></div><div class="jodi-grid">${grid}</div>${renderBids()}</div>`;
         } else if (currentGameType.includes('Pana')) {
-            p.innerHTML = `<div class="game-panel-content">${top}<div class="manual-entry"><div class="manual-row"><span class="manual-label">Enter Pana:</span><input type="number" id="v1" placeholder="3-Digits"></div></div><button class="add-btn" onclick="addToBids(document.getElementById('v1').value, parseInt(document.getElementById('pointsInput').value))">ADD</button>${renderBids()}</div>`;
-        } else if (currentGameType === 'Half Sangam A') {
-            p.innerHTML = `<div class="game-panel-content">${top}<div class="manual-entry"><div class="manual-row"><span class="manual-label">Open Pana:</span><input type="number" id="v1"></div><div class="manual-row"><span class="manual-label">Close Digit:</span><input type="number" id="v2"></div></div><button class="add-btn" onclick="addToBids(document.getElementById('v1').value+'-'+document.getElementById('v2').value, parseInt(document.getElementById('pointsInput').value))">ADD</button>${renderBids()}</div>`;
-        } else if (currentGameType === 'Half Sangam B') {
-            p.innerHTML = `<div class="game-panel-content">${top}<div class="manual-entry"><div class="manual-row"><span class="manual-label">Open Digit:</span><input type="number" id="v1"></div><div class="manual-row"><span class="manual-label">Close Pana:</span><input type="number" id="v2"></div></div><button class="add-btn" onclick="addToBids(document.getElementById('v1').value+'-'+document.getElementById('v2').value, parseInt(document.getElementById('pointsInput').value))">ADD</button>${renderBids()}</div>`;
-        } else if (currentGameType === 'Full Sangam') {
-            p.innerHTML = `<div class="game-panel-content">${top}<div class="manual-entry"><div class="manual-row"><span class="manual-label">Open Pana:</span><input type="number" id="v1"></div><div class="manual-row"><span class="manual-label">Close Pana:</span><input type="number" id="v2"></div></div><button class="add-btn" onclick="addToBids(document.getElementById('v1').value+'-'+document.getElementById('v2').value, parseInt(document.getElementById('pointsInput').value))">ADD</button>${renderBids()}</div>`;
+            p.innerHTML = `<div class="game-panel-content">${top}<div class="manual-entry"><div class="manual-row"><span class="manual-label">Pana:</span><input type="number" id="v1" placeholder="3-Digits" oninput="handleAutoAdd(this)"></div></div>${renderBids()}</div>`;
+        } else if (currentGameType.includes('Sangam')) {
+            let labels = currentGameType === 'Half Sangam A' ? ['Open Pana', 'Close Digit'] : (currentGameType === 'Half Sangam B' ? ['Open Digit', 'Close Pana'] : ['Open Pana', 'Close Pana']);
+            p.innerHTML = `<div class="game-panel-content">${top}<div class="manual-entry"><div class="manual-row"><span class="manual-label">${labels[0]}:</span><input type="number" id="v1"></div><div class="manual-row"><span class="manual-label">${labels[1]}:</span><input type="number" id="v2"></div></div><button class="add-btn" onclick="addToBids(document.getElementById('v1').value+'-'+document.getElementById('v2').value, parseInt(document.getElementById('pointsInput').value))">ADD</button>${renderBids()}</div>`;
         }
     }
 
@@ -250,6 +270,13 @@
     currentStatus = url.get('status') || 'open';
     document.getElementById('marketName').innerText = currentMarket;
     document.getElementById('bidTypeBadge').innerText = currentStatus.toUpperCase();
+
+    db.collection('markets').doc(currentMarketId).get().then(d => {
+        if(d.exists) {
+            marketOpenEndTime = timeToMinutes(d.data().openBidEnd);
+            marketCloseEndTime = timeToMinutes(d.data().closeBidEnd);
+        }
+    });
 
     auth.onAuthStateChanged(user => { if(!user) location.href='index.html'; else db.collection('users').doc(user.uid).get().then(d => { document.getElementById('userBalance').innerText = d.data().balance; renderGameTypeSelection(); }); });
 </script>
