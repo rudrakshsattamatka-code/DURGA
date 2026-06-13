@@ -19,11 +19,41 @@
         }
 
         /* ---------------------------------- */
-        /* TOP HALF: FIXED LOGIN (BLUE)       */
+        /* TOP SLIDING TICKER MESSAGE         */
+        /* ---------------------------------- */
+        .ticker-container {
+            width: 100%;
+            background: #000000;
+            color: #ffd700;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 0;
+            overflow: hidden;
+            position: relative;
+            z-index: 30;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+            white-space: nowrap;
+        }
+
+        .ticker-text {
+            display: inline-block;
+            padding-left: 100%;
+            animation: tickerScroll 20s linear infinite;
+        }
+
+        @keyframes tickerScroll {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
+        }
+
+        /* ---------------------------------- */
+        /* TOP HALF: FIXED LOGIN (IMAGE BG)   */
         /* ---------------------------------- */
         .top-half {
-            height: 50vh;
-            background: linear-gradient(135deg, #0a192f 0%, #0f3460 50%, #16213e 100%);
+            height: calc(50vh - 30px);
+            background: linear-gradient(135deg, rgba(10, 25, 47, 0.85) 0%, rgba(15, 52, 96, 0.85) 100%), url('https://i.imgur.com/n48xdmM.png');
+            background-size: cover;
+            background-position: center;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -31,51 +61,51 @@
             position: relative;
             z-index: 10;
             padding: 20px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
         }
 
-        /* Premium Animated Headline */
+        /* Golden Premium Animated Headline */
         .logo-text {
-            font-size: 46px;
+            font-size: 48px;
             font-weight: 900;
             letter-spacing: 6px;
             text-transform: uppercase;
-            background: linear-gradient(90deg, #ffffff, #8cb2ff, #ffffff);
+            background: linear-gradient(90deg, #ffd700, #ffa500, #fff7c2, #ffd700);
             background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: shine 3s linear infinite, pulseGlow 2s ease-in-out infinite alternate;
+            animation: goldenShine 3s linear infinite, goldenGlow 2s ease-in-out infinite alternate;
             margin-bottom: 4px;
         }
 
         .tagline {
             font-size: 11px;
-            color: #8cb2ff;
-            margin-bottom: 25px;
+            color: #ffffff;
+            margin-bottom: 20px;
             text-transform: uppercase;
             letter-spacing: 2px;
             font-weight: 600;
-            opacity: 0.9;
+            opacity: 0.85;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
 
-        /* Dynamic CSS Animations */
-        @keyframes shine {
+        @keyframes goldenShine {
             0% { background-position: 0% center; }
             100% { background-position: 200% center; }
         }
 
-        @keyframes pulseGlow {
-            0% { filter: drop-shadow(0 0 2px rgba(255,255,255,0.2)); }
-            100% { filter: drop-shadow(0 0 12px rgba(140,178,255,0.6)); }
+        @keyframes goldenGlow {
+            0% { filter: drop-shadow(0 0 2px rgba(255, 215, 0, 0.3)); }
+            100% { filter: drop-shadow(0 0 14px rgba(255, 215, 0, 0.7)); }
         }
 
-        /* Form Layout Adjustments for App Feel */
+        /* Form Controls */
         .screen { width: 100%; max-width: 360px; display: flex; flex-direction: column; }
         .hidden { display: none !important; }
 
         .input-field {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 215, 0, 0.4);
             border-radius: 12px;
             padding: 14px 18px;
             width: 100%;
@@ -88,26 +118,26 @@
         }
 
         .input-field:focus {
-            border-color: #8cb2ff;
-            background: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 0 15px rgba(140,178,255,0.3);
+            border-color: #ffd700;
+            background: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 0 15px rgba(255,215,0,0.3);
         }
 
-        .input-field::placeholder { color: rgba(255, 255, 255, 0.5); }
+        .input-field::placeholder { color: rgba(255, 255, 255, 0.6); }
 
         .btn {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(90deg, #2575fc 0%, #6a11cb 100%);
+            background: linear-gradient(90deg, #ffd700 0%, #daa520 100%);
             border: none;
             border-radius: 12px;
-            color: #ffffff;
+            color: #000000;
             font-weight: 700;
             font-size: 15px;
             text-transform: uppercase;
             letter-spacing: 1px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(37, 117, 252, 0.4);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
             transition: transform 0.2s;
         }
 
@@ -116,16 +146,17 @@
         .link {
             text-align: center;
             margin-top: 12px;
-            color: #8cb2ff;
+            color: #ffd700;
             font-size: 13px;
             font-weight: 500;
             cursor: pointer;
             text-decoration: none;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
         }
 
-        .welcome-text { color: #ffffff; font-size: 14px; margin-bottom: 12px; text-align: center; font-weight: 400; opacity: 0.9; }
+        .welcome-text { color: #ffffff; font-size: 14px; margin-bottom: 12px; text-align: center; font-weight: 500; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
         .timer { color: #ffbe0b; font-size: 14px; font-weight: bold; margin-bottom: 10px; text-align: center; }
-        .error-text { color: #ff4d4d; font-size: 12px; text-align: center; margin-top: 6px; font-weight: 500; }
+        .error-text { color: #ff4d4d; font-size: 12px; text-align: center; margin-top: 6px; font-weight: 600; background: rgba(0,0,0,0.4); padding: 4px; border-radius: 6px; }
 
         /* ---------------------------------- */
         /* MIDDLE DIVIDER                     */
@@ -142,19 +173,14 @@
             position: relative;
             z-index: 20;
             margin-top: -12px;
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.15);
             border-bottom: 1px solid #f0f0f0;
         }
 
-        .divider-bar {
-            width: 40px;
-            height: 4px;
-            background: #e0e0e0;
-            border-radius: 10px;
-        }
+        .divider-bar { width: 40px; height: 4px; background: #e0e0e0; border-radius: 10px; }
 
         /* ---------------------------------- */
-        /* BOTTOM HALF: SCROLLING MARKET (WHITE)*/
+        /* BOTTOM HALF: FAST SCROLLING MARKET */
         /* ---------------------------------- */
         .bottom-half {
             height: calc(50vh - 12px);
@@ -165,17 +191,6 @@
             flex-direction: column;
         }
 
-        .market-header {
-            text-align: center;
-            padding: 10px 0 5px 0;
-            font-size: 14px;
-            font-weight: 700;
-            color: #0f3460;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        /* Infinite Smooth Scrolling Marquee Container */
         .marquee-wrapper {
             flex: 1;
             overflow: hidden;
@@ -189,53 +204,54 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
-            padding: 10px 20px;
-            animation: scrollUp 25s linear infinite;
+            padding: 15px 20px;
+            animation: scrollUp 12s linear infinite; /* Faster scroll rate (12s instead of 25s) */
         }
 
-        /* Pause scrolling when user hovers or touches */
-        .marquee-wrapper:hover .marquee-content {
-            animation-play-state: paused;
-        }
+        .marquee-wrapper:hover .marquee-content { animation-play-state: paused; }
 
         @keyframes scrollUp {
             0% { transform: translateY(0%); }
-            100% { transform: translateY(-50%); } /* Loops flawlessly at halfway point */
+            100% { transform: translateY(-50%); }
         }
 
-        /* Styling for Market Result Cards */
         .market-card {
             background: #f8f9fa;
-            border-left: 4px solid #0f3460;
+            border-left: 4px solid #daa520;
             border-radius: 8px;
             padding: 12px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         }
 
-        .market-name { font-size: 14px; font-weight: 700; color: #333333; text-transform: uppercase; }
-        .market-time { font-size: 11px; color: #777777; margin-top: 2px; }
-        .market-number { font-size: 18px; font-weight: 800; color: #2575fc; letter-spacing: 1px; }
+        .market-name { font-size: 14px; font-weight: 700; color: #222222; text-transform: uppercase; }
+        .market-time { font-size: 11px; color: #666666; margin-top: 2px; }
+        .market-number { font-size: 18px; font-weight: 800; color: #daa520; letter-spacing: 1px; }
     </style>
 </head>
 <body>
+
+    <!-- TOP SLIDING TICKER MESSAGE -->
+    <div class="ticker-container">
+        <div class="ticker-text">Welcome to Durga 👑 Full Rates ⚡ Fast Withdrawal within 10 mins 🎯 Fast Results 💎 Trusted App &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Welcome to Durga 👑 Full Rates ⚡ Fast Withdrawal within 10 mins 🎯 Fast Results 💎 Trusted App</div>
+    </div>
 
     <!-- TOP HALF: FIXED LOGIN -->
     <div class="top-half">
         <div class="logo-text">DURGA</div>
         <div class="tagline">Official Satta Matka Platform</div>
         
-        <!-- LOGIN SCREENS -->
+        <!-- PHONE SCREEN -->
         <div id="phoneScreen" class="screen">
             <input type="tel" id="phoneNumber" class="input-field" placeholder="Enter Mobile Number">
             <button class="btn" id="sendOtpBtn">Login with OTP</button>
-            <div class="link" id="showPinBtn">Login with MPIN</div>
-            <div class="link" id="forgotPinLink">Forgot MPIN?</div>
+            <div class="link" id="forgotPinLink">Forgot Password?</div>
             <div id="phoneError" class="error-text"></div>
         </div>
 
+        <!-- OTP SCREEN -->
         <div id="otpScreen" class="screen hidden">
             <div class="welcome-text">Enter OTP sent to your mobile</div>
             <div class="timer" id="timer">Second Remaining 60</div>
@@ -245,53 +261,35 @@
             <div id="otpError" class="error-text"></div>
         </div>
 
-        <div id="pinScreen" class="screen hidden">
-            <input type="password" id="pinInput" class="input-field" style="font-size:22px; letter-spacing:6px;" placeholder="●●●●" maxlength="4">
-            <button class="btn" id="verifyPinBtn">Login with MPIN</button>
-            <div class="link" id="forgotPinFromPinBtn">Forgot MPIN?</div>
-            <div id="pinError" class="error-text"></div>
-        </div>
-
+        <!-- NEW USER PROFILE REGISTRATION SCREEN -->
         <div id="registerScreen" class="screen hidden">
+            <div class="welcome-text">Complete Your Profile</div>
             <input type="text" id="regName" class="input-field" placeholder="Full Name">
-            <input type="password" id="regPin" class="input-field" placeholder="Create MPIN" maxlength="4">
-            <input type="password" id="regConfirmPin" class="input-field" placeholder="Confirm MPIN" maxlength="4">
-            <button class="btn" id="registerBtn">Register</button>
+            <input type="text" id="regCity" class="input-field" placeholder="City">
+            <input type="date" id="regDob" class="input-field" placeholder="Date of Birth">
+            <button class="btn" id="registerBtn">Create Account & Login</button>
             <div id="regError" class="error-text"></div>
         </div>
 
+        <!-- FORGOT PASSWORD SCREEN -->
         <div id="resetPinScreen" class="screen hidden">
-            <div class="welcome-text">Reset MPIN</div>
+            <div class="welcome-text">Recover Account</div>
             <input type="tel" id="resetPhone" class="input-field" placeholder="Enter Mobile Number">
-            <button class="btn" id="sendResetOtpBtn">Send OTP</button>
-            <div id="resetError" class="error-text"></div>
-        </div>
-
-        <div id="resetOtpScreen" class="screen hidden">
-            <div class="welcome-text">Enter OTP to reset MPIN</div>
-            <div class="timer" id="resetTimer">Second Remaining 60</div>
-            <input type="text" id="resetOtpCode" class="input-field" placeholder="Enter OTP" maxlength="6">
-            <input type="password" id="newPinReset" class="input-field" placeholder="New MPIN (4 digits)" maxlength="4">
-            <input type="password" id="confirmPinReset" class="input-field" placeholder="Confirm MPIN" maxlength="4">
-            <button class="btn" id="resetPinBtn">Reset MPIN</button>
+            <button class="btn" id="sendResetOtpBtn">Send Verification OTP</button>
             <div class="link" id="backToLogin">Back to Login</div>
-            <div id="resetOtpError" class="error-text"></div>
+            <div id="resetError" class="error-text"></div>
         </div>
     </div>
 
-    <!-- MIDDLE DIVIDER HANDLE -->
+    <!-- MIDDLE DIVIDER -->
     <div class="professional-divider">
         <div class="divider-bar"></div>
     </div>
 
     <!-- BOTTOM HALF: AUTO SCROLLING MARKET RESULTS -->
     <div class="bottom-half">
-        <div class="market-header">Live Market Results</div>
-        
         <div class="marquee-wrapper">
-            <!-- Continuous Duplicated list layout enables perfectly seamless looping -->
             <div class="marquee-content">
-                <!-- Item 1 -->
                 <div class="market-card">
                     <div>
                         <div class="market-name">MILAN MORNING</div>
@@ -299,7 +297,6 @@
                     </div>
                     <div class="market-number">234-90-123</div>
                 </div>
-                <!-- Item 2 -->
                 <div class="market-card">
                     <div>
                         <div class="market-name">KALYAN MORNING</div>
@@ -307,7 +304,6 @@
                     </div>
                     <div class="market-number">149-40-145</div>
                 </div>
-                <!-- Item 3 -->
                 <div class="market-card">
                     <div>
                         <div class="market-name">TIME BAZAR</div>
@@ -315,7 +311,6 @@
                     </div>
                     <div class="market-number">456-55-230</div>
                 </div>
-                <!-- Item 4 -->
                 <div class="market-card">
                     <div>
                         <div class="market-name">MADHUR DAY</div>
@@ -324,7 +319,7 @@
                     <div class="market-number">120-38-350</div>
                 </div>
 
-                <!-- DUPLICATE SET (Required for uninterrupted smooth cycle) -->
+                <!-- DUPLICATE SET -->
                 <div class="market-card">
                     <div>
                         <div class="market-name">MILAN MORNING</div>
@@ -357,7 +352,7 @@
         </div>
     </div>
 
-    <!-- SCRIPT RUNNING SYSTEM (UNTOUCHED) -->
+    <!-- FIREBASE AND ROUTING LOGIC SYSTEM -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyBeGpb7V0i5GN1opY9JECHxQIGvHFDPX38",
@@ -374,15 +369,13 @@
         auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
         
         let confirmationResult = null, currentPhone = null, countdown = 0, timerInterval = null, recaptchaVerifier = null;
-        let resetConfirmationResult = null, resetPhoneNumber = null;
+        let isForgotFlow = false;
         
         function showScreen(screen) {
             document.getElementById('phoneScreen').classList.add('hidden');
             document.getElementById('otpScreen').classList.add('hidden');
-            document.getElementById('pinScreen').classList.add('hidden');
             document.getElementById('registerScreen').classList.add('hidden');
             document.getElementById('resetPinScreen').classList.add('hidden');
-            document.getElementById('resetOtpScreen').classList.add('hidden');
             screen.classList.remove('hidden');
         }
         
@@ -393,163 +386,112 @@
         function startTimer(seconds, timerElementId) { 
             countdown = seconds; 
             if (timerInterval) clearInterval(timerInterval); 
-            timerInterval = setInterval(() => { 
-                if (countdown <= 1) clearInterval(timerInterval); 
-                const timerEl = document.getElementById(timerElementId); 
-                if (timerEl && countdown > 0) timerEl.innerText = `Second Remaining ${countdown}`; 
-                countdown--; 
-            }, 1000); 
+            timerInterval = setInterval(() => { if (countdown <= 1) clearInterval(timerInterval); const timerEl = document.getElementById(timerElementId); if (timerEl && countdown > 0) timerEl.innerText = `Second Remaining ${countdown}`; countdown--; }, 1000); 
         }
         
         document.getElementById('sendOtpBtn').onclick = function() {
             const phone = document.getElementById('phoneNumber').value.replace(/\D/g, '');
             if (!phone || phone.length < 10) { showError('phoneError', 'Enter valid 10-digit number'); return; }
             currentPhone = '+91' + phone;
-            const btn = this; btn.disabled = true; btn.innerText = 'Sending...';
+            isForgotFlow = false;
+            sendVerificationPhone(currentPhone, this, 'phoneError');
+        };
+        
+        document.getElementById('sendResetOtpBtn').onclick = function() {
+            const phone = document.getElementById('resetPhone').value.replace(/\D/g, '');
+            if (!phone || phone.length < 10) { showError('resetError', 'Enter valid 10-digit number'); return; }
+            currentPhone = '+91' + phone;
+            isForgotFlow = true;
+            sendVerificationPhone(currentPhone, this, 'resetError');
+        };
+
+        function sendVerificationPhone(phoneNumber, btnElement, errorId) {
+            btnElement.disabled = true; btnElement.innerText = 'Sending...';
             const verifier = initRecaptcha();
-            auth.signInWithPhoneNumber(currentPhone, verifier).then(confirmation => { 
+            auth.signInWithPhoneNumber(phoneNumber, verifier).then(confirmation => { 
                 confirmationResult = confirmation; 
                 showScreen(otpScreen); 
                 startTimer(60, 'timer'); 
-                btn.disabled = false; 
-                btn.innerText = 'Login with OTP'; 
-            }).catch(error => { 
-                showError('phoneError', error.message); 
-                btn.disabled = false; 
-                btn.innerText = 'Login with OTP'; 
-            });
-        };
+                btnElement.disabled = false; 
+                btnElement.innerText = btnElement.id === 'sendOtpBtn' ? 'Login with OTP' : 'Send Verification OTP'; 
+            }).catch(error => { showError(errorId, error.message); btnElement.disabled = false; });
+        }
         
         document.getElementById('verifyOtpBtn').onclick = function() {
             const code = document.getElementById('otpCode').value;
             if (!code || code.length !== 6) { showError('otpError', 'Enter 6-digit OTP'); return; }
             const btn = this; btn.disabled = true; btn.innerText = 'Verifying...';
+            
             confirmationResult.confirm(code).then(result => { 
                 const user = result.user; 
                 db.collection('users').doc(user.uid).get().then(doc => { 
-                    if (doc.exists && doc.data().pin) showScreen(pinScreen); 
-                    else showScreen(registerScreen); 
-                    btn.disabled = false; 
-                    btn.innerText = 'VERIFY OTP'; 
-                }).catch(() => { 
-                    showScreen(registerScreen); 
-                    btn.disabled = false; 
-                    btn.innerText = 'VERIFY OTP'; 
-                }); 
-            }).catch(error => { 
-                showError('otpError', 'Invalid OTP'); 
-                btn.disabled = false; 
-                btn.innerText = 'VERIFY OTP'; 
-            });
+                    if (doc.exists) {
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        if(isForgotFlow) {
+                            showError('otpError', 'No account found for this number.');
+                            btn.disabled = false; btn.innerText = 'VERIFY OTP';
+                        } else {
+                            showScreen(registerScreen);
+                            btn.disabled = false; btn.innerText = 'VERIFY OTP';
+                        }
+                    }
+                }).catch(() => { showScreen(registerScreen); btn.disabled = false; }); 
+            }).catch(error => { showError('otpError', 'Invalid OTP'); btn.disabled = false; });
         };
         
         document.getElementById('resendOtpBtn').onclick = function() { 
             if (!currentPhone) return; 
             const verifier = initRecaptcha(); 
-            auth.signInWithPhoneNumber(currentPhone, verifier).then(confirmation => { 
-                confirmationResult = confirmation; 
-                startTimer(60, 'timer'); 
-                showError('otpError', 'OTP resent!'); 
-            }).catch(error => showError('otpError', error.message)); 
+            auth.signInWithPhoneNumber(currentPhone, verifier).then(confirmation => { confirmationResult = confirmation; startTimer(60, 'timer'); showError('otpError', 'OTP resent!'); }).catch(error => showError('otpError', error.message)); 
         };
         
         document.getElementById('forgotPinLink').onclick = function() { showScreen(resetPinScreen); };
-        document.getElementById('forgotPinFromPinBtn').onclick = function() { showScreen(resetPinScreen); };
-        
-        document.getElementById('sendResetOtpBtn').onclick = function() {
-            const phone = document.getElementById('resetPhone').value.replace(/\D/g, '');
-            if (!phone || phone.length < 10) { showError('resetError', 'Enter valid 10-digit number'); return; }
-            resetPhoneNumber = '+91' + phone;
-            
-            db.collection('users').where('phone', '==', resetPhoneNumber).get().then((snapshot) => {
-                if (snapshot.empty) {
-                    showError('resetError', 'No account found with this number');
-                    return;
-                }
-                const btn = this; btn.disabled = true; btn.innerText = 'Sending...';
-                const verifier = initRecaptcha();
-                auth.signInWithPhoneNumber(resetPhoneNumber, verifier).then(confirmation => {
-                    resetConfirmationResult = confirmation;
-                    showScreen(resetOtpScreen);
-                    startTimer(60, 'resetTimer');
-                    btn.disabled = false;
-                    btn.innerText = 'Send OTP';
-                }).catch(error => {
-                    showError('resetError', error.message);
-                    btn.disabled = false;
-                    btn.innerText = 'Send OTP';
-                });
-            }).catch(() => {
-                showError('resetError', 'Error checking user');
-            });
-        };
-        
-        document.getElementById('resetPinBtn').onclick = function() {
-            const otp = document.getElementById('resetOtpCode').value;
-            const newPin = document.getElementById('newPinReset').value;
-            const confirmPin = document.getElementById('confirmPinReset').value;
-            
-            if (!otp || otp.length !== 6) { showError('resetOtpError', 'Enter 6-digit OTP'); return; }
-            if (!newPin || newPin.length !== 4) { showError('resetOtpError', 'MPIN must be 4 digits'); return; }
-            if (newPin !== confirmPin) { showError('resetOtpError', 'MPINs do not match'); return; }
-            
-            const btn = this; btn.disabled = true; btn.innerText = 'Verifying...';
-            
-            resetConfirmationResult.confirm(otp).then((result) => {
-                const user = result.user;
-                db.collection('users').doc(user.uid).update({ pin: newPin }).then(() => {
-                    alert('✅ MPIN reset successfully! Please login with new MPIN.');
-                    showScreen(phoneScreen);
-                    document.getElementById('resetPhone').value = '';
-                    document.getElementById('resetOtpCode').value = '';
-                    document.getElementById('newPinReset').value = '';
-                    document.getElementById('confirmPinReset').value = '';
-                    btn.disabled = false;
-                    btn.innerText = 'Reset MPIN';
-                }).catch((err) => {
-                    showError('resetOtpError', 'Error updating PIN');
-                    btn.disabled = false;
-                    btn.innerText = 'Reset MPIN';
-                });
-            }).catch((error) => {
-                showError('resetOtpError', 'Invalid OTP');
-                btn.disabled = false;
-                btn.innerText = 'Reset MPIN';
-            });
-        };
-        
-        document.getElementById('backToLogin').onclick = function() {
-            showScreen(phoneScreen);
-            document.getElementById('resetPhone').value = '';
-            document.getElementById('resetOtpCode').value = '';
-            document.getElementById('newPinReset').value = '';
-            document.getElementById('confirmPinReset').value = '';
-        };
+        document.getElementById('backToLogin').onclick = function() { showScreen(phoneScreen); };
         
         document.getElementById('registerBtn').onclick = function() {
-            const name = document.getElementById('regName').value.trim(), pin = document.getElementById('regPin').value, confirmPin = document.getElementById('regConfirmPin').value;
+            const name = document.getElementById('regName').value.trim();
+            const city = document.getElementById('regCity').value.trim();
+            const dob = document.getElementById('regDob').value;
+            
             if (!name) { showError('regError', 'Enter your name'); return; } 
-            if (!pin || pin.length !== 4) { showError('regError', 'MPIN must be 4 digits'); return; } 
-            if (pin !== confirmPin) { showError('regError', 'MPINs do not match'); return; }
+            if (!city) { showError('regError', 'Enter your city'); return; }
+            if (!dob) { showError('regError', 'Select your Date of Birth'); return; }
+            
             const user = auth.currentUser; if (!user) { showError('regError', 'Session expired'); return; }
-            const btn = this; btn.disabled = true; btn.innerText = 'Creating...';
-            db.collection('users').doc(user.uid).set({ uid: user.uid, phone: user.phoneNumber, name: name, pin: pin, balance: 0, role: 'user', createdAt: new Date() }).then(() => { window.location.href = 'dashboard.html'; }).catch(error => { showError('regError', error.message); btn.disabled = false; btn.innerText = 'Register'; });
+            const btn = this; btn.disabled = true; btn.innerText = 'Creating Account...';
+            
+            db.collection('users').doc(user.uid).set({ 
+                uid: user.uid, 
+                phone: user.phoneNumber, 
+                name: name, 
+                city: city, 
+                dob: dob, 
+                balance: 0, 
+                role: 'user', 
+                createdAt: new Date() 
+            }).then(() => { 
+                window.location.href = 'dashboard.html'; 
+            }).catch(error => { 
+                showError('regError', error.message); 
+                btn.disabled = false; btn.innerText = 'Create Account & Login'; 
+            });
         };
         
-        document.getElementById('verifyPinBtn').onclick = function() {
-            const pin = document.getElementById('pinInput').value;
-            if (!pin || pin.length !== 4) { showError('pinError', 'Enter 4-digit MPIN'); return; }
-            const user = auth.currentUser; if (!user) { showScreen(phoneScreen); return; }
-            const btn = this; btn.disabled = true; btn.innerText = 'Verifying...';
-            db.collection('users').doc(user.uid).get().then(doc => { if (doc.exists && doc.data().pin === pin) window.location.href = 'dashboard.html'; else showError('pinError', 'Invalid MPIN'); btn.disabled = false; btn.innerText = 'Login with MPIN'; }).catch(error => { showError('pinError', 'Error verifying PIN'); btn.disabled = false; btn.innerText = 'Login with MPIN'; });
-        };
-        
-        document.getElementById('showPinBtn').onclick = function() {
-            const user = auth.currentUser; if (!user) { showScreen(phoneScreen); return; }
-            db.collection('users').doc(user.uid).get().then(doc => { if (doc.exists && doc.data().pin) showScreen(pinScreen); else showScreen(phoneScreen); }).catch(() => showScreen(phoneScreen));
-        };
-        
-        auth.onAuthStateChanged(user => { if (user) { db.collection('users').doc(user.uid).get().then(doc => { if (doc.exists && doc.data().pin) showScreen(pinScreen); else if (doc.exists && !doc.data().pin) showScreen(registerScreen); else showScreen(phoneScreen); }).catch(() => showScreen(phoneScreen)); } else showScreen(phoneScreen); });
+        // AUTO-LOGIN RESUME MONITOR SYSTEM
+        auth.onAuthStateChanged(user => { 
+            if (user) { 
+                db.collection('users').doc(user.uid).get().then(doc => { 
+                    if (doc.exists) { 
+                        window.location.href = 'dashboard.html'; 
+                    } else { 
+                        showScreen(registerScreen); 
+                    } 
+                }).catch(() => showScreen(phoneScreen)); 
+            } else { 
+                showScreen(phoneScreen); 
+            } 
+        });
     </script>
 </body>
 </html>
