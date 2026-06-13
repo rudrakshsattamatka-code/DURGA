@@ -10,160 +10,154 @@
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        body { background: #f4f6f9; color: #1e293b; padding-bottom: 90px; }
-        .app-container { max-width: 480px; margin: 0 auto; background: #f4f6f9; min-height: 100vh; position: relative; }
         
-        .loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column; }
-        .loader-spinner { width: 50px; height: 50px; border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; }
+        body { background: #0f172a; color: #f8fafc; padding-bottom: 100px; min-height: 100vh; }
+        .app-container { max-width: 480px; margin: 0 auto; background: #0f172a; min-height: 100vh; padding: 16px; position: relative; }
+        
+        .loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 9999; display: flex; justify-content: center; align-items: center; }
+        .loader-spinner { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        /* Fixed Top 30% Panel Container */
-        .sticky-top-panel {
-            position: fixed; top: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto;
-            height: 30vh; background: #0f172a; color: #fff; z-index: 1000;
-            display: flex; flex-direction: column; justify-content: space-between;
-            padding: 14px 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        /* Modern Compact Inline Header Bar */
+        .app-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 4px 0 20px 0;
+            background: #0f172a;
         }
-        .header-action-line { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; }
-        .menu-btn { background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; padding: 4px; display: flex; align-items: center; }
+        .back-btn {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
         
         /* DURGA Animated Color Title */
         .app-title {
-            font-weight: 800; font-size: 18px; letter-spacing: 1.5px;
+            font-weight: 800; font-size: 20px; letter-spacing: 2px;
             background: linear-gradient(45deg, #3b82f6, #ef4444, #10b981, #f59e0b, #3b82f6);
             background-size: 400% 400%; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             animation: gradientShift 8s ease infinite;
         }
         @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-        .action-shortcuts { display: flex; gap: 6px; }
-        .shortcut-btn { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; text-decoration: none; }
-        .balance-box { background: #22c55e; padding: 6px 12px; border-radius: 6px; color: #fff; font-weight: 700; font-size: 13px; cursor: pointer; }
-        
-        .banner-container { flex: 1; display: flex; align-items: center; justify-content: center; margin: 6px 0; overflow: hidden; border-radius: 6px; }
-        .banner-img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .balance-pill {
+            background: #1e293b;
+            border: 1px solid #334155;
+            padding: 6px 14px;
+            border-radius: 20px;
+            color: #10b981;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+        }
 
-        .panel-info-row { display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 6px; }
-        .user-meta { display: flex; flex-direction: column; gap: 2px; }
-        .user-meta .name { font-size: 14px; font-weight: 600; color: #f8fafc; }
-        .user-meta .phone { font-size: 11px; color: #94a3b8; }
-        .funds-header-label { font-size: 12px; font-weight: 700; color: #3b82f6; text-transform: uppercase; letter-spacing: 0.5px; }
+        /* Notice banner styled directly into theme */
+        .notice-banner { background: rgba(59, 130, 246, 0.1); padding: 12px; border-radius: 12px; display: flex; align-items: center; gap: 10px; cursor: pointer; border: 1px solid rgba(59, 130, 246, 0.2); margin-bottom: 20px; }
+        .notice-text { flex: 1; color: #93c5fd; font-weight: 500; font-size: 12px; line-height: 1.4; }
+        .close-notice { background: none; border: none; color: #93c5fd; font-size: 14px; cursor: pointer; opacity: 0.6; }
 
-        /* Scrollable Content Container */
-        .main-scroll-content { margin-top: 30vh; padding: 12px; }
+        /* Unified Single Screen Payment Console Card */
+        .deposit-card { background: #1e293b; border-radius: 16px; padding: 20px; border: 1px solid #334155; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        .deposit-title { color: #f8fafc; font-size: 18px; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 16px; text-align: center; }
         
-        .notice-board { background: #eff6ff; padding: 10px 14px; border-radius: 8px; display: flex; align-items: center; gap: 10px; cursor: pointer; border-left: 4px solid #3b82f6; margin-bottom: 14px; }
-        .notice-text { flex: 1; color: #1e3a8a; font-weight: 500; font-size: 12px; line-height: 1.4; }
-        .close-notice { background: none; border: none; color: #1e3a8a; font-size: 14px; cursor: pointer; opacity: 0.6; }
+        /* Grid Quick Value Selectors */
+        .amount-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
+        .amount-btn { background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 14px 6px; text-align: center; font-size: 14px; font-weight: 700; color: #94a3b8; cursor: pointer; transition: all 0.2s ease; }
+        .amount-btn.active { background: #3b82f6; color: #fff; border-color: #3b82f6; box-shadow: 0 0 12px rgba(59, 130, 246, 0.3); }
+        
+        .custom-amount { background: #0f172a; border-radius: 10px; padding: 14px; margin-bottom: 18px; border: 1px solid #334155; }
+        .custom-amount input { width: 100%; background: transparent; border: none; outline: none; font-size: 16px; font-weight: 700; color: #fff; text-align: center; }
+        .custom-amount input::placeholder { color: #475569; }
+        
+        .bonus-box { background: rgba(16, 185, 129, 0.05); border-radius: 10px; padding: 14px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; border: 1px dashed rgba(16, 185, 129, 0.3); }
+        .bonus-box label { font-weight: 600; font-size: 13px; color: #34d399; }
+        .bonus-box input { width: 18px; height: 18px; accent-color: #10b981; cursor: pointer; }
+        
+        .generate-btn { width: 100%; padding: 14px; background: #3b82f6; border: none; border-radius: 10px; color: #fff; font-weight: 700; cursor: pointer; font-size: 14px; letter-spacing: 0.5px; text-transform: uppercase; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2); }
+        .generate-btn:active { background: #2563eb; }
+        
+        /* QR Output Processing Module Layout */
+        .qr-section { background: #0f172a; border-radius: 12px; padding: 20px; text-align: center; margin-top: 18px; display: none; border: 1px solid #334155; }
+        #qrcode { display: flex; justify-content: center; margin: 12px 0; padding: 10px; background: #fff; border-radius: 8px; width: fit-content; margin-left: auto; margin-right: auto; }
+        .timer-box { background: #1e293b; border-radius: 8px; padding: 12px; text-align: center; margin-top: 14px; border: 1px solid #334155; }
+        .timer-text { color: #ef4444; font-size: 26px; font-weight: 700; font-family: monospace; }
+        .paid-btn { width: 100%; padding: 14px; background: #10b981; border: none; border-radius: 10px; color: #fff; font-weight: 700; cursor: pointer; margin-top: 16px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2); }
+        .paid-btn:active { background: #059669; }
+        
+        .message { padding: 12px; border-radius: 8px; text-align: center; margin-top: 14px; font-size: 13px; font-weight: 600; display: none; }
+        .message-success { background: rgba(16, 185, 129, 0.1); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.2); }
+        .message-error { background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
 
-        .deposit-card { background: #fff; border-radius: 12px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); border: 1px solid #e2e8f0; }
-        .deposit-title { color: #0f172a; font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px; }
-        
-        /* Modern Borderless Fast Inputs Matrix */
-        .amount-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
-        .amount-btn { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 6px; text-align: center; font-size: 14px; font-weight: 700; color: #334155; cursor: pointer; }
-        .amount-btn.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
-        
-        .custom-amount { background: #f1f5f9; border-radius: 8px; padding: 12px; margin-bottom: 14px; }
-        .custom-amount input { width: 100%; background: transparent; border: none; outline: none; font-size: 15px; font-weight: 700; color: #0f172a; text-align: center; }
-        
-        .bonus-box { background: #f8fafc; border-radius: 8px; padding: 12px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; border: 1px dashed #cbd5e1; }
-        .bonus-box label { font-weight: 600; font-size: 13px; color: #475569; }
-        .bonus-box input { width: 18px; height: 18px; accent-color: #3b82f6; cursor: pointer; }
-        
-        .generate-btn { width: 100%; padding: 12px; background: #3b82f6; border: none; border-radius: 8px; color: #fff; font-weight: 700; cursor: pointer; font-size: 14px; letter-spacing: 0.5px; text-transform: uppercase; }
-        
-        .qr-section { background: #f8fafc; border-radius: 12px; padding: 16px; text-align: center; margin-top: 14px; display: none; border: 1px dashed #cbd5e1; }
-        #qrcode { display: flex; justify-content: center; margin: 12px 0; }
-        .timer-box { background: #f1f5f9; border-radius: 8px; padding: 10px; text-align: center; margin-top: 12px; display: none; }
-        .timer-text { color: #ef4444; font-size: 24px; font-weight: 700; font-family: monospace; }
-        .paid-btn { width: 100%; padding: 12px; background: #22c55e; border: none; border-radius: 8px; color: #fff; font-weight: 700; cursor: pointer; margin-top: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        .message { padding: 10px; border-radius: 6px; text-align: center; margin-top: 12px; font-size: 13px; font-weight: 600; display: none; }
-        .message-success { background: #dcfce7; color: #15803d; }
-        .message-error { background: #fee2e2; color: #b91c1c; }
-
-        /* Unified Bottom Navigation Grid Deck Bar */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto; background: #fff; display: flex; justify-content: space-around; align-items: center; padding: 10px 6px 14px 6px; border-top: 1px solid #e2e8f0; z-index: 1000; height: 75px; }
-        .nav-item { text-align: center; color: #64748b; cursor: pointer; font-size: 13px; flex: 1; font-weight: 600; text-decoration: none; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; }
-        .nav-item-home { position: relative; top: -20px; background: #3b82f6; color: #fff !important; width: 64px; height: 64px; max-width: 64px; border-radius: 50%; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4); border: 4px solid #f4f6f9; }
+        /* Bottom Fixed Navigation Bar Matching Core Framework */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto; background: #1e293b; display: flex; justify-content: space-around; align-items: center; padding: 10px 6px 14px 6px; border-top: 1px solid #334155; z-index: 1000; height: 75px; }
+        .nav-item { text-align: center; color: #94a3b8; cursor: pointer; font-size: 13px; flex: 1; font-weight: 600; text-decoration: none; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; }
+        .nav-item.active { color: #3b82f6; }
+        .nav-item-home { position: relative; top: -20px; background: #3b82f6; color: #fff !important; width: 64px; height: 64px; max-width: 64px; border-radius: 50%; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4); border: 4px solid #0f172a; }
         .nav-item-home span { font-size: 12px; font-weight: 700; }
 
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 2000; justify-content: center; align-items: center; }
-        .modal-content { background: #fff; border-radius: 16px; padding: 24px; width: 90%; max-width: 340px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-        .modal-content h3 { color: #0f172a; margin-bottom: 16px; text-align: center; font-size: 18px; font-weight: 700; }
+        /* Dynamic Popup Containers styled cleanly */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: #1e293b; border-radius: 16px; padding: 24px; width: 90%; max-width: 340px; border: 1px solid #334155; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); }
+        .modal-content h3 { color: #f8fafc; margin-bottom: 16px; text-align: center; font-size: 18px; font-weight: 700; }
         .modal-btn { width: 100%; padding: 11px; background: #3b82f6; border: none; border-radius: 8px; color: #fff; font-weight: 600; cursor: pointer; margin-top: 10px; font-size: 14px; }
-        .close-modal { background: #f1f5f9; color: #334155; }
-        .modal-input { width: 100%; padding: 10px 12px; margin: 8px 0; border: 1px solid #cbd5e1; background: #f8fafc; border-radius: 8px; font-size: 14px; color: #0f172a; }
-        .rate-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f1f5f9; font-size: 14px; color: #334155; }
+        .close-modal { background: #334155; color: #cbd5e1; }
+        .modal-input { width: 100%; padding: 10px 12px; margin: 8px 0; border: 1px solid #334155; background: #0f172a; border-radius: 8px; font-size: 14px; color: #fff; }
+        .rate-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #334155; font-size: 14px; color: #cbd5e1; }
     </style>
 </head>
 <body>
 <div class="app-container">
     
-    <!-- Fixed Top Panel Interface Setup Area -->
-    <div class="sticky-top-panel">
-        <div class="header-action-line">
-            <button class="menu-btn" onclick="showProfileModal()">☰</button>
-            <span class="app-title">DURGA</span>
-            <div class="action-shortcuts">
-                <a href="deposit.html" class="shortcut-btn">Deposit</a>
-                <a href="withdraw.html" class="shortcut-btn">Withdraw</a>
-                <div class="balance-box" onclick="showBalance()">₹<span id="userBalance">0</span></div>
-            </div>
-        </div>
-        <div class="banner-container">
-            <img src="https://i.imgur.com/n48xdmM.png" alt="Banner" class="banner-img">
-        </div>
-        <div class="panel-info-row">
-            <div class="user-meta">
-                <div class="name" id="profileName">Loading...</div>
-                <div class="phone" id="profilePhone">Loading...</div>
-            </div>
-            <div class="funds-header-label">Deposit Desk</div>
-        </div>
+    <!-- Thin App Bar Header Component -->
+    <div class="app-header">
+        <button class="back-btn" onclick="goBack()">←</button>
+        <span class="app-title">DURGA</span>
+        <div class="balance-pill" onclick="showBalance()">₹<span id="userBalance">0</span></div>
     </div>
     
-    <!-- Scrolling Page Core Elements Section Container -->
-    <div class="main-scroll-content">
-        <div id="noticeBoard" class="notice-board" onclick="showNoticeModal()">
-            <div class="notice-text" id="noticeText">Welcome to DURGA!</div>
-            <button class="close-notice" onclick="event.stopPropagation(); closeNotice()">✕</button>
+    <!-- Unified Central View Panel Component -->
+    <div id="noticeBoard" class="notice-banner" onclick="showNoticeModal()">
+        <div class="notice-text" id="noticeText">Welcome to DURGA!</div>
+        <button class="close-notice" onclick="event.stopPropagation(); closeNotice()">✕</button>
+    </div>
+    
+    <div class="deposit-card">
+        <div class="deposit-title">Deposit Console</div>
+        <div class="amount-grid">
+            <div class="amount-btn" onclick="selectAmount(200)">+ ₹200</div>
+            <div class="amount-btn" onclick="selectAmount(500)">+ ₹500</div>
+            <div class="amount-btn" onclick="selectAmount(1000)">+ ₹1000</div>
+            <div class="amount-btn" onclick="selectAmount(2000)">+ ₹2000</div>
+            <div class="amount-btn" onclick="selectAmount(5000)">+ ₹5000</div>
+            <div class="amount-btn" onclick="selectAmount(10000)">+ ₹10000</div>
         </div>
+        <div class="custom-amount">
+            <input type="number" id="customAmount" placeholder="Enter custom value (Min ₹200)" oninput="updateAmount()">
+        </div>
+        <div class="bonus-box">
+            <label>🎁 Claim 10% Match Bonus (On ₹500+)</label>
+            <input type="checkbox" id="applyBonus" onchange="updateAmount()">
+        </div>
+        <button class="generate-btn" id="generateBtn">Proceed to QR Generation</button>
         
-        <div class="deposit-card">
-            <div class="deposit-title">Add Funds</div>
-            <div class="amount-grid">
-                <div class="amount-btn" onclick="selectAmount(200)">+ ₹200</div>
-                <div class="amount-btn" onclick="selectAmount(500)">+ ₹500</div>
-                <div class="amount-btn" onclick="selectAmount(1000)">+ ₹1000</div>
-                <div class="amount-btn" onclick="selectAmount(2000)">+ ₹2000</div>
-                <div class="amount-btn" onclick="selectAmount(5000)">+ ₹5000</div>
-                <div class="amount-btn" onclick="selectAmount(10000)">+ ₹10000</div>
+        <div class="qr-section" id="qrSection">
+            <div id="qrcode"></div>
+            <p style="font-size:14px; font-weight:700; color:#e2e8f0; margin-top:8px;">Amount Due: ₹<span id="qrAmount">0</span></p>
+            <div class="timer-box" id="timerBox">
+                <div class="timer-text" id="countdownTimer">10:00</div>
+                <div style="font-size:11px; color:#94a3b8; font-weight:600; margin-top:2px;">Time remaining to clear account statement</div>
             </div>
-            <div class="custom-amount">
-                <input type="number" id="customAmount" placeholder="Custom amount (Min ₹200)" oninput="updateAmount()">
-            </div>
-            <div class="bonus-box">
-                <label>🎁 Apply 10% Bonus (On ₹500+)</label>
-                <input type="checkbox" id="applyBonus" onchange="updateAmount()">
-            </div>
-            <button class="generate-btn" id="generateBtn">Generate Payment QR</button>
-            
-            <div class="qr-section" id="qrSection">
-                <div id="qrcode"></div>
-                <p style="font-size:13px; font-weight:700; color:#334155; margin-top:8px;">Amount Due: ₹<span id="qrAmount">0</span></p>
-                <div class="timer-box" id="timerBox">
-                    <div class="timer-text" id="countdownTimer">10:00</div>
-                    <div style="font-size:11px; color:#64748b; font-weight:600; margin-top:2px;">Time remaining to pay</div>
-                </div>
-                <button class="paid-btn" id="paidBtn" style="display:none;">✅ I Have Made Payment</button>
-            </div>
-            <div id="message" class="message"></div>
+            <button class="paid-btn" id="paidBtn" style="display:none;">I Have Finalized My Payment</button>
         </div>
+        <div id="message" class="message"></div>
     </div>
     
-    <!-- Unified Bottom Navigation Matrix Link Deck -->
+    <!-- Unified Lower Interactive Deck Framework -->
     <div class="bottom-nav">
         <a href="mybids.html" class="nav-item"><span>Passbook</span></a>
         <a href="mybids.html" class="nav-item"><span>My Bids</span></a>
@@ -173,11 +167,11 @@
     </div>
 </div>
 
-<!-- Modal Control Layers -->
+<!-- Modal Framework Architecture Layer -->
 <div id="profileModal" class="modal"><div class="modal-content"><h3>My Profile</h3><div id="profileInfo"></div><button class="modal-btn" onclick="showGameRatesModal()">🎲 Game Rates</button><button class="modal-btn" onclick="showChangePinModal()">🔐 Change MPIN</button><button class="modal-btn" onclick="showBankModal()">🏦 Bank Details</button><button class="modal-btn close-modal" onclick="closeProfileModal()">Close</button></div></div>
 <div id="gameRatesModal" class="modal"><div class="modal-content"><h3>🎲 GAME RATES</h3><div class="rate-row"><span>Single Digit</span><span>10x</span></div><div class="rate-row"><span>Jodi</span><span>100x</span></div><div class="rate-row"><span>Single Pana</span><span>160x</span></div><div class="rate-row"><span>Double Pana</span><span>320x</span></div><div class="rate-row"><span>Triple Pana</span><span>1000x</span></div><div class="rate-row"><span>Half Sangam A</span><span>1000x</span></div><div class="rate-row"><span>Half Sangam B</span><span>1000x</span></div><div class="rate-row"><span>Full Sangam</span><span>10000x</span></div><button class="modal-btn close-modal" onclick="closeGameRatesModal()">Close</button></div></div>
-<div id="changePinModal" class="modal"><div class="modal-content"><h3>🔐 Change MPIN</h3><input type="password" id="oldPin" class="modal-input" placeholder="Current MPIN" maxlength="4"><input type="password" id="newPin" class="modal-input" placeholder="New MPIN" maxlength="4"><input type="password" id="confirmPin" class="modal-input" placeholder="Confirm MPIN" maxlength="4"><button class="modal-btn" onclick="updatePin()">Update</button><button class="modal-btn close-modal" onclick="closeChangePinModal()">Cancel</button><div id="pinMsg" style="text-align:center; color:#ef4444; margin-top:6px; font-size:13px;"></div></div></div>
-<div id="bankModal" class="modal"><div class="modal-content"><h3>🏦 Bank Details</h3><input type="text" id="bankAccountHolder" class="modal-input" placeholder="Account Holder"><input type="text" id="bankName" class="modal-input" placeholder="Bank Name"><input type="text" id="bankAccountNumber" class="modal-input" placeholder="Account Number"><input type="text" id="bankIfsc" class="modal-input" placeholder="IFSC"><button class="modal-btn" onclick="saveBankDetails()">Save</button><button class="modal-btn close-modal" onclick="closeBankModal()">Cancel</button><div id="bankMsg" style="text-align:center; color:#10b981; margin-top:6px; font-size:13px;"></div></div></div>
+<div id="changePinModal" class="modal"><div class="modal-content"><h3>🔐 Change MPIN</h3><input type="password" id="oldPin" class="modal-input" placeholder="Current MPIN" maxlength="4"><input type="password" id="newPin" class="modal-input" placeholder="New MPIN" maxlength="4"><input type="password" id="confirmPin" class="modal-input" placeholder="Confirm MPIN" maxlength="4"><button class="modal-btn" onclick="updatePin()">Update</button><button class="modal-btn close-modal" onclick="closeChangePinModal()">Cancel</button><div id="pinMsg" style="text-align:center; color:#f87171; margin-top:6px; font-size:13px;"></div></div></div>
+<div id="bankModal" class="modal"><div class="modal-content"><h3>🏦 Bank Details</h3><input type="text" id="bankAccountHolder" class="modal-input" placeholder="Account Holder"><input type="text" id="bankName" class="modal-input" placeholder="Bank Name"><input type="text" id="bankAccountNumber" class="modal-input" placeholder="Account Number"><input type="text" id="bankIfsc" class="modal-input" placeholder="IFSC"><button class="modal-btn" onclick="saveBankDetails()">Save</button><button class="modal-btn close-modal" onclick="closeBankModal()">Cancel</button><div id="bankMsg" style="text-align:center; color:#34d399; margin-top:6px; font-size:13px;"></div></div></div>
 
 <script>
     const firebaseConfig = { apiKey: "AIzaSyBeGpb7V0i5GN1opY9JECHxQIGvHFDPX38", authDomain: "win777-ed482.firebaseapp.com", projectId: "win777-ed482", storageBucket: "win777-ed482.firebasestorage.app", messagingSenderId: "843686112399", appId: "1:843686112399:web:9c20a96831e6a94cd814fa" };
@@ -193,7 +187,7 @@
     showLoader();
     auth.onAuthStateChanged(async (user) => { if (!user) window.location.href='index.html'; else { currentUser=user; await loadUserData(); await loadPaymentSettings(); updateAmount(); hideLoader(); } });
     
-    async function loadUserData(){ let doc=await db.collection('users').doc(currentUser.uid).get(); if(doc.exists){ currentUserData=doc.data(); document.getElementById('userBalance').innerText=currentUserData.balance||0; document.getElementById('profileName').innerHTML=currentUserData.name||'User'; document.getElementById('profilePhone').innerHTML=currentUserData.phone||''; } }
+    async function loadUserData(){ let doc=await db.collection('users').doc(currentUser.uid).get(); if(doc.exists){ currentUserData=doc.data(); document.getElementById('userBalance').innerText=currentUserData.balance||0; } }
     async function loadPaymentSettings(){ let upiDoc=await db.collection('settings').doc('upi').get(); if(upiDoc.exists && upiDoc.data().upiId) upiId=upiDoc.data().upiId; }
     function showBalance(){ alert(`💰 Balance: ₹${currentUserData?.balance||0}`); }
     
@@ -251,7 +245,7 @@
     document.getElementById('paidBtn').onclick=confirmPayment;
     document.getElementById('customAmount').addEventListener('input',updateAmount);
     
-    function showProfileModal(){ if(currentUserData){ document.getElementById('profileInfo').innerHTML=`<div style="text-align:center;"><div style="font-size:18px; font-weight:700; color:#0f172a;">${currentUserData.name}</div><div style="color:#64748b; font-size:13px; margin:2px 0 6px 0;">${currentUserData.phone}</div><div style="font-size:20px; font-weight:800; color:#10b981;">₹${currentUserData.balance}</div></div>`; document.getElementById('profileModal').style.display='flex'; } }
+    function showProfileModal(){ if(currentUserData){ document.getElementById('profileInfo').innerHTML=`<div style="text-align:center;"><div style="font-size:18px; font-weight:700; color:#cbd5e1;">${currentUserData.name}</div><div style="color:#64748b; font-size:13px; margin:2px 0 6px 0;">${currentUserData.phone}</div><div style="font-size:20px; font-weight:800; color:#10b981;">₹${currentUserData.balance}</div></div>`; document.getElementById('profileModal').style.display='flex'; } }
     function closeProfileModal(){ document.getElementById('profileModal').style.display='none'; }
     function showGameRatesModal(){ closeProfileModal(); document.getElementById('gameRatesModal').style.display='flex'; }
     function closeGameRatesModal(){ document.getElementById('gameRatesModal').style.display='none'; }
@@ -263,9 +257,10 @@
     async function saveBankDetails(){ let ah=document.getElementById('bankAccountHolder').value.trim(), bn=document.getElementById('bankName').value.trim(), an=document.getElementById('bankAccountNumber').value.trim(), ifsc=document.getElementById('bankIfsc').value.trim(); if(!ah||!bn||!an||!ifsc){ document.getElementById('bankMsg').innerHTML='Fill all fields'; return; } await db.collection('users').doc(currentUser.uid).update({bankDetails:{accountHolder:ah,bankName:bn,accountNumber:an,ifscCode:ifsc}}); currentUserData.bankDetails={accountHolder:ah,bankName:bn,accountNumber:an,ifscCode:ifsc}; document.getElementById('bankMsg').innerHTML='✅ Saved!'; setTimeout(()=>closeBankModal(),1500); }
     function showNoticeModal(){ db.collection('settings').doc('notice').get().then(d => { alert(d.exists ? d.data().text : 'Welcome to DURGA!'); }); }
     function closeNotice(){ document.getElementById('noticeBoard').style.display='none'; }
+    function goBack() { window.location.href = 'dashboard.html'; }
     
     db.collection('settings').doc('notice').onSnapshot(doc=>{ document.getElementById('noticeText').innerHTML=doc.exists?doc.data().text:'Welcome to DURGA!'; });
-    window.selectAmount=selectAmount; window.showBalance=showBalance; window.showProfileModal=showProfileModal; window.closeProfileModal=closeProfileModal; window.showGameRatesModal=showGameRatesModal; window.closeGameRatesModal=closeGameRatesModal; window.showChangePinModal=showChangePinModal; window.closeChangePinModal=closeChangePinModal; window.updatePin=updatePin; window.showBankModal=showBankModal; window.closeBankModal=closeBankModal; window.saveBankDetails=saveBankDetails; window.closeNotice=closeNotice; window.confirmPayment=confirmPayment;
+    window.selectAmount=selectAmount; window.showBalance=showBalance; window.showProfileModal=showProfileModal; window.closeProfileModal=closeProfileModal; window.showGameRatesModal=showGameRatesModal; window.closeGameRatesModal=closeGameRatesModal; window.showChangePinModal=showChangePinModal; window.closeChangePinModal=closeChangePinModal; window.updatePin=updatePin; window.showBankModal=showBankModal; window.closeBankModal=closeBankModal; window.saveBankDetails=saveBankDetails; window.closeNotice=closeNotice; window.confirmPayment=confirmPayment; window.goBack=goBack;
 </script>
 </body>
 </html>
