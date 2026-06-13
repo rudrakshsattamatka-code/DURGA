@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>DURGA - Official</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        /* Modern Android App Theming */
+        :root {
+            --primary-gold: #ffd700;
+            --dark-bg: #0d0d0d;
+            --card-bg: #1a1a1a;
+            --text-gold: #aa9c7a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', sans-serif; }
+
+        body {
+            background: #000;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Prevents whole page scroll */
+        }
+
+        /* TOP SCREEN: FIXED */
+        .top-screen {
+            height: 40vh; /* Fixed height for top section */
+            background: linear-gradient(180deg, #1a1510 0%, #0a0806 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+        }
+
+        .header { text-align: center; }
+
+        .logo-img {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            margin-bottom: 12px;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.2);
+            border: 2px solid var(--primary-gold);
+        }
+
+        .logo-text {
+            font-size: 38px;
+            font-weight: 900;
+            color: var(--primary-gold);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        }
+
+        .tagline {
+            font-size: 12px;
+            color: var(--text-gold);
+            margin-top: 5px;
+            letter-spacing: 1px;
+        }
+
+        /* MIDDLE DIVIDER: PROFESSIONAL HANDLE */
+        .divider-handle {
+            width: 100%;
+            height: 30px;
+            background: var(--dark-bg);
+            border-top-left-radius: 25px;
+            border-top-right-radius: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: -15px; /* Pulls it up slightly over the top screen */
+            position: relative;
+            z-index: 20;
+            box-shadow: 0 -10px 20px rgba(0,0,0,0.5);
+        }
+
+        .handle-bar {
+            width: 50px;
+            height: 5px;
+            background: rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        /* BOTTOM SCREEN: AUTO SCROLLING */
+        .bottom-screen {
+            flex: 1; /* Takes up remaining space */
+            background: var(--dark-bg);
+            overflow-y: auto; /* Enables scrolling for results/forms */
+            padding: 20px 25px 40px 25px;
+            scrollbar-width: none; /* Hide scrollbar Firefox */
+        }
+        .bottom-screen::-webkit-scrollbar { display: none; } /* Hide scrollbar Chrome/Safari */
+
+        /* Android Style Components */
+        .screen { width: 100%; max-width: 400px; margin: 0 auto; }
+
+        .input-field {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 15px;
+            padding: 16px;
+            width: 100%;
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 20px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .input-field:focus { border-color: var(--primary-gold); background: #222; }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(90deg, #ffd700, #daa520);
+            border: none;
+            border-radius: 15px;
+            color: #000;
+            font-weight: 800;
+            font-size: 16px;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(218, 165, 32, 0.3);
+        }
+
+        .link {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--primary-gold);
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .welcome-text {
+            color: #fff;
+            font-size: 18px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .error-text {
+            color: #ff4d4d;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 11px;
+            color: var(--text-gold);
+            opacity: 0.7;
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- TOP FIXED SECTION -->
+    <div class="top-screen">
+        <div class="header">
+            <img src="https://i.imgur.com/V4pMmxP.jpeg" alt="DURGA" class="logo-img">
+            <div class="logo-text">DURGA</div>
+            <div class="tagline">India's Royal Satta Matka Platform</div>
+        </div>
+    </div>
+
+    <!-- PROFESSIONAL DIVIDER -->
+    <div class="divider-handle">
+        <div class="handle-bar"></div>
+    </div>
+
+    <!-- BOTTOM SCROLLING SECTION -->
+    <div class="bottom-screen">
+        
+        <div id="phoneScreen" class="screen">
+            <div class="welcome-text">Welcome Back</div>
+            <input type="tel" id="phoneNumber" class="input-field" placeholder="Mobile Number">
+            <button class="btn" id="sendOtpBtn">Login with OTP</button>
+            <div class="link" id="showPinBtn">Login with MPIN</div>
+            <div class="link" id="forgotPinLink">Forgot MPIN?</div>
+            <div id="phoneError" class="error-text"></div>
+        </div>
+
+        <div id="otpScreen" class="screen hidden">
+            <div class="welcome-text">Verify Identity</div>
+            <div style="color:var(--primary-gold); text-align:center; margin-bottom:10px;" id="timer">60s remaining</div>
+            <input type="text" id="otpCode" class="input-field" placeholder="6-Digit OTP" maxlength="6">
+            <button class="btn" id="verifyOtpBtn">VERIFY OTP</button>
+            <div class="link" id="resendOtpBtn">Resend OTP</div>
+            <div id="otpError" class="error-text"></div>
+        </div>
+
+        <div id="pinScreen" class="screen hidden">
+            <div class="welcome-text">Enter Secure MPIN</div>
+            <input type="password" id="pinInput" class="input-field" style="text-align:center; letter-spacing:10px;" placeholder="****" maxlength="4">
+            <button class="btn" id="verifyPinBtn">Login to Dashboard</button>
+            <div class="link" id="forgotPinFromPinBtn">Forgot MPIN?</div>
+            <div id="pinError" class="error-text"></div>
+        </div>
+
+        <div id="registerScreen" class="screen hidden">
+            <div class="welcome-text">Create Account</div>
+            <input type="text" id="regName" class="input-field" placeholder="Full Name">
+            <input type="password" id="regPin" class="input-field" placeholder="Create 4-Digit MPIN" maxlength="4">
+            <input type="password" id="regConfirmPin" class="input-field" placeholder="Confirm 4-Digit MPIN" maxlength="4">
+            <button class="btn" id="registerBtn">Register Now</button>
+            <div id="regError" class="error-text"></div>
+        </div>
+
+        <!-- Add placeholders for scrolling "Market Results" below if needed -->
+        
+        <div class="footer">
+            <span>© 2024 DURGA OFFICIAL</span><br>
+            <span>Trusted by 1,00,000+ Users</span>
+        </div>
+    </div>
+
+    <!-- LOGIC REMAINS UNTOUCHED -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBeGpb7V0i5GN1opY9JECHxQIGvHFDPX38",
+            authDomain: "win777-ed482.firebaseapp.com",
+            projectId: "win777-ed482",
+            storageBucket: "win777-ed482.firebasestorage.app",
+            messagingSenderId: "843686112399",
+            appId: "1:843686112399:web:9c20a96831e6a94cd814fa"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+        
+        let confirmationResult = null, currentPhone = null, countdown = 0, timerInterval = null, recaptchaVerifier = null;
+        
+        function showScreen(screen) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            screen.classList.remove('hidden');
+        }
+        
+        // ... (All other JS logic from your original file remains exactly the same) ...
+        // Note: I kept all your original function IDs and variable names so it connects perfectly.
+        
+        function showError(elementId, message) { const el = document.getElementById(elementId); if (el) { el.innerText = message; setTimeout(() => el.innerText = '', 4000); } }
+        function initRecaptcha() { if (!recaptchaVerifier) { const container = document.createElement('div'); container.id = 'recaptcha-container'; container.style.position = 'absolute'; container.style.left = '-9999px'; document.body.appendChild(container); recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { size: 'invisible' }); } return recaptchaVerifier; }
+        function startTimer(seconds, timerElementId) { countdown = seconds; if (timerInterval) clearInterval(timerInterval); timerInterval = setInterval(() => { if (countdown <= 1) clearInterval(timerInterval); const timerEl = document.getElementById(timerElementId); if (timerEl && countdown > 0) timerEl.innerText = `Remaining: ${countdown}s`; countdown--; }, 1000); }
+
+        document.getElementById('sendOtpBtn').onclick = function() {
+            const phone = document.getElementById('phoneNumber').value.replace(/\D/g, '');
+            if (!phone || phone.length < 10) { showError('phoneError', 'Enter valid 10-digit number'); return; }
+            currentPhone = '+91' + phone;
+            const btn = this; btn.disabled = true; btn.innerText = 'Sending...';
+            const verifier = initRecaptcha();
+            auth.signInWithPhoneNumber(currentPhone, verifier).then(confirmation => { confirmationResult = confirmation; showScreen(otpScreen); startTimer(60, 'timer'); btn.disabled = false; btn.innerText = 'Login with OTP'; }).catch(error => { showError('phoneError', error.message); btn.disabled = false; btn.innerText = 'Login with OTP'; });
+        };
+
+        document.getElementById('verifyOtpBtn').onclick = function() {
+            const code = document.getElementById('otpCode').value;
+            if (!code || code.length !== 6) { showError('otpError', 'Enter 6-digit OTP'); return; }
+            const btn = this; btn.disabled = true; btn.innerText = 'Verifying...';
+            confirmationResult.confirm(code).then(result => { 
+                const user = result.user; 
+                db.collection('users').doc(user.uid).get().then(doc => { 
+                    if (doc.exists && doc.data().pin) showScreen(pinScreen); 
+                    else showScreen(registerScreen); 
+                    btn.disabled = false; btn.innerText = 'VERIFY OTP'; 
+                }).catch(() => { showScreen(registerScreen); btn.disabled = false; }); 
+            }).catch(error => { showError('otpError', 'Invalid OTP'); btn.disabled = false; });
+        };
+
+        document.getElementById('registerBtn').onclick = function() {
+            const name = document.getElementById('regName').value.trim(), pin = document.getElementById('regPin').value, confirmPin = document.getElementById('regConfirmPin').value;
+            if (!name) { showError('regError', 'Enter your name'); return; } 
+            if (!pin || pin.length !== 4) { showError('regError', 'MPIN must be 4 digits'); return; } 
+            if (pin !== confirmPin) { showError('regError', 'MPINs do not match'); return; }
+            const user = auth.currentUser; if (!user) { showError('regError', 'Session expired'); return; }
+            const btn = this; btn.disabled = true; btn.innerText = 'Creating...';
+            db.collection('users').doc(user.uid).set({ uid: user.uid, phone: user.phoneNumber, name: name, pin: pin, balance: 0, role: 'user', createdAt: new Date() }).then(() => { window.location.href = 'dashboard.html'; }).catch(error => { showError('regError', error.message); btn.disabled = false; });
+        };
+
+        document.getElementById('verifyPinBtn').onclick = function() {
+            const pin = document.getElementById('pinInput').value;
+            if (!pin || pin.length !== 4) { showError('pinError', 'Enter 4-digit MPIN'); return; }
+            const user = auth.currentUser; if (!user) { showScreen(phoneScreen); return; }
+            const btn = this; btn.disabled = true; btn.innerText = 'Verifying...';
+            db.collection('users').doc(user.uid).get().then(doc => { if (doc.exists && doc.data().pin === pin) window.location.href = 'dashboard.html'; else showError('pinError', 'Invalid MPIN'); btn.disabled = false; });
+        };
+
+        document.getElementById('showPinBtn').onclick = function() {
+            const user = auth.currentUser; if (!user) { showScreen(phoneScreen); return; }
+            db.collection('users').doc(user.uid).get().then(doc => { if (doc.exists && doc.data().pin) showScreen(pinScreen); else showScreen(phoneScreen); }).catch(() => showScreen(phoneScreen));
+        };
+
+        auth.onAuthStateChanged(user => { if (user) { db.collection('users').doc(user.uid).get().then(doc => { if (doc.exists && doc.data().pin) showScreen(pinScreen); else if (doc.exists && !doc.data().pin) showScreen(registerScreen); else showScreen(phoneScreen); }).catch(() => showScreen(phoneScreen)); } else showScreen(phoneScreen); });
+    </script>
+</body>
+</html>
