@@ -24,7 +24,6 @@
         .tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; border-radius: 6px; color: #64748b; font-weight: 700; font-size: 13px; text-transform: uppercase; }
         .tab.active { background: #3b82f6; color: #fff; }
         
-        /* Modern Native Status Cards Structure */
         .bid-card { background: #fff; margin: 12px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 12px; padding: 16px; }
         .bid-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #e2e8f0; padding-bottom: 10px; }
         .market-name { color: #0f172a; font-size: 15px; font-weight: 700; }
@@ -41,7 +40,6 @@
         .bid-footer { border-top: 1px solid #f1f5f9; padding-top: 8px; font-size: 11px; color: #94a3b8; text-align: right; font-weight: 500; }
         .no-data { text-align: center; color: #64748b; padding: 60px 20px; font-size: 14px; font-weight: 500; }
         
-        /* Enlarged Bottom Navigation Matching Dashboard Layout Framework */
         .bottom-nav { 
             position: fixed; bottom: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto; 
             background: #fff; display: flex; justify-content: space-around; align-items: center;
@@ -53,7 +51,6 @@
         }
         .nav-item.active { color: #3b82f6; }
         
-        /* Circular Floating Home Setup Design Integration */
         .nav-item-home { position: relative; top: -20px; background: #3b82f6; color: #fff !important; width: 64px; height: 64px; max-width: 64px; border-radius: 50%; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4); border: 4px solid #f4f6f9; }
         .nav-item-home span { font-size: 12px; font-weight: 700; }
         
@@ -96,11 +93,7 @@
     <div class="bottom-nav">
         <a href="dashboard.html" class="nav-item"><span>Passbook</span></a>
         <a href="dashboard.html" class="nav-item"><span>My Bids</span></a>
-        
-        <a href="dashboard.html" class="nav-item nav-item-home">
-            <span>Home</span>
-        </a>
-        
+        <a href="dashboard.html" class="nav-item nav-item-home"><span>Home</span></a>
         <a href="funds.html" class="nav-item"><span>Fund</span></a>
         <a href="chat.html" class="nav-item"><span>Support</span></a>
     </div>
@@ -160,7 +153,10 @@
                 
                 let date=b.dateObj && b.dateObj.getTime()>0 ? b.dateObj.toLocaleString() : 'Pending';
                 let sessionDisplay = b.bidType ? b.bidType.toUpperCase() : 'CLOSE';
-                let winAmount = (statusText==='WON') ? (b.points * (gameRates[b.gameType]||10)) : 0;
+                
+                // Matches exact key parameters saved from placing system
+                let gameTypeDisplay = b.gameType || b.type || 'Unknown Game';
+                let winAmount = (statusText==='WON') ? (b.points * (gameRates[gameTypeDisplay]||10)) : 0;
                 
                 html+=`<div class="bid-card">
                     <div class="bid-header">
@@ -168,7 +164,7 @@
                         <span class="status-badge ${statusClass}">${statusText}</span>
                     </div>
                     <div class="bid-body">
-                        <div class="bid-row"><span class="bid-label">Game Type</span><span class="bid-value">${escapeHtml(b.gameType)}</span></div>
+                        <div class="bid-row"><span class="bid-label">Game Type</span><span class="bid-value" style="font-weight:700; color:#0f172a;">${escapeHtml(gameTypeDisplay)}</span></div>
                         <div class="bid-row"><span class="bid-label">Session</span><span class="bid-value" style="color:#3b82f6; font-weight:700;">${sessionDisplay}</span></div>
                         <div class="bid-row"><span class="bid-label">Selected Number</span><span class="bid-value" style="color:#ef4444; font-family:monospace; font-size:15px;">${escapeHtml(b.value)}</span></div>
                         <div class="bid-row"><span class="bid-label">Points Bet</span><span class="bid-value">₹${b.points}</span></div>
