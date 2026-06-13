@@ -8,85 +8,157 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #f5f7fa; padding-bottom: 65px; }
-        .app-container { max-width: 480px; margin: 0 auto; background: #f5f7fa; min-height: 100vh; }
-        .header { background: #fff; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
-        .logo-img { width: 36px; height: 36px; border-radius: 50%; border: 1px solid #e91e63; }
-        .balance { background: linear-gradient(135deg, #e91e63, #9c27b0); padding: 4px 12px; border-radius: 30px; color: #fff; font-weight: bold; font-size: 13px; cursor: pointer; }
-        .profile-row { display: flex; align-items: center; gap: 10px; background: #fff; margin: 8px; padding: 10px 12px; border-radius: 16px; border: 1px solid #eee; cursor: pointer; }
-        .profile-avatar { width: 45px; height: 45px; background: linear-gradient(135deg, #e91e63, #9c27b0); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #fff; }
-        .profile-info { flex: 1; }
-        .profile-name { color: #1a1a2e; font-size: 14px; font-weight: bold; }
-        .profile-phone { color: #888; font-size: 11px; }
-        .view-profile { color: #e91e63; font-size: 11px; }
-        .notice-board { background: linear-gradient(135deg, #e91e63, #9c27b0); margin: 8px; padding: 8px 12px; border-radius: 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; }
-        .notice-icon { font-size: 18px; }
-        .notice-text { flex: 1; color: #fff; font-weight: bold; font-size: 11px; }
-        .close-notice { background: none; border: none; color: #fff; font-size: 16px; cursor: pointer; }
-        .games-row { display: flex; justify-content: space-around; background: #fff; margin: 8px; padding: 8px; border-radius: 16px; border: 1px solid #eee; }
-        .game-icon { text-align: center; color: #888; font-size: 10px; cursor: pointer; transition: 0.3s; }
-        .game-icon:hover { color: #e91e63; transform: translateY(-3px); }
-        .game-icon img { width: 38px; height: 38px; display: block; margin: 0 auto 3px; border-radius: 10px; }
-        .withdraw-card { background: #fff; margin: 12px; border-radius: 20px; padding: 16px; border: 1px solid #eee; }
-        .withdraw-title { color: #1a1a2e; font-size: 18px; font-weight: bold; text-align: center; margin-bottom: 15px; }
-        .amount-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
-        .amount-btn { background: #f8f9fa; border: 1px solid #ddd; border-radius: 12px; padding: 10px; text-align: center; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .amount-btn.active { background: linear-gradient(135deg, #e91e63, #9c27b0); color: #fff; border-color: #e91e63; }
-        .custom-amount input { width: 100%; padding: 10px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 12px; text-align: center; margin-bottom: 12px; font-size: 14px; }
-        .bank-info { background: #f8f9fa; border-radius: 12px; padding: 12px; margin: 12px 0; }
-        .bank-info h4 { color: #1a1a2e; margin-bottom: 8px; font-size: 14px; }
-        .bank-detail { color: #888; font-size: 12px; margin: 4px 0; }
-        .bank-detail span { color: #1a1a2e; font-weight: bold; }
-        .withdraw-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #e91e63, #9c27b0); border: none; border-radius: 30px; color: #fff; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 8px; }
-        .back-btn { width: 100%; padding: 12px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 30px; color: #1a1a2e; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .message { padding: 10px; border-radius: 10px; text-align: center; margin-top: 10px; font-size: 12px; display: none; }
-        .message-success { background: #d4edda; color: #28a745; }
-        .message-error { background: #ffe0e0; color: #dc3545; }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto; background: #fff; display: flex; justify-content: space-around; padding: 6px 8px; border-top: 1px solid #eee; }
-        .nav-item { text-align: center; color: #888; cursor: pointer; font-size: 9px; flex: 1; }
-        .nav-item:hover { color: #e91e63; }
-        .nav-item img { width: 24px; height: 24px; display: block; margin: 0 auto 2px; opacity: 0.7; }
-        .nav-item.active { color: #e91e63; }
-        .terms-popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; justify-content: center; align-items: center; }
-        .terms-content { background: #fff; border-radius: 20px; padding: 20px; width: 90%; max-width: 360px; }
-        .terms-content h2 { color: #e91e63; text-align: center; margin-bottom: 12px; font-size: 18px; }
-        .terms-body { color: #555; font-size: 12px; line-height: 1.6; margin-bottom: 15px; max-height: 300px; overflow-y: auto; }
-        .terms-body li { padding: 5px 0; margin-left: 20px; }
-        .terms-accept-btn { width: 100%; padding: 12px; background: linear-gradient(135deg, #e91e63, #9c27b0); border: none; border-radius: 30px; color: #fff; font-weight: bold; cursor: pointer; margin-top: 8px; }
-        .terms-close-btn { width: 100%; padding: 10px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 30px; color: #1a1a2e; cursor: pointer; margin-top: 8px; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; }
-        .modal-content { background: #fff; border-radius: 20px; padding: 20px; width: 90%; max-width: 340px; }
-        .modal-content h3 { color: #1a1a2e; text-align: center; margin-bottom: 12px; }
-        .modal-btn { width: 100%; padding: 10px; background: linear-gradient(135deg, #e91e63, #9c27b0); border: none; border-radius: 10px; color: #fff; font-weight: bold; cursor: pointer; margin-top: 8px; }
-        .close-modal { background: #e9ecef; color: #1a1a2e; }
-        .modal-input { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; background: #f8f9fa; border-radius: 10px; }
-        .rate-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #eee; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        
+        body { background: #0f172a; color: #f8fafc; padding-bottom: 100px; min-height: 100vh; }
+        .app-container { max-width: 480px; margin: 0 auto; background: #0f172a; min-height: 100vh; padding: 16px; position: relative; }
+        
+        /* Modern Compact Inline Header Bar */
+        .app-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 4px 0 20px 0;
+            background: #0f172a;
+        }
+        .back-btn-top {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        
+        /* DURGA Animated Color Title */
+        .app-title {
+            font-weight: 800; font-size: 20px; letter-spacing: 2px;
+            background: linear-gradient(45deg, #3b82f6, #ef4444, #10b981, #f59e0b, #3b82f6);
+            background-size: 400% 400%; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: gradientShift 8s ease infinite;
+        }
+        @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        .balance-pill {
+            background: #1e293b;
+            border: 1px solid #334155;
+            padding: 6px 14px;
+            border-radius: 20px;
+            color: #10b981;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* Notice Banner Layout */
+        .notice-banner { background: rgba(59, 130, 246, 0.1); padding: 12px; border-radius: 12px; display: flex; align-items: center; gap: 10px; cursor: pointer; border: 1px solid rgba(59, 130, 246, 0.2); margin-bottom: 20px; }
+        .notice-text { flex: 1; color: #93c5fd; font-weight: 500; font-size: 12px; line-height: 1.4; }
+        .close-notice { background: none; border: none; color: #93c5fd; font-size: 14px; cursor: pointer; opacity: 0.6; }
+
+        /* Unified Single Screen Settlement Card */
+        .withdraw-card { background: #1e293b; border-radius: 16px; padding: 20px; border: 1px solid #334155; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        .withdraw-title { color: #f8fafc; font-size: 18px; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 16px; text-align: center; }
+        
+        /* Grid Quick Value Selectors */
+        .amount-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
+        .amount-btn { background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 14px 6px; text-align: center; font-size: 14px; font-weight: 700; color: #94a3b8; cursor: pointer; transition: all 0.2s ease; }
+        .amount-btn.active { background: #3b82f6; color: #fff; border-color: #3b82f6; box-shadow: 0 0 12px rgba(59, 130, 246, 0.3); }
+        
+        .custom-amount { background: #0f172a; border-radius: 10px; padding: 14px; margin-bottom: 18px; border: 1px solid #334155; }
+        .custom-amount input { width: 100%; background: transparent; border: none; outline: none; font-size: 16px; font-weight: 700; color: #fff; text-align: center; }
+        .custom-amount input::placeholder { color: #475569; }
+        
+        /* Bank Info Snapshot View Layer */
+        .bank-info { background: #0f172a; border-radius: 10px; padding: 14px; margin-bottom: 18px; border: 1px solid #334155; }
+        .bank-info h4 { color: #94a3b8; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+        .bank-detail { font-size: 13px; color: #cbd5e1; margin: 6px 0; display: flex; justify-content: space-between; }
+        .bank-detail span { color: #64748b; font-weight: 600; }
+
+        .withdraw-btn { width: 100%; padding: 14px; background: #3b82f6; border: none; border-radius: 10px; color: #fff; font-weight: 700; cursor: pointer; font-size: 14px; letter-spacing: 0.5px; text-transform: uppercase; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2); margin-bottom: 10px; }
+        .withdraw-btn:active { background: #2563eb; }
+        .back-btn { width: 100%; padding: 12px; background: #334155; border: none; border-radius: 10px; color: #cbd5e1; font-weight: 700; font-size: 14px; cursor: pointer; text-transform: uppercase; }
+        
+        .message { padding: 12px; border-radius: 8px; text-align: center; margin-top: 14px; font-size: 13px; font-weight: 600; display: none; }
+        .message-success { background: rgba(16, 185, 129, 0.1); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.2); }
+        .message-error { background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
+
+        /* Bottom Fixed Navigation Bar Matching Core Framework */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto; background: #1e293b; display: flex; justify-content: space-around; align-items: center; padding: 10px 6px 14px 6px; border-top: 1px solid #334155; z-index: 1000; height: 75px; }
+        .nav-item { text-align: center; color: #94a3b8; cursor: pointer; font-size: 13px; flex: 1; font-weight: 600; text-decoration: none; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; }
+        .nav-item.active { color: #3b82f6; }
+        .nav-item-home { position: relative; top: -20px; background: #3b82f6; color: #fff !important; width: 64px; height: 64px; max-width: 64px; border-radius: 50%; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4); border: 4px solid #0f172a; }
+        .nav-item-home span { font-size: 12px; font-weight: 700; }
+
+        /* Terms & Overlay Popup Layout Templates */
+        .terms-popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(4px); z-index: 9999; justify-content: center; align-items: center; }
+        .terms-content { background: #1e293b; border-radius: 16px; padding: 24px; width: 90%; max-width: 360px; border: 1px solid #334155; }
+        .terms-content h2 { color: #f8fafc; text-align: center; margin-bottom: 14px; font-size: 18px; font-weight: 700; }
+        .terms-body { color: #cbd5e1; font-size: 13px; line-height: 1.6; margin-bottom: 18px; }
+        .terms-body li { padding: 4px 0; margin-left: 16px; }
+        .terms-accept-btn { width: 100%; padding: 12px; background: #22c55e; border: none; border-radius: 8px; color: #fff; font-weight: 700; cursor: pointer; text-transform: uppercase; }
+        .terms-close-btn { width: 100%; padding: 10px; background: #334155; border: none; border-radius: 8px; color: #cbd5e1; font-weight: 700; cursor: pointer; margin-top: 8px; text-transform: uppercase; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: #1e293b; border-radius: 16px; padding: 24px; width: 90%; max-width: 340px; border: 1px solid #334155; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); }
+        .modal-content h3 { color: #f8fafc; margin-bottom: 16px; text-align: center; font-size: 18px; font-weight: 700; }
+        .modal-btn { width: 100%; padding: 11px; background: #3b82f6; border: none; border-radius: 8px; color: #fff; font-weight: 600; cursor: pointer; margin-top: 10px; font-size: 14px; }
+        .close-modal { background: #334155; color: #cbd5e1; }
+        .modal-input { width: 100%; padding: 10px 12px; margin: 8px 0; border: 1px solid #334155; background: #0f172a; border-radius: 8px; font-size: 14px; color: #fff; }
+        .rate-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #334155; font-size: 14px; color: #cbd5e1; }
     </style>
 </head>
 <body>
 <div class="app-container">
-    <div class="header"><img src="https://i.imgur.com/V4pMmxP.jpeg" alt="DURGA" class="logo-img"><div class="balance" onclick="showBalance()">₹<span id="userBalance">0</span></div></div>
-    <div class="profile-row" onclick="showProfileModal()"><div class="profile-avatar">🌸</div><div class="profile-info"><div class="profile-name" id="profileName">Loading...</div><div class="profile-phone" id="profilePhone">Loading...</div></div><div class="view-profile">View →</div></div>
-    <div id="noticeBoard" class="notice-board" onclick="showNoticeModal()"><div class="notice-icon">📜</div><div class="notice-text" id="noticeText">Welcome to DURGA!</div><button class="close-notice" onclick="event.stopPropagation(); closeNotice()">✕</button></div>
-    <div class="games-row"><div class="game-icon" onclick="showGames()"><img src="https://i.imgur.com/xaMlRtU.jpeg"><span>Games</span></div><div class="game-icon" onclick="location.href='deposit.html'"><img src="https://i.imgur.com/NvJCTli.png"><span>Deposit</span></div><div class="game-icon" onclick="location.href='withdraw.html'"><img src="https://i.imgur.com/3ZxjAIp.png"><span>Withdraw</span></div><div class="game-icon" onclick="location.href='mybids.html'"><img src="https://i.imgur.com/QhfWXLI.jpeg"><span>My Bids</span></div></div>
-    <div class="withdraw-card"><div class="withdraw-title">💸 WITHDRAW FUNDS</div>
-        <div class="amount-grid"><div class="amount-btn" onclick="selectAmount(500)">₹500</div><div class="amount-btn" onclick="selectAmount(1000)">₹1000</div><div class="amount-btn" onclick="selectAmount(2000)">₹2000</div><div class="amount-btn" onclick="selectAmount(5000)">₹5000</div><div class="amount-btn" onclick="selectAmount(10000)">₹10000</div><div class="amount-btn" onclick="selectAmount(25000)">₹25000</div></div>
-        <div class="custom-amount"><input type="number" id="withdrawAmount" placeholder="Custom amount (Min ₹500)"></div>
-        <div class="bank-info" id="bankDetailsDisplay"><h4>🏦 Bank Account Details</h4><div id="bankInfoContent">Loading...</div></div>
-        <button class="withdraw-btn" id="withdrawBtn">💸 REQUEST WITHDRAWAL</button>
-        <button class="back-btn" onclick="goBack()">← Back</button>
+    
+    <div class="app-header">
+        <button class="back-btn-top" onclick="goBack()">←</button>
+        <span class="app-title">DURGA</span>
+        <div class="balance-pill" onclick="showBalance()">₹<span id="userBalance">0</span></div>
+    </div>
+    
+    <div id="noticeBoard" class="notice-banner" onclick="showNoticeModal()">
+        <div class="notice-text" id="noticeText">Welcome to DURGA!</div>
+        <button class="close-notice" onclick="event.stopPropagation(); closeNotice()">✕</button>
+    </div>
+    
+    <div class="withdraw-card">
+        <div class="withdraw-title">Withdraw Cash</div>
+        <div class="amount-grid">
+            <div class="amount-btn" onclick="selectAmount(500)">₹500</div>
+            <div class="amount-btn" onclick="selectAmount(1000)">₹1000</div>
+            <div class="amount-btn" onclick="selectAmount(2000)">₹2000</div>
+            <div class="amount-btn" onclick="selectAmount(5000)">₹5000</div>
+            <div class="amount-btn" onclick="selectAmount(10000)">₹10000</div>
+            <div class="amount-btn" onclick="selectAmount(25000)">₹25000</div>
+        </div>
+        <div class="custom-amount">
+            <input type="number" id="withdrawAmount" placeholder="Enter custom amount (Min ₹500)">
+        </div>
+        <div class="bank-info" id="bankDetailsDisplay">
+            <h4>🏦 Active Bank Destination</h4>
+            <div id="bankInfoContent">Loading accounts...</div>
+        </div>
+        <button class="withdraw-btn" id="withdrawBtn">Submit Cashout Request</button>
+        <button class="back-btn" onclick="goBack()">Return to Dashboard</button>
         <div id="message" class="message"></div>
     </div>
-    <div class="bottom-nav"><div class="nav-item" onclick="location.href='dashboard.html'"><img src="https://i.imgur.com/StGZq3Y.png"><span>Home</span></div><div class="nav-item" onclick="location.href='mybids.html'"><img src="https://i.imgur.com/rUWwMYm.png"><span>Passbook</span></div><div class="nav-item" onclick="location.href='mybids.html'"><img src="https://i.imgur.com/QhfWXLI.jpeg"><span>My Bids</span></div><div class="nav-item active" onclick="location.href='funds.html'"><img src="https://i.imgur.com/NvJCTli.png"><span>Fund</span></div><div class="nav-item" onclick="location.href='chat.html'"><img src="https://i.imgur.com/ug9IprL.jpeg"><span>Support</span></div></div>
+    
+    <div class="bottom-nav">
+        <a href="mybids.html" class="nav-item"><span>Passbook</span></a>
+        <a href="mybids.html" class="nav-item"><span>My Bids</span></a>
+        <a href="dashboard.html" class="nav-item nav-item-home"><span>Home</span></a>
+        <a href="funds.html" class="nav-item"><span>Fund</span></a>
+        <a href="chat.html" class="nav-item"><span>Support</span></a>
+    </div>
 </div>
 
-<div id="termsPopup" class="terms-popup"><div class="terms-content"><h2>🌸 TERMS & CONDITIONS</h2><div class="terms-body"><ul><li>Minimum withdraw: ₹500</li><li>Maximum withdraw: ₹2.5 lakh/day</li><li>Up to ₹1,00,000 – automatic</li><li>Above ₹1,00,000 – manual approval</li><li>Processing: 10-60 minutes</li><li>Available all 7 days</li></ul></div><button class="terms-accept-btn" onclick="acceptTermsAndWithdraw()">✓ I AGREE & CONTINUE</button><button class="terms-close-btn" onclick="closeTermsPopup()">✗ Cancel</button></div></div>
+<div id="termsPopup" class="terms-popup"><div class="terms-content"><h2>🌸 PROCESSING POLICY</h2><div class="terms-body"><ul><li>Minimum settlement withdrawal: ₹500</li><li>Maximum ceiling threshold limit: ₹2.5 Lakh/day</li><li>Up to ₹1,00,000 – Instantly automated execution</li><li>Above ₹1,00,000 – Manual ledger authorization</li><li>Processing settlement velocity: 10-60 minutes</li><li>Operational runtime calendar: Available all 7 days</li></ul></div><button class="terms-accept-btn" onclick="acceptTermsAndWithdraw()">I Agree, Continue</button><button class="terms-close-btn" onclick="closeTermsPopup()">Cancel</button></div></div>
 
-<div id="profileModal" class="modal"><div class="modal-content"><h3>🌸 My Profile</h3><div id="profileInfo"></div><button class="modal-btn" onclick="showGameRatesModal()">🎲 Game Rates</button><button class="modal-btn" onclick="showChangePinModal()">🔐 Change MPIN</button><button class="modal-btn" onclick="showBankModal()">🏦 Bank Details</button><button class="modal-btn close-modal" onclick="closeProfileModal()">Close</button></div></div>
+<div id="profileModal" class="modal"><div class="modal-content"><h3>My Profile</h3><div id="profileInfo"></div><button class="modal-btn" onclick="showGameRatesModal()">🎲 Game Rates</button><button class="modal-btn" onclick="showChangePinModal()">🔐 Change MPIN</button><button class="modal-btn" onclick="showBankModal()">🏦 Bank Details</button><button class="modal-btn close-modal" onclick="closeProfileModal()">Close</button></div></div>
 <div id="gameRatesModal" class="modal"><div class="modal-content"><h3>🎲 GAME RATES</h3><div class="rate-row"><span>Single Digit</span><span>10x</span></div><div class="rate-row"><span>Jodi</span><span>100x</span></div><div class="rate-row"><span>Single Pana</span><span>160x</span></div><div class="rate-row"><span>Double Pana</span><span>320x</span></div><div class="rate-row"><span>Triple Pana</span><span>1000x</span></div><div class="rate-row"><span>Half Sangam A</span><span>1000x</span></div><div class="rate-row"><span>Half Sangam B</span><span>1000x</span></div><div class="rate-row"><span>Full Sangam</span><span>10000x</span></div><button class="modal-btn close-modal" onclick="closeGameRatesModal()">Close</button></div></div>
-<div id="changePinModal" class="modal"><div class="modal-content"><h3>🔐 Change MPIN</h3><input type="password" id="oldPin" class="modal-input" placeholder="Current MPIN" maxlength="4"><input type="password" id="newPin" class="modal-input" placeholder="New MPIN" maxlength="4"><input type="password" id="confirmPin" class="modal-input" placeholder="Confirm MPIN" maxlength="4"><button class="modal-btn" onclick="updatePin()">Update</button><button class="modal-btn close-modal" onclick="closeChangePinModal()">Cancel</button><div id="pinMsg"></div></div></div>
-<div id="bankModal" class="modal"><div class="modal-content"><h3>🏦 Bank Details</h3><input type="text" id="bankAccountHolder" class="modal-input" placeholder="Account Holder"><input type="text" id="bankName" class="modal-input" placeholder="Bank Name"><input type="text" id="bankAccountNumber" class="modal-input" placeholder="Account Number"><input type="text" id="bankIfsc" class="modal-input" placeholder="IFSC"><button class="modal-btn" onclick="saveBankDetails()">Save</button><button class="modal-btn close-modal" onclick="closeBankModal()">Cancel</button><div id="bankMsg"></div></div></div>
+<div id="changePinModal" class="modal"><div class="modal-content"><h3>🔐 Change MPIN</h3><input type="password" id="oldPin" class="modal-input" placeholder="Current MPIN" maxlength="4"><input type="password" id="newPin" class="modal-input" placeholder="New MPIN" maxlength="4"><input type="password" id="confirmPin" class="modal-input" placeholder="Confirm MPIN" maxlength="4"><button class="modal-btn" onclick="updatePin()">Update</button><button class="modal-btn close-modal" onclick="closeChangePinModal()">Cancel</button><div id="pinMsg" style="text-align:center; color:#f87171; margin-top:6px; font-size:13px;"></div></div></div>
+<div id="bankModal" class="modal"><div class="modal-content"><h3>🏦 Bank Details</h3><input type="text" id="bankAccountHolder" class="modal-input" placeholder="Account Holder"><input type="text" id="bankName" class="modal-input" placeholder="Bank Name"><input type="text" id="bankAccountNumber" class="modal-input" placeholder="Account Number"><input type="text" id="bankIfsc" class="modal-input" placeholder="IFSC"><button class="modal-btn" onclick="saveBankDetails()">Save</button><button class="modal-btn close-modal" onclick="closeBankModal()">Cancel</button><div id="bankMsg" style="text-align:center; color:#34d399; margin-top:6px; font-size:13px;"></div></div></div>
 
 <script>
     const firebaseConfig = { apiKey: "AIzaSyBeGpb7V0i5GN1opY9JECHxQIGvHFDPX38", authDomain: "win777-ed482.firebaseapp.com", projectId: "win777-ed482", storageBucket: "win777-ed482.firebasestorage.app", messagingSenderId: "843686112399", appId: "1:843686112399:web:9c20a96831e6a94cd814fa" };
@@ -94,49 +166,79 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
     
-    // ========== LAST ACTIVE TRACKING ==========
     function updateLastActive() {
         if (auth.currentUser) {
             db.collection('users').doc(auth.currentUser.uid).update({
                 lastActive: firebase.firestore.FieldValue.serverTimestamp()
-            }).catch(e => console.log("Last active update error:", e));
+            }).catch(e => console.log("Last active check failure logs emitted."));
         }
     }
     setInterval(updateLastActive, 30000);
     updateLastActive();
     document.addEventListener('visibilitychange', () => { if (!document.hidden) updateLastActive(); });
     ['click', 'touchstart', 'scroll'].forEach(ev => document.addEventListener(ev, () => updateLastActive()));
-    // ========== END LAST ACTIVE TRACKING ==========
     
     let currentUser=null, currentUserData=null, selectedAmount=500, pendingAmount=0, pendingBankDetails=null;
     
     auth.onAuthStateChanged(async (user) => { if (!user) window.location.href='index.html'; else { currentUser=user; await loadUserData(); loadBankDetails(); listenToNotice(); } });
-    async function loadUserData(){ let doc=await db.collection('users').doc(currentUser.uid).get(); if(doc.exists){ currentUserData=doc.data(); document.getElementById('userBalance').innerText=currentUserData.balance||0; document.getElementById('profileName').innerHTML=currentUserData.name||'User'; document.getElementById('profilePhone').innerHTML=currentUserData.phone||''; } }
-    async function loadBankDetails(){ let doc=await db.collection('users').doc(currentUser.uid).get(); let bank=doc.data()?.bankDetails; let container=document.getElementById('bankInfoContent'); if(bank && bank.accountNumber){ container.innerHTML=`<div class="bank-detail"><span>Holder:</span> ${bank.accountHolder||'N/A'}</div><div class="bank-detail"><span>Bank:</span> ${bank.bankName||'N/A'}</div><div class="bank-detail"><span>Account:</span> ${bank.accountNumber||'N/A'}</div><div class="bank-detail"><span>IFSC:</span> ${bank.ifscCode||'N/A'}</div>`; pendingBankDetails=bank; } else { container.innerHTML='<div style="color:#dc3545;">⚠️ No bank details found. Add in Profile → Bank Details</div>'; pendingBankDetails=null; } }
-    function selectAmount(amt){ selectedAmount=amt; document.querySelectorAll('.amount-btn').forEach(b=>b.classList.remove('active')); event.target.classList.add('active'); document.getElementById('withdrawAmount').value=''; }
+    
+    async function loadUserData(){ let doc=await db.collection('users').doc(currentUser.uid).get(); if(doc.exists){ currentUserData=doc.data(); document.getElementById('userBalance').innerText=currentUserData.balance||0; } }
+    
+    async function loadBankDetails(){ 
+        let doc=await db.collection('users').doc(currentUser.uid).get(); 
+        let bank=doc.data()?.bankDetails; 
+        let container=document.getElementById('bankInfoContent'); 
+        if(bank && bank.accountNumber){ 
+            container.innerHTML=`<div class="bank-detail"><span>Holder:</span> ${bank.accountHolder||'N/A'}</div><div class="bank-detail"><span>Bank Name:</span> ${bank.bankName||'N/A'}</div><div class="bank-detail"><span>Account:</span> ${bank.accountNumber||'N/A'}</div><div class="bank-detail"><span>IFSC:</span> ${bank.ifscCode||'N/A'}</div>`; 
+            pendingBankDetails=bank; 
+        } else { 
+            container.innerHTML='<div style="color:#f87171; font-weight:600; text-align:center; font-size:12px; padding:6px 0;">⚠️ Bank coordinates unverified. Bind destination within Bank Details profile layer.</div>'; 
+            pendingBankDetails=null; 
+        } 
+    }
+    
+    function selectAmount(amt){ selectedAmount=amt; document.querySelectorAll('.amount-btn').forEach(b=>b.classList.remove('active')); if(event && event.target) event.target.classList.add('active'); document.getElementById('withdrawAmount').value=''; }
     function getAmount(){ let amt=selectedAmount; let custom=parseInt(document.getElementById('withdrawAmount').value); if(custom&&custom>=500) amt=custom; return amt; }
     function showMessage(msg,type){ let d=document.getElementById('message'); d.innerText=msg; d.className=`message message-${type}`; d.style.display='block'; setTimeout(()=>d.style.display='none',4000); }
+    
     function showTermsPopup(){ let amt=getAmount(); if(amt<500){ showMessage('Minimum ₹500','error'); return; } if(amt>2500000){ showMessage('Maximum ₹25,00,000','error'); return; } if(amt>(currentUserData?.balance||0)){ showMessage(`Insufficient balance! You have ₹${currentUserData?.balance||0}`,'error'); return; } if(!pendingBankDetails){ showMessage('Please add bank details first!','error'); setTimeout(()=>showBankModal(),2000); return; } pendingAmount=amt; document.getElementById('termsPopup').style.display='flex'; }
     function closeTermsPopup(){ document.getElementById('termsPopup').style.display='none'; pendingAmount=0; }
-    async function acceptTermsAndWithdraw(){ document.getElementById('termsPopup').style.display='none'; let amt=pendingAmount; if(!amt) return; let requestType=amt>100000?"manual":"automatic"; if(confirm(`Withdraw ₹${amt}?\nBank: ${pendingBankDetails.bankName}\nAccount: ${pendingBankDetails.accountNumber}`)){ let btn=document.getElementById('withdrawBtn'); btn.disabled=true; btn.innerText='Processing...'; await db.collection('withdrawRequests').add({ userId:currentUser.uid, amount:amt, bankDetails:pendingBankDetails, requestType:requestType, status:'Pending', date:firebase.firestore.FieldValue.serverTimestamp() }); await db.collection('transactions').add({ userId:currentUser.uid, type:'debit', amount:amt, status:'Pending', date:firebase.firestore.FieldValue.serverTimestamp(), description:'Withdrawal Request' }); showMessage(`✅ ₹${amt} request sent! Process within 10-60 min.`,'success'); btn.disabled=false; btn.innerText='💸 REQUEST WITHDRAWAL'; pendingAmount=0; setTimeout(()=>goBack(),2500); } }
+    
+    async function acceptTermsAndWithdraw(){ 
+        document.getElementById('termsPopup').style.display='none'; 
+        let amt=pendingAmount; if(!amt) return; 
+        let requestType=amt>100000?"manual":"automatic"; 
+        if(confirm(`Withdraw ₹${amt}?\nBank: ${pendingBankDetails.bankName}\nAccount: ${pendingBankDetails.accountNumber}`)){ 
+            let btn=document.getElementById('withdrawBtn'); btn.disabled=true; btn.innerText='Processing...'; 
+            await db.collection('withdrawRequests').add({ userId:currentUser.uid, amount:amt, bankDetails:pendingBankDetails, requestType:requestType, status:'Pending', date:firebase.firestore.FieldValue.serverTimestamp() }); 
+            await db.collection('transactions').add({ userId:currentUser.uid, type:'debit', amount:amt, status:'Pending', date:firebase.firestore.FieldValue.serverTimestamp(), description:'Withdrawal Request' }); 
+            showMessage(`✅ ₹${amt} request sent! Process within 10-60 min.`,'success'); 
+            btn.disabled=false; btn.innerText='Submit Cashout Request'; pendingAmount=0; 
+            setTimeout(()=>goBack(),2500); 
+        } 
+    }
+    
     function showBalance(){ alert(`💰 Balance: ₹${currentUserData?.balance||0}`); }
     function goBack(){ window.location.href='dashboard.html'; }
     function showGames(){ alert('Games coming soon!'); }
-    function showNoticeModal(){ alert(document.getElementById('noticeText').innerText); }
+    function showNoticeModal(){ db.collection('settings').doc('notice').get().then(d => { alert(d.exists ? d.data().text : 'Welcome to DURGA!'); }); }
     function closeNotice(){ document.getElementById('noticeBoard').style.display='none'; }
-    function showProfileModal(){ if(currentUserData){ document.getElementById('profileInfo').innerHTML=`<div style="text-align:center;"><div style="font-size:18px;">${currentUserData.name}</div><div style="color:#888;">${currentUserData.phone}</div><div style="font-size:18px;">₹${currentUserData.balance}</div></div>`; document.getElementById('profileModal').style.display='flex'; } }
+    
+    function showProfileModal(){ if(currentUserData){ document.getElementById('profileInfo').innerHTML=`<div style="text-align:center;"><div style="font-size:18px; font-weight:700; color:#cbd5e1;">${currentUserData.name}</div><div style="color:#64748b; font-size:13px; margin:2px 0 6px 0;">${currentUserData.phone}</div><div style="font-size:20px; font-weight:800; color:#10b981;">₹${currentUserData.balance}</div></div>`; document.getElementById('profileModal').style.display='flex'; } }
     function closeProfileModal(){ document.getElementById('profileModal').style.display='none'; }
     function showGameRatesModal(){ closeProfileModal(); document.getElementById('gameRatesModal').style.display='flex'; }
     function closeGameRatesModal(){ document.getElementById('gameRatesModal').style.display='none'; }
     function showChangePinModal(){ closeProfileModal(); document.getElementById('changePinModal').style.display='flex'; }
     function closeChangePinModal(){ document.getElementById('changePinModal').style.display='none'; document.getElementById('pinMsg').innerHTML=''; }
-    async function updatePin(){ let old=document.getElementById('oldPin').value, newP=document.getElementById('newPin').value, confirm=document.getElementById('confirmPin').value; if(!old||!newP||!confirm){ document.getElementById('pinMsg').innerHTML='Fill all fields'; return; } if(newP.length!==4||!/^\d{4}$/.test(newP)){ document.getElementById('pinMsg').innerHTML='MPIN must be 4 digits'; return; } if(newP!==confirm){ document.getElementById('pinMsg').innerHTML='MPINs do not match'; return; } if(old!==currentUserData.pin){ document.getElementById('pinMsg').innerHTML='Current MPIN incorrect'; return; } await db.collection('users').doc(currentUser.uid).update({pin:newP}); currentUserData.pin=newP; document.getElementById('pinMsg').innerHTML='✅ MPIN changed!'; document.getElementById('pinMsg').style.color='#28a745'; setTimeout(()=>closeChangePinModal(),1500); }
+    async function updatePin(){ let old=document.getElementById('oldPin').value, newP=document.getElementById('newPin').value, confirm=document.getElementById('confirmPin').value; if(!old||!newP||!confirm){ document.getElementById('pinMsg').innerHTML='Fill all fields'; return; } if(newP.length!==4||!/^\d{4}$/.test(newP)){ document.getElementById('pinMsg').innerHTML='MPIN must be 4 digits'; return; } if(newP!==confirm){ document.getElementById('pinMsg').innerHTML='MPINs do not match'; return; } if(old!==currentUserData.pin){ document.getElementById('pinMsg').innerHTML='Current MPIN incorrect'; return; } await db.collection('users').doc(currentUser.uid).update({pin:newP}); currentUserData.pin=newP; document.getElementById('pinMsg').innerHTML='✅ MPIN changed!'; document.getElementById('pinMsg').style.color='#10b981'; setTimeout(()=>closeChangePinModal(),1500); }
     function showBankModal(){ closeProfileModal(); let b=currentUserData?.bankDetails; if(b){ document.getElementById('bankAccountHolder').value=b.accountHolder||''; document.getElementById('bankName').value=b.bankName||''; document.getElementById('bankAccountNumber').value=b.accountNumber||''; document.getElementById('bankIfsc').value=b.ifscCode||''; } document.getElementById('bankModal').style.display='flex'; }
     function closeBankModal(){ document.getElementById('bankModal').style.display='none'; document.getElementById('bankMsg').innerHTML=''; }
     async function saveBankDetails(){ let ah=document.getElementById('bankAccountHolder').value.trim(), bn=document.getElementById('bankName').value.trim(), an=document.getElementById('bankAccountNumber').value.trim(), ifsc=document.getElementById('bankIfsc').value.trim(); if(!ah||!bn||!an||!ifsc){ document.getElementById('bankMsg').innerHTML='Fill all fields'; return; } await db.collection('users').doc(currentUser.uid).update({bankDetails:{accountHolder:ah,bankName:bn,accountNumber:an,ifscCode:ifsc}}); currentUserData.bankDetails={accountHolder:ah,bankName:bn,accountNumber:an,ifscCode:ifsc}; document.getElementById('bankMsg').innerHTML='✅ Saved!'; setTimeout(()=>closeBankModal(),1500); loadBankDetails(); }
-    function listenToNotice(){ db.collection('settings').doc('notice').onSnapshot(doc=>{ let text=doc.exists?doc.data().text:'Welcome to DURGA!'; document.getElementById('noticeText').innerHTML=text; }); }
+    
+    db.collection('settings').doc('notice').onSnapshot(doc=>{ document.getElementById('noticeText').innerHTML=doc.exists?doc.data().text:'Welcome to DURGA!'; });
     document.getElementById('withdrawBtn').onclick=showTermsPopup;
-    window.selectAmount=selectAmount; window.showBalance=showBalance; window.showProfileModal=showProfileModal; window.closeProfileModal=closeProfileModal; window.showGameRatesModal=showGameRatesModal; window.closeGameRatesModal=closeGameRatesModal; window.showChangePinModal=showChangePinModal; window.closeChangePinModal=closeChangePinModal; window.updatePin=updatePin; window.showBankModal=showBankModal; window.closeBankModal=closeBankModal; window.saveBankDetails=saveBankDetails; window.closeNotice=closeNotice; window.showGames=showGames; window.showTermsPopup=showTermsPopup; window.closeTermsPopup=closeTermsPopup; window.acceptTermsAndWithdraw=acceptTermsAndWithdraw;
+    
+    window.selectAmount=selectAmount; window.showBalance=showBalance; window.showProfileModal=showProfileModal; window.closeProfileModal=closeProfileModal; window.showGameRatesModal=showGameRatesModal; window.closeGameRatesModal=closeGameRatesModal; window.showChangePinModal=showChangePinModal; window.closeChangePinModal=closeChangePinModal; window.updatePin=updatePin; window.showBankModal=showBankModal; window.closeBankModal=closeBankModal; window.saveBankDetails=saveBankDetails; window.closeNotice=closeNotice; window.showGames=showGames; window.showTermsPopup=showTermsPopup; window.closeTermsPopup=closeTermsPopup; window.acceptTermsAndWithdraw=acceptTermsAndWithdraw; window.goBack=goBack;
 </script>
 </body>
 </html>
