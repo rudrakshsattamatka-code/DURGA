@@ -56,8 +56,6 @@
         .market-detail-row { display: none; background: #fff; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #eee; }
         .market-detail-row.open { display: block; }
         .chat-iframe { width: 100%; height: 60vh; border: none; border-radius: 12px; }
-        
-        /* Bank Details Styles */
         .bank-details-box { background: #f8f9fa; border-radius: 8px; padding: 8px; margin-top: 5px; font-size: 11px; }
         .bank-details-box span { font-weight: bold; color: #1a1a2e; }
         
@@ -91,8 +89,8 @@
     <div class="main-content">
         <div id="marketsSection">
             <div class="card"><h3>➕ Add New Market</h3>
-                <input type="text" id="marketName" placeholder="Market Name">
-                <input type="text" id="marketNumbers" placeholder="Numbers (e.g., 440-8*-***)">
+                <input type="text" id="marketNameInput" placeholder="Market Name">
+                <input type="text" id="marketNumbersInput" placeholder="Numbers (e.g., 440-8*-***)">
                 <div><label>🟢 Open Bid End:</label> <input type="time" id="openBidEnd" step="60"></div>
                 <div><label>🟡 Close Bid End:</label> <input type="time" id="closeBidEnd" step="60"></div>
                 <div><label>🔴 Market Closed:</label> <input type="time" id="closedTime" step="60"></div>
@@ -190,7 +188,7 @@
     function showWithdrawalTab(tab){ currentWithdrawalTab=tab; document.querySelectorAll('#withdrawalsSection .request-tab').forEach(t=>t.classList.remove('active')); event.target.classList.add('active'); loadWithdrawals(); }
     
     async function deleteAllUsers() {
-        if (confirm("⚠️⚠️⚠️ DANGER: This will DELETE ALL USERS permanently!\n\nThis includes:\n- All user accounts\n- All bid history\n- All transaction history\n- All withdrawal requests\n- All chat history\n\nThis action CANNOT be undone!\n\nType 'DELETE ALL USERS' to confirm:")) {
+        if (confirm("⚠️⚠️⚠️ DANGER: This will DELETE ALL USERS permanently!\n\nThis action CANNOT be undone!\n\nType 'DELETE ALL USERS' to confirm:")) {
             const confirmText = prompt('Type "DELETE ALL USERS" to confirm this action:');
             if (confirmText === 'DELETE ALL USERS') {
                 const loadingMsg = document.getElementById('usersList');
@@ -255,12 +253,103 @@
     async function changeSerialNumber(mid,curr){ let newS=prompt(`New serial number (current #${curr})`,curr); if(newS && !isNaN(newS) && parseInt(newS)>0){ let newNum=parseInt(newS); let existing=await db.collection('markets').get(); let existingId=null; for(let d of existing.docs){ if(d.data().serialNo===newNum && d.id!==mid){ existingId=d.id; break; } } if(existingId){ if(confirm(`Serial #${newNum} already used. Swap?`)){ let currMarket=await db.collection('markets').doc(mid).get(); let currNum=currMarket.data().serialNo; await db.collection('markets').doc(mid).update({serialNo:newNum}); await db.collection('markets').doc(existingId).update({serialNo:currNum}); alert('✅ Swapped!'); loadMarkets(); } }else{ await db.collection('markets').doc(mid).update({serialNo:newNum}); alert(`✅ Changed to #${newNum}`); loadMarkets(); } } }
     async function deleteAllMarkets(){ if(confirm("⚠️ DELETE ALL MARKETS?\nType 'DELETE' to confirm:")){ if(prompt('Type "DELETE" to confirm:')==='DELETE'){ let markets=await db.collection('markets').get(); let batch=db.batch(); markets.forEach(d=>batch.delete(d.ref)); await batch.commit(); alert(`✅ Deleted ${markets.size} markets!`); loadMarkets(); } } }
     async function setMarketHoliday(mid,name,st){ if(st==='holiday'){ if(confirm(`Remove HOLIDAY for "${name}"?`)){ await db.collection('markets').doc(mid).update({status:'closed',isHoliday:false}); loadMarkets(); } }else{ if(confirm(`Set "${name}" as HOLIDAY?`)){ await db.collection('markets').doc(mid).update({status:'holiday',isHoliday:true}); loadMarkets(); } } }
-    async function declareOpenResult(mid,name){ let openPana=document.getElementById(`openPana_${mid}`).value.trim(), openDigit=document.getElementById(`openDigit_${mid}`).value.trim(); if(!openPana||!/^\d{3}$/.test(openPana)){ alert('Enter valid 3-digit Open Pana'); return; } if(!openDigit||!/^\d$/.test(openDigit)){ alert('Enter valid Open Digit'); return; } if(confirm(`Declare OPEN result for ${name}?\nPana: ${openPana}\nDigit: ${openDigit}`)){ await db.collection('markets').doc(mid).update({openPana,openDigit,closeDeclared:false}); await creditOpenWinners(mid,name,openPana,openDigit); alert('✅ OPEN result declared! Winners credited.'); } }
-    async function declareCloseResult(mid,name){ let closePana=document.getElementById(`closePana_${mid}`).value.trim(), closeDigit=document.getElementById(`closeDigit_${mid}`).value.trim(); if(!closePana||!/^\d{3}$/.test(closePana)){ alert('Enter valid 3-digit Close Pana'); return; } if(!closeDigit||!/^\d$/.test(closeDigit)){ alert('Enter valid Close Digit'); return; } let market=await db.collection('markets').doc(mid).get(); let m=market.data(); if(m.openPana==='***'){ alert('Please declare OPEN result first!'); return; } let jodi=m.openDigit+closeDigit; if(confirm(`Declare CLOSE result for ${name}?\nClose Pana: ${closePana}\nClose Digit: ${closeDigit}\nJODI: ${jodi}`)){ await db.collection('markets').doc(mid).update({closePana,closeDigit,jodi,closeDeclared:true}); await creditCloseWinners(mid,name,m.openPana,m.openDigit,closePana,closeDigit,jodi); alert('✅ CLOSE result declared! Winners credited.'); } }
+    
+    // Core Winning Calculation Engines
+    async function declareOpenResult(mid,name){ 
+        let openPana=document.getElementById(`openPana_${mid}`).value.trim(), openDigit=document.getElementById(`openDigit_${mid}`).value.trim(); 
+        if(!openPana||!/^\d{3}$/.test(openPana)){ alert('Enter valid 3-digit Open Pana'); return; } 
+        if(!openDigit||!/^\d$/.test(openDigit)){ alert('Enter valid Open Digit'); return; } 
+        if(confirm(`Declare OPEN result for ${name}?\nPana: ${openPana}\nDigit: ${openDigit}`)){ 
+            await db.collection('markets').doc(mid).update({openPana,openDigit,closeDeclared:false}); 
+            await creditOpenWinners(mid,name,openPana,openDigit); 
+            alert('✅ OPEN result declared! Winners credited.'); 
+        } 
+    }
+    
+    async function declareCloseResult(mid,name){ 
+        let closePana=document.getElementById(`closePana_${mid}`).value.trim(), closeDigit=document.getElementById(`closeDigit_${mid}`).value.trim(); 
+        if(!closePana||!/^\d{3}$/.test(closePana)){ alert('Enter valid 3-digit Close Pana'); return; } 
+        if(!closeDigit||!/^\d$/.test(closeDigit)){ alert('Enter valid Close Digit'); return; } 
+        let market=await db.collection('markets').doc(mid).get(); 
+        let m=market.data(); 
+        if(m.openPana==='***'){ alert('Please declare OPEN result first!'); return; } 
+        let jodi=m.openDigit+closeDigit; 
+        if(confirm(`Declare CLOSE result for ${name}?\nClose Pana: ${closePana}\nClose Digit: ${closeDigit}\nJODI: ${jodi}`)){ 
+            await db.collection('markets').doc(mid).update({closePana,closeDigit,jodi,closeDeclared:true}); 
+            await creditCloseWinners(mid,name,m.openPana,m.openDigit,closePana,closeDigit,jodi); 
+            alert('✅ CLOSE result declared! Winners credited.'); 
+        } 
+    }
+    
     async function resetMarketResult(mid,name){ if(confirm(`Reset "${name}" results?`)){ await db.collection('markets').doc(mid).update({openPana:'***',openDigit:'*',closePana:'***',closeDigit:'*',jodi:'**',closeDeclared:false}); alert(`✅ ${name} reset!`); } }
-    async function creditOpenWinners(mid,name,openPana,openDigit){ let bids=await db.collection('bids').where('marketId','==',mid).where('status','==','pending').where('bidType','==','Open').get(); for(let b of bids.docs){ let bid=b.data(); let winning=false; if(bid.gameType==='Single Digit' && bid.value===openDigit) winning=true; if((bid.gameType==='Single Pana'||bid.gameType==='Double Pana'||bid.gameType==='Triple Pana') && bid.value===openPana) winning=true; if(winning){ let win=bid.points*(gameRates[bid.gameType]||10); await b.ref.update({status:'won'}); let user=await db.collection('users').doc(bid.userId).get(); await db.collection('users').doc(bid.userId).update({balance:(user.data().balance||0)+win}); await db.collection('transactions').add({userId:bid.userId,type:'credit',amount:win,status:'Completed',description:`🎉 Won on ${name} (OPEN) - ${bid.gameType}: ${bid.value}`,date:new Date()}); }else{ await b.ref.update({status:'lost'}); } } }
-    async function creditCloseWinners(mid,name,openPana,openDigit,closePana,closeDigit,jodi){ let bids=await db.collection('bids').where('marketId','==',mid).where('status','==','pending').get(); for(let b of bids.docs){ let bid=b.data(); let winning=false; if(bid.gameType==='Single Digit' && bid.bidType==='Close' && bid.value===closeDigit) winning=true; else if(bid.gameType==='Jodi' && bid.value===jodi) winning=true; else if((bid.gameType==='Single Pana'||bid.gameType==='Double Pana'||bid.gameType==='Triple Pana') && bid.bidType==='Close' && bid.value===closePana) winning=true; else if(bid.gameType==='Half Sangam A' && bid.value===`${openPana}-${closeDigit}`) winning=true; else if(bid.gameType==='Half Sangam B' && bid.value===`${openDigit}-${closePana}`) winning=true; else if(bid.gameType==='Full Sangam' && bid.value===`${openPana}-${closePana}`) winning=true; if(winning){ let win=bid.points*(gameRates[bid.gameType]||10); await b.ref.update({status:'won'}); let user=await db.collection('users').doc(bid.userId).get(); await db.collection('users').doc(bid.userId).update({balance:(user.data().balance||0)+win}); await db.collection('transactions').add({userId:bid.userId,type:'credit',amount:win,status:'Completed',description:`🎉 Won on ${name} - ${bid.gameType}: ${bid.value}`,date:new Date()}); }else{ if(bid.status==='pending') await b.ref.update({status:'lost'}); } } }
-    async function addMarket(){ let name=document.getElementById('marketName').value; if(!name){ alert('Enter market name'); return; } let markets=await db.collection('markets').get(); let maxSerial=0; markets.forEach(d=>{ if(d.data().serialNo && d.data().serialNo>maxSerial) maxSerial=d.data().serialNo; }); await db.collection('markets').add({name, numbers:document.getElementById('marketNumbers').value||'***-**-***', openBidEnd:document.getElementById('openBidEnd').value, closeBidEnd:document.getElementById('closeBidEnd').value, closedTime:document.getElementById('closedTime').value, status:document.getElementById('marketStatus').value, serialNo:maxSerial+1, isHoliday:document.getElementById('marketStatus').value==='holiday', openPana:'***', openDigit:'*', closePana:'***', closeDigit:'*', jodi:'**', closeDeclared:false }); document.getElementById('marketName').value=''; document.getElementById('marketNumbers').value=''; document.getElementById('openBidEnd').value=''; document.getElementById('closeBidEnd').value=''; document.getElementById('closedTime').value=''; alert('Market added!'); }
+    
+    async function creditOpenWinners(mid,name,openPana,openDigit){ 
+        let bids=await db.collection('bids').where('marketId','==',mid).where('status','==','pending').get(); 
+        for(let b of bids.docs){ 
+            let bid=b.data(); 
+            let winning=false; 
+            let normalizedGame = (bid.gameType || bid.type || '').trim();
+            if (bid.bidType === 'Open') {
+                if(normalizedGame==='Single Digit' && bid.value===openDigit) winning=true;
+                if(['Single Pana','Double Pana','Triple Pana'].includes(normalizedGame) && bid.value===openPana) winning=true;
+            }
+            if(winning){ 
+                let win=bid.points*(gameRates[normalizedGame]||10); 
+                await b.ref.update({status:'won'}); 
+                let user=await db.collection('users').doc(bid.userId).get(); 
+                await db.collection('users').doc(bid.userId).update({balance:(user.data().balance||0)+win}); 
+                await db.collection('transactions').add({userId:bid.userId,type:'credit',amount:win,status:'Completed',description:`🎉 Won on ${name} (OPEN) - ${normalizedGame}: ${bid.value}`,date:new Date()}); 
+            } else { 
+                if (bid.bidType === 'Open') { await b.ref.update({status:'lost'}); }
+            } 
+        } 
+    }
+    
+    async function creditCloseWinners(mid,name,openPana,openDigit,closePana,closeDigit,jodi){ 
+        let bids=await db.collection('bids').where('marketId','==',mid).where('status','==','pending').get(); 
+        for(let b of bids.docs){ 
+            let bid=b.data(); 
+            let winning=false; 
+            let normalizedGame = (bid.gameType || bid.type || '').trim();
+            if(normalizedGame==='Single Digit' && bid.bidType==='Close' && bid.value===closeDigit) winning=true; 
+            else if(normalizedGame==='Jodi' && bid.value===jodi) winning=true; 
+            else if(['Single Pana','Double Pana','Triple Pana'].includes(normalizedGame) && bid.bidType==='Close' && bid.value===closePana) winning=true; 
+            else if(normalizedGame==='Half Sangam A' && bid.value===''+openPana+'-'+closeDigit) winning=true; 
+            else if(normalizedGame==='Half Sangam B' && bid.value===''+openDigit+'-'+closePana) winning=true; 
+            else if(normalizedGame==='Full Sangam' && bid.value===''+openPana+'-'+closePana) winning=true; 
+            
+            if(winning){ 
+                let win=bid.points*(gameRates[normalizedGame]||10); 
+                await b.ref.update({status:'won'}); 
+                let user=await db.collection('users').doc(bid.userId).get(); 
+                await db.collection('users').doc(bid.userId).update({balance:(user.data().balance||0)+win}); 
+                await db.collection('transactions').add({userId:bid.userId,type:'credit',amount:win,status:'Completed',description:`🎉 Won on ${name} - ${normalizedGame}: ${bid.value}`,date:new Date()}); 
+            }else{ 
+                await b.ref.update({status:'lost'}); 
+            } 
+        } 
+    }
+    
+    async function addMarket(){ 
+        let name=document.getElementById('marketNameInput').value; 
+        if(!name){ alert('Enter market name'); return; } 
+        let markets=await db.collection('markets').get(); 
+        let maxSerial=0; 
+        markets.forEach(d=>{ if(d.data().serialNo && d.data().serialNo>maxSerial) maxSerial=d.data().serialNo; }); 
+        await db.collection('markets').add({
+            name, numbers:document.getElementById('marketNumbersInput').value||'***-**-***', 
+            openBidEnd:document.getElementById('openBidEnd').value, closeBidEnd:document.getElementById('closeBidEnd').value, 
+            closedTime:document.getElementById('closedTime').value, status:document.getElementById('marketStatus').value, 
+            serialNo:maxSerial+1, isHoliday:document.getElementById('marketStatus').value==='holiday', 
+            openPana:'***', openDigit:'*', closePana:'***', closeDigit:'*', jodi:'**', closeDeclared:false 
+        }); 
+        document.getElementById('marketNameInput').value=''; 
+        document.getElementById('marketNumbersInput').value=''; 
+        document.getElementById('openBidEnd').value=''; 
+        document.getElementById('closeBidEnd').value=''; 
+        document.getElementById('closedTime').value=''; 
+        alert('Market added!'); 
+    }
     async function editMarket(id,oldName,oldNumbers){ let newName=prompt('New name',oldName); let newNumbers=prompt('New numbers',oldNumbers); if(newName) await db.collection('markets').doc(id).update({name:newName,numbers:newNumbers||'***-**-***'}); }
     async function deleteMarket(id){ if(confirm('Delete this market permanently?')) await db.collection('markets').doc(id).delete(); }
     
@@ -276,8 +365,7 @@
         for(let d of snap.docs){ 
             let w=d.data(); 
             let user=await db.collection('users').doc(w.userId).get(); 
-            let bankDetails = w.bankDetails || {};
-            withdrawals.push({id:d.id, userId:w.userId, amount:w.amount, bankDetails:bankDetails, date:w.date?.toDate()||new Date(0), userName:user.data()?.name||'Unknown', userPhone:user.data()?.phone||'N/A'}); 
+            let bankDetails = w.bankDetails || {}; withdrawals.push({id:d.id, userId:w.userId, amount:w.amount, bankDetails:bankDetails, date:w.date?.toDate()||new Date(0), userName:user.data()?.name||'Unknown', userPhone:user.data()?.phone||'N/A'}); 
         } 
         withdrawals.sort((a,b)=>b.date-a.date); 
         let html=''; 
