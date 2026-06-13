@@ -2,80 +2,122 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>DURGA - Admin Panel</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #1a1a2e; }
-        .login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #1a1a2e, #16213e); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-        .login-card { background: #fff; padding: 30px; border-radius: 20px; width: 300px; text-align: center; }
-        .login-card h2 { color: #e91e63; margin-bottom: 20px; }
-        .login-card input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; }
-        .login-card button { width: 100%; padding: 12px; background: linear-gradient(135deg, #e91e63, #9c27b0); border: none; border-radius: 8px; color: #fff; font-weight: bold; cursor: pointer; }
-        .admin-panel { display: none; }
-        .sidebar { width: 250px; background: #fff; min-height: 100vh; position: fixed; border-right: 1px solid #eee; }
-        .sidebar h2 { color: #e91e63; padding: 20px; text-align: center; border-bottom: 1px solid #eee; font-size: 18px; }
-        .sidebar-item { padding: 12px 20px; color: #555; cursor: pointer; border-bottom: 1px solid #eee; transition: 0.3s; position: relative; }
-        .sidebar-item:hover { background: #f8f9fa; color: #e91e63; }
-        .notification-badge { position: absolute; right: 15px; top: 10px; background: #e91e63; color: #fff; border-radius: 20px; padding: 2px 8px; font-size: 10px; }
-        .main-content { margin-left: 250px; padding: 20px; }
-        .card { background: #fff; border-radius: 16px; padding: 20px; margin-bottom: 20px; border: 1px solid #eee; }
-        .card h3 { margin-bottom: 15px; color: #1a1a2e; border-left: 3px solid #e91e63; padding-left: 12px; font-size: 16px; }
-        input, select { padding: 10px; margin: 5px; border: 1px solid #ddd; border-radius: 8px; width: calc(100% - 10px); }
-        button { background: linear-gradient(135deg, #e91e63, #9c27b0); border: none; padding: 8px 16px; border-radius: 8px; color: #fff; font-weight: bold; cursor: pointer; margin: 5px; }
-        button:hover { opacity: 0.9; }
-        .market-item, .user-item, .request-item { background: #fff; padding: 15px; margin: 12px 0; border-radius: 12px; border: 1px solid #eee; }
-        .status-badge { padding: 3px 10px; border-radius: 20px; font-size: 11px; display: inline-block; }
-        .status-open { background: #d4edda; color: #28a745; }
-        .status-close { background: #fff3cd; color: #ff9800; }
-        .status-closed { background: #ffe0e0; color: #dc3545; }
-        .status-holiday { background: #e0d5c1; color: #8B4513; }
-        .btn-success { background: #28a745; }
-        .btn-danger { background: #dc3545; }
-        .btn-warning { background: #ff9800; color: #1a1a2e; }
-        .btn-reset { background: #6c757d; }
-        .btn-info { background: #17a2b8; }
-        .btn-delete { background: #8B0000; }
-        .hidden { display: none; }
-        .results-container { display: flex; gap: 15px; flex-wrap: wrap; margin: 10px 0; }
-        .result-card { background: #f8f9fa; border-radius: 12px; padding: 12px 20px; text-align: center; }
-        .result-pana { font-size: 28px; font-weight: bold; color: #e91e63; }
-        .request-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
-        .request-tab { padding: 6px 15px; cursor: pointer; border-radius: 20px; background: #f8f9fa; font-size: 13px; }
-        .request-tab.active { background: linear-gradient(135deg, #e91e63, #9c27b0); color: #fff; }
-        .search-container { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
-        .search-input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 8px; }
-        .sort-bar { display: flex; gap: 12px; flex-wrap: wrap; margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 12px; align-items: center; }
-        .sort-select { width: auto; margin: 0; }
-        .today-bidder-badge { background: #e91e63; color: #fff; font-size: 9px; padding: 2px 8px; border-radius: 12px; margin-left: 8px; }
-        .bid-highlight { background: #fff0f5; border-left: 3px solid #e91e63; }
-        .market-header-row { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 10px; background: #f8f9fa; border-radius: 10px; margin-bottom: 8px; }
-        .market-detail-row { display: none; background: #fff; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #eee; }
-        .market-detail-row.open { display: block; }
-        .chat-iframe { width: 100%; height: 60vh; border: none; border-radius: 12px; }
-        .bank-details-box { background: #f8f9fa; border-radius: 8px; padding: 8px; margin-top: 5px; font-size: 11px; }
-        .bank-details-box span { font-weight: bold; color: #1a1a2e; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background: #0f172a; color: #f8fafc; display: flex; min-height: 100vh; overflow-x: hidden; }
         
-        @media (max-width: 768px) { .sidebar { width: 70px; } .sidebar h2 { font-size: 10px; padding: 15px 5px; } .sidebar-item { padding: 12px; text-align: center; font-size: 10px; } .main-content { margin-left: 70px; } .results-container { justify-content: center; } }
+        .login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; display: flex; justify-content: center; align-items: center; z-index: 2000; }
+        .login-card { background: #1e293b; padding: 32px; border-radius: 16px; width: 90%; max-width: 340px; text-align: center; border: 1px solid #334155; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        
+        /* DURGA Animated Color Title */
+        .app-title-animated {
+            font-weight: 800; font-size: 22px; letter-spacing: 2px; margin-bottom: 24px; display: inline-block;
+            background: linear-gradient(45deg, #3b82f6, #ef4444, #10b981, #f59e0b, #3b82f6);
+            background-size: 400% 400%; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: gradientShift 8s ease infinite;
+        }
+        @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        .login-card input { width: 100%; padding: 12px 14px; margin: 12px 0; border: 1px solid #334155; background: #0f172a; border-radius: 8px; color: #fff; font-size: 14px; outline: none; }
+        .login-card button { width: 100%; padding: 12px; background: #3b82f6; border: none; border-radius: 8px; color: #fff; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .admin-panel { display: flex; width: 100%; min-height: 100vh; }
+        
+        /* Premium Android Sidebar Menu */
+        .sidebar { width: 260px; background: #1e293b; min-height: 100vh; position: fixed; border-right: 1px solid #334155; display: flex; flex-direction: column; z-index: 1000; }
+        .sidebar h2 { padding: 24px 20px; text-align: center; border-bottom: 1px solid #334155; font-size: 16px; font-weight: 800; color: #f8fafc; }
+        .sidebar-item { padding: 14px 20px; color: #94a3b8; cursor: pointer; border-bottom: 1px solid #10172a; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; transition: all 0.2s; }
+        .sidebar-item:hover { background: #0f172a; color: #3b82f6; }
+        .notification-badge { background: #ef4444; color: #fff; border-radius: 6px; padding: 2px 8px; font-size: 10px; font-weight: 700; font-family: monospace; }
+        
+        /* Main View Panel Matrix */
+        .main-content { margin-left: 260px; padding: 24px; flex: 1; background: #0f172a; min-height: 100vh; }
+        .card { background: #1e293b; border-radius: 14px; padding: 20px; margin-bottom: 24px; border: 1px solid #334155; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .card h3 { margin-bottom: 18px; color: #f8fafc; font-size: 15px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; border-left: 4px solid #3b82f6; padding-left: 10px; }
+        
+        input, select, textarea { padding: 12px; margin: 6px; border: 1px solid #334155; background: #0f172a; border-radius: 8px; width: calc(100% - 12px); color: #fff; font-size: 14px; font-weight: 500; outline: none; }
+        input:focus, select:focus, textarea:focus { border-color: #3b82f6; }
+        label { font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-left: 6px; display: inline-block; margin-top: 4px; }
+        
+        button { background: #3b82f6; border: none; padding: 10px 20px; border-radius: 8px; color: #fff; font-weight: 700; cursor: pointer; margin: 6px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; transition: opacity 0.15s; }
+        button:hover { opacity: 0.9; }
+        
+        /* Operational Grid Elements Layout Blocks */
+        .market-item, .user-item, .request-item { background: #1a2238; padding: 16px; margin: 14px 0; border-radius: 10px; border: 1px solid #334155; }
+        .market-header-row { display: flex; justify-content: space-between; align-items: center; cursor: pointer; background: #0f172a; padding: 12px; border-radius: 8px; border: 1px solid #334155; }
+        .market-detail-row { display: none; background: #1e293b; padding: 16px; border-radius: 8px; margin-top: 10px; border: 1px solid #334155; }
+        .market-detail-row.open { display: block; }
+        .market-serial { font-family: monospace; color: #3b82f6; font-weight: 700; cursor: pointer; }
+        
+        .status-badge { padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+        .status-open { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+        .status-close { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+        .status-closed { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+        .status-holiday { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
+        
+        .btn-success { background: #10b981; }
+        .btn-danger { background: #ef4444; }
+        .btn-warning { background: #f59e0b; color: #0f172a; }
+        .btn-reset { background: #475569; }
+        .btn-info { background: #0ea5e9; }
+        .btn-delete { background: #7f1d1d; color: #fca5a5; }
+        .hidden { display: none !important; }
+        
+        .results-container { display: flex; gap: 12px; flex-wrap: wrap; margin: 14px 0; }
+        .result-card { background: #0f172a; border-radius: 8px; padding: 12px 18px; text-align: center; border: 1px solid #334155; flex: 1; min-width: 100px; }
+        .result-pana { font-size: 24px; font-weight: 700; color: #3b82f6; font-family: monospace; letter-spacing: 1px; }
+        .jodi-display { font-size: 13px; color: #94a3b8; margin-top: 8px; }
+        .jodi-display strong { color: #f59e0b; font-size: 15px; font-family: monospace; }
+        
+        .request-tabs { display: flex; gap: 8px; margin-bottom: 16px; background: #0f172a; padding: 4px; border-radius: 8px; border: 1px solid #334155; }
+        .request-tab { flex: 1; padding: 8px; cursor: pointer; border-radius: 6px; background: transparent; font-size: 12px; font-weight: 700; text-align: center; color: #94a3b8; text-transform: uppercase; }
+        .request-tab.active { background: #3b82f6; color: #fff; }
+        
+        .search-container { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+        .search-input { flex: 1; margin: 0; }
+        .sort-bar { display: flex; gap: 12px; flex-wrap: wrap; margin: 16px 0; padding: 12px; background: #0f172a; border-radius: 8px; align-items: center; border: 1px solid #334155; font-size: 13px; color: #94a3b8; font-weight: 600; }
+        .sort-select { width: auto; margin: 0; }
+        
+        .today-bidder-badge { background: #3b82f6; color: #fff; font-size: 10px; padding: 3px 8px; border-radius: 4px; margin-left: 8px; font-weight: 700; }
+        .bid-highlight { border-left: 4px solid #3b82f6; background: rgba(59, 130, 246, 0.02); }
+        .user-count { font-size: 13px; font-weight: 700; color: #94a3b8; margin-bottom: 12px; padding-left: 4px; }
+        .user-status { font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 700; margin-left: 8px; display: inline-block; vertical-align: middle; }
+        .status-online { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .status-offline { background: rgba(148, 163, 184, 0.2); color: #94a3b8; }
+        .last-login { font-size: 11px; color: #64748b; margin-top: 4px; font-weight: 500; }
+        
+        .chat-iframe { width: 100%; height: 62vh; border: none; border-radius: 10px; background: #0f172a; }
+        .bank-details-box { background: #0f172a; border-radius: 8px; padding: 10px; margin-top: 10px; font-size: 12px; border: 1px dashed #334155; color: #cbd5e1; line-height: 1.5; }
+        .bank-details-box span { font-weight: 700; color: #94a3b8; }
+        
+        @media (max-width: 768px) { 
+            .sidebar { width: 70px; } 
+            .sidebar h2 { font-size: 9px; padding: 14px 2px; letter-spacing: 0; } 
+            .sidebar-item { padding: 14px 4px; text-align: center; font-size: 10px; flex-direction: column; gap: 4px; justify-content: center; } 
+            .notification-badge { position: relative; right: auto; top: auto; margin-top: 2px; }
+            .main-content { margin-left: 70px; padding: 16px; } 
+        }
     </style>
 </head>
 <body>
 
 <div id="loginScreen" class="login-screen">
     <div class="login-card">
-        <h2>🌸 DURGA ADMIN</h2>
-        <input type="password" id="adminPass" placeholder="Enter Password">
-        <button onclick="login()">Login</button>
-        <div id="loginError" style="color:#dc3545; margin-top:10px;"></div>
+        <span class="app-title-animated">DURGA ADMIN</span>
+        <input type="password" id="adminPass" placeholder="Enter Control Password">
+        <button onclick="login()">Sign In</button>
+        <div id="loginError" style="color:#f87171; margin-top:12px; font-size:13px; font-weight:600;"></div>
     </div>
 </div>
 
 <div id="adminPanel" class="admin-panel">
     <div class="sidebar">
-        <h2>🌸 DURGA</h2>
+        <h2>DURGA SYSTEM</h2>
         <div class="sidebar-item" onclick="showSection('markets')">🎮 Markets</div>
         <div class="sidebar-item" onclick="showSection('users')" id="usersMenuItem">👥 Users</div>
         <div class="sidebar-item" onclick="showSection('deposits')" id="depositsMenuItem">💰 Deposits <span id="depositBadge" class="notification-badge" style="display:none;">0</span></div>
@@ -91,9 +133,9 @@
             <div class="card"><h3>➕ Add New Market</h3>
                 <input type="text" id="marketNameInput" placeholder="Market Name">
                 <input type="text" id="marketNumbersInput" placeholder="Numbers (e.g., 440-8*-***)">
-                <div><label>🟢 Open Bid End:</label> <input type="time" id="openBidEnd" step="60"></div>
-                <div><label>🟡 Close Bid End:</label> <input type="time" id="closeBidEnd" step="60"></div>
-                <div><label>🔴 Market Closed:</label> <input type="time" id="closedTime" step="60"></div>
+                <div><label>🟢 Open Bid End Time:</label> <input type="time" id="openBidEnd" step="60"></div>
+                <div><label>🟡 Close Bid End Time:</label> <input type="time" id="closeBidEnd" step="60"></div>
+                <div><label>🔴 Market Closed Time:</label> <input type="time" id="closedTime" step="60"></div>
                 <select id="marketStatus"><option value="open">🟢 OPEN</option><option value="close">🟡 CLOSE</option><option value="closed">🔴 CLOSED</option><option value="holiday">🎪 HOLIDAY</option></select>
                 <button onclick="addMarket()">Add Market</button>
                 <button onclick="deleteAllMarkets()" class="btn-danger">🗑️ Delete All</button>
@@ -106,7 +148,7 @@
             <div class="card"><h3>👥 Users Management 
                 <button onclick="deleteAllUsers()" class="btn-delete delete-all-btn" style="float:right;">🗑️ DELETE ALL USERS</button>
             </h3>
-                <div class="warning-text" style="margin-bottom:10px; color:#dc3545; font-size:11px;">⚠️ Warning: Deleting users will remove all their bids, transactions, and chat history permanently!</div>
+                <div class="warning-text" style="margin-bottom:12px; color:#f87171; font-size:11px; font-weight:600;">⚠️ Warning: Deleting users will remove all their bids, transactions, and chat history permanently!</div>
                 <div class="search-container"><input type="text" id="searchInput" class="search-input" placeholder="🔍 Search by name or mobile..."><button onclick="searchUsers()" class="btn-info">Search</button><button onclick="clearSearch()" class="btn-reset">Clear</button></div>
                 <div class="sort-bar"><label>📊 Sort By:</label><select id="sortUsersSelect" class="sort-select" onchange="applyUserSort()"><option value="todayBidders">📈 Today Bidders</option><option value="newest">🕒 Newest First</option><option value="balanceHigh">💰 Balance High-Low</option><option value="balanceLow">💰 Balance Low-High</option><option value="lastActive">⏰ Last Active</option></select><button onclick="refreshTodayBidsForUsers()" class="btn-info">🔄 Refresh Today's Bids</button></div>
                 <div id="userCount" class="user-count"></div>
@@ -118,9 +160,17 @@
         
         <div id="withdrawalsSection" class="hidden"><div class="card"><h3>💸 Withdrawal Requests</h3><div class="request-tabs"><div class="request-tab active" onclick="showWithdrawalTab('pending')">⏳ Pending</div><div class="request-tab" onclick="showWithdrawalTab('completed')">✅ Completed</div><div class="request-tab" onclick="showWithdrawalTab('rejected')">❌ Rejected</div></div><div id="withdrawalsList">Loading...</div></div></div>
         
-        <div id="noticeSection" class="hidden"><div class="card"><h3>📢 Notice Board</h3><textarea id="noticeText" rows="3" style="width:100%; padding:10px;"></textarea><button onclick="updateNotice()">Update Notice</button><div id="noticeMsg"></div></div></div>
+        <div id="noticeSection" class="hidden"><div class="card"><h3>📢 Notice Board</h3><textarea id="noticeText" rows="3" style="width:100%; padding:10px;"></textarea><button onclick="updateNotice()">Update Notice</button><div id="noticeMsg" style="margin-top:6px; color:#10b981; font-weight:600; font-size:13px;"></div></div></div>
         
-        <div id="settingsSection" class="hidden"><div class="card"><h3>🔐 Change Password</h3><input type="password" id="oldPass" placeholder="Old Password"><input type="password" id="newPass" placeholder="New Password"><button onclick="changePassword()">Update</button><div id="passMsg"></div></div><div class="card"><h3>🏧 UPI ID Settings</h3><input type="text" id="upiId" placeholder="UPI ID" value="durga@axl"><button onclick="updateUPI()">Update UPI ID</button><div id="upiMsg"></div></div></div>
+        <div id="settingsSection" class="hidden">
+            <div class="card"><h3>🔐 Change Password</h3>
+                <input type="password" id="oldPass" placeholder="Old Password">
+                <input type="password" id="newPass" placeholder="New Password">
+                <button onclick="changePassword()">Update Password</button>
+                <div id="passMsg" style="margin-top:6px; font-weight:600; font-size:13px;"></div>
+            </div>
+            <div class="card"><h3>🏧 UPI ID Settings</h3><input type="text" id="upiId" placeholder="UPI ID" value="durga@axl"><button onclick="updateUPI()">Update UPI ID</button><div id="upiMsg"></div></div>
+        </div>
         
         <div id="livechatSection" class="hidden"><div class="card"><h3>💬 Live Support Chat</h3><iframe src="admin-chat.html" class="chat-iframe" id="chatIframe"></iframe><div><button onclick="clearAllChats()" class="btn-danger">🗑️ Delete All Chat History</button><button onclick="refreshChat()" class="btn-info">🔄 Refresh Chat</button></div></div></div>
     </div>
@@ -132,14 +182,33 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
     
-    let adminPassword = "Gani99@@", allUsers = [], currentSearchTerm = "", currentSortType = "todayBidders", todayBidMap = new Map(), userLastBidTime = new Map();
+    let dbPassword = "Gani99@@", allUsers = [], currentSearchTerm = "", currentSortType = "todayBidders", todayBidMap = new Map(), userLastBidTime = new Map();
     let depositCount = 0, withdrawalCount = 0, chatUnreadCount = 0, depositListener = null, withdrawalListener = null, chatListener = null, currentDepositTab = "pending", currentWithdrawalTab = "pending", openMarketId = null;
     let userLastActive = new Map();
     let onlineStatusListener = null;
     
     const gameRates = { 'Single Digit':10, 'Jodi':100, 'Single Pana':160, 'Double Pana':320, 'Triple Pana':1000, 'Half Sangam A':1000, 'Half Sangam B':1000, 'Full Sangam':10000 };
     
-    if (sessionStorage.getItem('adminLoggedIn') === 'true') { document.getElementById('loginScreen').style.display = 'none'; document.getElementById('adminPanel').style.display = 'block'; loadMarkets(); loadUsersWithTodayBids(); loadDeposits(); loadWithdrawals(); loadNotice(); loadSettings(); startNotificationListeners(); startAutoCleanup(); startOnlineStatusTracking(); }
+    // Remote Admin Security Core Sync Execution Block
+    async function syncAdminCredentials() {
+        try {
+            const adminDoc = await db.collection('settings').doc('admin').get();
+            if(adminDoc.exists && adminDoc.data().password) {
+                dbPassword = adminDoc.data().password;
+            } else {
+                // Instantiates configuration file layout on first startup run
+                await db.collection('settings').doc('admin').set({ password: dbPassword });
+            }
+        } catch(e) { console.error("Database connection fault during credential processing."); }
+    }
+
+    syncAdminCredentials().then(() => {
+        if (sessionStorage.getItem('adminLoggedIn') === 'true') { 
+            document.getElementById('loginScreen').style.display = 'none'; 
+            document.getElementById('adminPanel').style.display = 'flex'; 
+            loadMarkets(); loadUsersWithTodayBids(); loadDeposits(); loadWithdrawals(); loadNotice(); loadSettings(); startNotificationListeners(); startAutoCleanup(); startOnlineStatusTracking(); 
+        }
+    });
     
     function startOnlineStatusTracking() {
         if (onlineStatusListener) onlineStatusListener();
@@ -178,7 +247,18 @@
         return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
     }
     
-    async function login() { let pwd = document.getElementById('adminPass').value; if(pwd === adminPassword){ sessionStorage.setItem('adminLoggedIn','true'); document.getElementById('loginScreen').style.display='none'; document.getElementById('adminPanel').style.display='block'; loadMarkets(); loadUsersWithTodayBids(); loadDeposits(); loadWithdrawals(); loadNotice(); loadSettings(); startNotificationListeners(); startAutoCleanup(); startOnlineStatusTracking(); } else { document.getElementById('loginError').innerText='Wrong password!'; } }
+    async function login() { 
+        let pwd = document.getElementById('adminPass').value; 
+        await syncAdminCredentials();
+        if(pwd === dbPassword){ 
+            sessionStorage.setItem('adminLoggedIn','true'); 
+            document.getElementById('loginScreen').style.display='none'; 
+            document.getElementById('adminPanel').style.display='flex'; 
+            loadMarkets(); loadUsersWithTodayBids(); loadDeposits(); loadWithdrawals(); loadNotice(); loadSettings(); startNotificationListeners(); startAutoCleanup(); startOnlineStatusTracking(); 
+        } else { 
+            document.getElementById('loginError').innerText='Control access code unverified!'; 
+        } 
+    }
     
     function startNotificationListeners(){ if(depositListener) depositListener(); depositListener = db.collection('transactions').where('type','==','credit').where('status','==','Pending').onSnapshot(s=>{ depositCount=s.size; updateDepositBadge(); if(currentDepositTab==='pending') loadDeposits(); }); if(withdrawalListener) withdrawalListener(); withdrawalListener = db.collection('withdrawRequests').where('status','==','Pending').onSnapshot(s=>{ withdrawalCount=s.size; updateWithdrawalBadge(); if(currentWithdrawalTab==='pending') loadWithdrawals(); }); if(chatListener) chatListener(); chatListener = db.collection('chats').where('unread','==',true).onSnapshot(s=>{ chatUnreadCount=s.size; updateChatBadge(); }); }
     function updateDepositBadge(){ let b=document.getElementById('depositBadge'); if(depositCount>0){ b.style.display='inline-block'; b.innerText=depositCount>99?'99+':depositCount; } else b.style.display='none'; }
@@ -224,9 +304,7 @@
                     }
                     alert(`✅ Successfully deleted ${totalDeleted} users and all associated data!`);
                     loadUsersWithTodayBids();
-                } catch (error) {
-                    alert("❌ Error deleting users: " + error.message);
-                }
+                } catch (error) { alert("❌ Error deleting users: " + error.message); }
             } else { alert("❌ Confirmation failed. No users were deleted."); }
         }
     }
@@ -238,23 +316,22 @@
     async function resetAllMarketsResults(){ if(confirm("⚠️ RESET ALL MARKETS RESULTS?\nType 'RESET' to confirm:")){ if(prompt('Type "RESET" to confirm:')==='RESET'){ let markets=await db.collection('markets').get(); let batch=db.batch(); markets.forEach(d=>batch.update(d.ref,{openPana:'***',openDigit:'*',closePana:'***',closeDigit:'*',jodi:'**',closeDeclared:false})); await batch.commit(); alert(`✅ Reset ${markets.size} markets!`); loadMarkets(); } } }
     
     async function loadUsersWithTodayBids(){ let today=new Date(); today.setHours(0,0,0,0); let bids=await db.collection('bids').where('createdAt','>=',today).get(); todayBidMap.clear(); userLastBidTime.clear(); bids.forEach(d=>{ let bid=d.data(); let uid=bid.userId; let pts=bid.points||0; todayBidMap.set(uid,(todayBidMap.get(uid)||0)+pts); let bidDate=bid.createdAt?.toDate?bid.createdAt.toDate():(bid.createdAt?.seconds?new Date(bid.createdAt.seconds*1000):null); if(bidDate){ let existing=userLastBidTime.get(uid); if(!existing || bidDate>existing) userLastBidTime.set(uid,bidDate); } }); db.collection('users').orderBy('createdAt','desc').onSnapshot(s=>{ allUsers=[]; s.forEach(d=>{ let ud=d.data(); allUsers.push({uid:d.id,...ud,todayBidTotal:todayBidMap.get(d.id)||0,lastBidTime:userLastBidTime.get(d.id)||null}); }); displayFilteredUsers(); }); }
-    async function refreshTodayBidsForUsers(){ let today=new Date(); today.setHours(0,0,0,0); let bids=await db.collection('bids').where('createdAt','>=',today).get(); todayBidMap.clear(); userLastBidTime.clear(); bids.forEach(d=>{ let bid=d.data(); let uid=bid.userId; todayBidMap.set(uid,(todayBidMap.get(uid)||0)+(bid.points||0)); let bidDate=bid.createdAt?.toDate?bid.createdAt.toDate():(bid.createdAt?.seconds?new Date(bid.createdAt.seconds*1000):null); if(bidDate){ let existing=userLastBidTime.get(uid); if(!existing || bidDate>existing) userLastBidTime.set(uid,bidDate); } }); allUsers=allUsers.map(u=>({...u,todayBidTotal:todayBidMap.get(u.uid)||0,lastBidTime:userLastBidTime.get(u.uid)||null})); displayFilteredUsers(); let cd=document.getElementById('userCount'); if(cd) cd.innerHTML+=' <span style="color:green;">✓ Refreshed</span>'; setTimeout(()=>{ if(document.getElementById('userCount')) document.getElementById('userCount').innerHTML=document.getElementById('userCount').innerHTML.replace(' ✓ Refreshed',''); },2000); }
+    async function refreshTodayBidsForUsers(){ let today=new Date(); today.setHours(0,0,0,0); let bids=await db.collection('bids').where('createdAt','>=',today).get(); todayBidMap.clear(); userLastBidTime.clear(); bids.forEach(d=>{ let bid=d.data(); let uid=bid.userId; todayBidMap.set(uid,(todayBidMap.get(uid)||0)+(bid.points||0)); let bidDate=bid.createdAt?.toDate?bid.createdAt.toDate():(bid.createdAt?.seconds?new Date(bid.createdAt.seconds*1000):null); if(bidDate){ let existing=userLastBidTime.get(uid); if(!existing || bidDate>existing) userLastBidTime.set(uid,bidDate); } }); allUsers=allUsers.map(u=>({...u,todayBidTotal:todayBidMap.get(u.uid)||0,lastBidTime:userLastBidTime.get(u.uid)||null})); displayFilteredUsers(); let cd=document.getElementById('userCount'); if(cd) cd.innerHTML+=' <span style="color:#10b981;">✓ Refreshed</span>'; setTimeout(()=>{ if(document.getElementById('userCount')) document.getElementById('userCount').innerHTML=document.getElementById('userCount').innerHTML.replace(' ✓ Refreshed',''); },2000); }
     function applyUserSort(){ let sel=document.getElementById('sortUsersSelect'); currentSortType=sel.value; displayFilteredUsers(); }
     function searchUsers(){ currentSearchTerm=document.getElementById('searchInput').value.trim().toLowerCase(); displayFilteredUsers(); }
     function clearSearch(){ document.getElementById('searchInput').value=''; currentSearchTerm=''; displayFilteredUsers(); }
-    function displayFilteredUsers(){ let filtered=[...allUsers]; if(currentSearchTerm) filtered=filtered.filter(u=>(u.name||'').toLowerCase().includes(currentSearchTerm)||(u.phone||'').toLowerCase().includes(currentSearchTerm)); if(currentSortType==='todayBidders') filtered.sort((a,b)=>{ if(a.todayBidTotal!==b.todayBidTotal) return (b.todayBidTotal||0)-(a.todayBidTotal||0); let ta=a.lastBidTime?a.lastBidTime.getTime():0, tb=b.lastBidTime?b.lastBidTime.getTime():0; return tb-ta; }); else if(currentSortType==='newest') filtered.sort((a,b)=>(b.createdAt?.toDate?.()||new Date(0))-(a.createdAt?.toDate?.()||new Date(0))); else if(currentSortType==='balanceHigh') filtered.sort((a,b)=>(b.balance||0)-(a.balance||0)); else if(currentSortType==='balanceLow') filtered.sort((a,b)=>(a.balance||0)-(b.balance||0)); else if(currentSortType==='lastActive') filtered.sort((a,b)=>{ let la=a.lastActive?.toDate?a.lastActive.toDate():new Date(0); let lb=b.lastActive?.toDate?b.lastActive.toDate():new Date(0); return lb-la; }); let todayBidders=filtered.filter(u=>u.todayBidTotal>0).length; document.getElementById('userCount').innerHTML=`👥 Total: ${filtered.length} ${currentSortType==='todayBidders'?`| 🎲 Today Bidders: ${todayBidders}`:''}`; if(filtered.length===0){ document.getElementById('usersList').innerHTML='<p style="color:#888; text-align:center; padding:30px;">No users found</p>'; return; } let html=''; filtered.forEach(u=>{ let isBlocked=u.blocked===true; let hasBid=(u.todayBidTotal||0)>0; let online = isUserOnline(u.uid); let lastLogin = formatLastLogin(u.uid); html+=`<div class="user-item ${isBlocked?'user-blocked':''} ${hasBid?'bid-highlight':''}"><div><b>${escapeHtml(u.name||'Unknown')}</b>${hasBid?`<span class="today-bidder-badge">🎲 Today: ₹${u.todayBidTotal}</span>`:''}<span class="user-status ${online?'status-online':'status-offline'}">${online?'ONLINE':'OFFLINE'}</span><br>${u.phone||'No phone'}<br>Balance: ₹${u.balance||0}<br><div class="last-login">📅 Last active: ${lastLogin}</div>${isBlocked?'<span style="color:#dc3545;">🚫 BLOCKED</span>':''}</div><div><button onclick="updateBalance('${u.uid}','add')" class="btn-success">➕ Add</button><button onclick="updateBalance('${u.uid}','remove')" class="btn-danger">➖ Remove</button><button onclick="openUserBidsPage('${u.uid}','${escapeHtml(u.name)}')" class="btn-info">📋 View Bids</button><button onclick="toggleBlockUser('${u.uid}','${escapeHtml(u.name)}',${isBlocked})" class="btn-warning">${isBlocked?'Unblock':'Block'}</button><button onclick="clearUserBids('${u.uid}','${escapeHtml(u.name)}')" class="btn-warning">🗑️ Clear Bids</button><button onclick="clearUserTransactions('${u.uid}','${escapeHtml(u.name)}')" class="btn-warning">🗑️ Clear History</button><button onclick="deleteUser('${u.uid}','${escapeHtml(u.name)}')" class="btn-danger">❌ Delete</button></div></div>`; }); document.getElementById('usersList').innerHTML=html; }
+    function displayFilteredUsers(){ let filtered=[...allUsers]; if(currentSearchTerm) filtered=filtered.filter(u=>(u.name||'').toLowerCase().includes(currentSearchTerm)||(u.phone||'').toLowerCase().includes(currentSearchTerm)); if(currentSortType==='todayBidders') filtered.sort((a,b)=>{ if(a.todayBidTotal!==b.todayBidTotal) return (b.todayBidTotal||0)-(a.todayBidTotal||0); let ta=a.lastBidTime?a.lastBidTime.getTime():0, tb=b.lastBidTime?b.lastBidTime.getTime():0; return tb-ta; }); else if(currentSortType==='newest') filtered.sort((a,b)=>(b.createdAt?.toDate?.()||new Date(0))-(a.createdAt?.toDate?.()||new Date(0))); else if(currentSortType==='balanceHigh') filtered.sort((a,b)=>(b.balance||0)-(a.balance||0)); else if(currentSortType==='balanceLow') filtered.sort((a,b)=>(a.balance||0)-(b.balance||0)); else if(currentSortType==='lastActive') filtered.sort((a,b)=>{ let la=a.lastActive?.toDate?a.lastActive.toDate():new Date(0); let lb=b.lastActive?.toDate?b.lastActive.toDate():new Date(0); return lb-la; }); let todayBidders=filtered.filter(u=>u.todayBidTotal>0).length; document.getElementById('userCount').innerHTML=`👥 Total: ${filtered.length} ${currentSortType==='todayBidders'?`| 🎲 Today Bidders: ${todayBidders}`:''}`; if(filtered.length===0){ document.getElementById('usersList').innerHTML='<p style="color:#64748b; text-align:center; padding:30px;">No users found</p>'; return; } let html=''; filtered.forEach(u=>{ let isBlocked=u.blocked===true; let hasBid=(u.todayBidTotal||0)>0; let online = isUserOnline(u.uid); let lastLogin = formatLastLogin(u.uid); html+=`<div class="user-item ${isBlocked?'user-blocked':''} ${hasBid?'bid-highlight':''}"><div><b>${escapeHtml(u.name||'Unknown')}</b>${hasBid?`<span class="today-bidder-badge">🎲 Today: ₹${u.todayBidTotal}</span>`:''}<span class="user-status ${online?'status-online':'status-offline'}">${online?'ONLINE':'OFFLINE'}</span><br>${u.phone||'No phone'}<br>Balance: ₹${u.balance||0}<br><div class="last-login">📅 Last active: ${lastLogin}</div>${isBlocked?'<span style="color:#ef4444; font-weight:700;">🚫 BLOCKED</span>':''}</div><div><button onclick="updateBalance('${u.uid}','add')" class="btn-success">➕ Add</button><button onclick="updateBalance('${u.uid}','remove')" class="btn-danger">➖ Remove</button><button onclick="openUserBidsPage('${u.uid}','${escapeHtml(u.name)}')" class="btn-info">📋 View Bids</button><button onclick="toggleBlockUser('${u.uid}','${escapeHtml(u.name)}',${isBlocked})" class="btn-warning">${isBlocked?'Unblock':'Block'}</button><button onclick="clearUserBids('${u.uid}','${escapeHtml(u.name)}')" class="btn-warning">🗑️ Clear Bids</button><button onclick="clearUserTransactions('${u.uid}','${escapeHtml(u.name)}')" class="btn-warning">🗑️ Clear History</button><button onclick="deleteUser('${u.uid}','${escapeHtml(u.name)}')" class="btn-danger">❌ Delete</button></div></div>`; }); document.getElementById('usersList').innerHTML=html; }
     function escapeHtml(s){ if(!s) return ''; return s.replace(/[&<>]/g,m=>m==='&'?'&amp;':(m==='<'?'&lt;':'&gt;')); }
     function openUserBidsPage(uid,name){ window.open(`user-bids.html?uid=${uid}&name=${encodeURIComponent(name)}`,'_blank'); }
     function toggleMarketDetails(mid){ let div=document.getElementById(`market_detail_${mid}`); if(div){ if(openMarketId===mid){ div.classList.remove('open'); openMarketId=null; }else{ if(openMarketId){ let prev=document.getElementById(`market_detail_${openMarketId}`); if(prev) prev.classList.remove('open'); } div.classList.add('open'); openMarketId=mid; } } }
     function formatTimeTo12Hour(t){ if(!t) return '--:--'; let [h,m]=t.split(':'); let hr=parseInt(h); let ampm=hr>=12?'PM':'AM'; hr=hr%12||12; return `${hr}:${m} ${ampm}`; }
-    function loadMarkets(){ db.collection('markets').orderBy('serialNo','asc').onSnapshot(s=>{ let html=''; s.forEach(d=>{ let m=d.data(); let statusClass='',statusText=''; if(m.status==='open'){ statusClass='status-open'; statusText='OPEN'; }else if(m.status==='close'){ statusClass='status-close'; statusText='CLOSE'; }else if(m.status==='holiday'){ statusClass='status-holiday'; statusText='HOLIDAY'; }else{ statusClass='status-closed'; statusText='CLOSED'; } let openPana=m.openPana||'***', openDigit=m.openDigit||'*', closePana=m.closePana||'***', closeDigit=m.closeDigit||'*', jodi=m.jodi||'**', isCloseDeclared=m.closeDeclared||false; let jodiDisplay=(!isCloseDeclared && openPana!=='***')?openDigit+'*':jodi; html+=`<div class="market-item"><div class="market-header-row" onclick="toggleMarketDetails('${d.id}')"><span class="toggle-icon">${openMarketId===d.id?'▼':'▶'}</span><span><span class="market-serial" onclick="event.stopPropagation(); changeSerialNumber('${d.id}',${m.serialNo||0})">#${m.serialNo||'?'}</span> ${m.name||'No name'}</span><span class="status-badge ${statusClass}">${statusText}</span><button onclick="event.stopPropagation(); deleteMarket('${d.id}')" class="btn-danger">🗑️</button></div><div id="market_detail_${d.id}" class="market-detail-row"><div><div>🎲 Numbers: ${m.numbers||'***'}</div><div>⏰ Open End: ${formatTimeTo12Hour(m.openBidEnd)} | Close End: ${formatTimeTo12Hour(m.closeBidEnd)}</div><div class="results-container"><div class="result-card"><div class="result-pana">${openPana}</div><div>Open: ${openDigit}</div></div><div class="result-card"><div class="result-pana">${closePana}</div><div>Close: ${closeDigit}</div></div></div><div class="jodi-display">JODI: <strong>${jodiDisplay}</strong></div><div><input type="time" id="openBidEnd_${d.id}" value="${m.openBidEnd||''}" step="60"><button onclick="updateMarketTime('${d.id}','openBidEnd',document.getElementById('openBidEnd_${d.id}').value)">Save Open</button></div><div><input type="time" id="closeBidEnd_${d.id}" value="${m.closeBidEnd||''}" step="60"><button onclick="updateMarketTime('${d.id}','closeBidEnd',document.getElementById('closeBidEnd_${d.id}').value)">Save Close</button></div><div><button onclick="setMarketStatus('${d.id}','open')" class="btn-success">🟢 OPEN</button><button onclick="setMarketStatus('${d.id}','close')" class="btn-warning">🟡 CLOSE</button><button onclick="setMarketStatus('${d.id}','closed')" class="btn-danger">🔴 CLOSED</button><button onclick="setMarketHoliday('${d.id}','${m.name}','${m.status}')" class="btn-warning">🎪 ${m.status==='holiday'?'Remove Holiday':'Set Holiday'}</button></div><div><input type="text" id="openPana_${d.id}" placeholder="Open Pana" maxlength="3" value="${openPana!=='***'?openPana:''}"><input type="text" id="openDigit_${d.id}" placeholder="Digit" maxlength="1" value="${openDigit!=='*'?openDigit:''}"><button onclick="declareOpenResult('${d.id}','${m.name}')">Declare OPEN</button></div><div><input type="text" id="closePana_${d.id}" placeholder="Close Pana" maxlength="3" value="${closePana!=='***'?closePana:''}"><input type="text" id="closeDigit_${d.id}" placeholder="Digit" maxlength="1" value="${closeDigit!=='*'?closeDigit:''}"><button onclick="declareCloseResult('${d.id}','${m.name}')">Declare CLOSE</button></div><div><button onclick="editMarket('${d.id}','${m.name}','${m.numbers||''}')">✏️ Edit</button><button onclick="resetMarketResult('${d.id}','${m.name}')" class="btn-reset">⟳ Reset</button></div></div></div></div>`; }); if(s.empty) html='<p style="color:#888; text-align:center; padding:30px;">No markets. Add one above!</p>'; document.getElementById('marketsList').innerHTML=html; }); }
+    function loadMarkets(){ db.collection('markets').orderBy('serialNo','asc').onSnapshot(s=>{ let html=''; s.forEach(d=>{ let m=d.data(); let statusClass='',statusText=''; if(m.status==='open'){ statusClass='status-open'; statusText='OPEN'; }else if(m.status==='close'){ statusClass='status-close'; statusText='CLOSE'; }else if(m.status==='holiday'){ statusClass='status-holiday'; statusText='HOLIDAY'; }else{ statusClass='status-closed'; statusText='CLOSED'; } let openPana=m.openPana||'***', openDigit=m.openDigit||'*', closePana=m.closePana||'***', closeDigit=m.closeDigit||'*', jodi=m.jodi||'**', isCloseDeclared=m.closeDeclared||false; let jodiDisplay=(!isCloseDeclared && openPana!=='***')?openDigit+'*':jodi; html+=`<div class="market-item"><div class="market-header-row" onclick="toggleMarketDetails('${d.id}')"><span class="toggle-icon">${openMarketId===d.id?'▼':'▶'}</span><span><span class="market-serial" onclick="event.stopPropagation(); changeSerialNumber('${d.id}',${m.serialNo||0})">#${m.serialNo||'?'}</span> ${m.name||'No name'}</span><span class="status-badge ${statusClass}">${statusText}</span><button onclick="event.stopPropagation(); deleteMarket('${d.id}')" class="btn-danger">🗑️</button></div><div id="market_detail_${d.id}" class="market-detail-row"><div><div>🎲 Numbers: ${m.numbers||'***'}</div><div>⏰ Open End: ${formatTimeTo12Hour(m.openBidEnd)} | Close End: ${formatTimeTo12Hour(m.closeBidEnd)}</div><div class="results-container"><div class="result-card"><div class="result-pana">${openPana}</div><div>Open: ${openDigit}</div></div><div class="result-card"><div class="result-pana">${closePana}</div><div>Close: ${closeDigit}</div></div></div><div class="jodi-display">JODI: <strong>${jodiDisplay}</strong></div><div><input type="time" id="openBidEnd_${d.id}" value="${m.openBidEnd||''}" step="60"><button onclick="updateMarketTime('${d.id}','openBidEnd',document.getElementById('openBidEnd_${d.id}').value)">Save Open</button></div><div><input type="time" id="closeBidEnd_${d.id}" value="${m.closeBidEnd||''}" step="60"><button onclick="updateMarketTime('${d.id}','closeBidEnd',document.getElementById('closeBidEnd_${d.id}').value)">Save Close</button></div><div><button onclick="setMarketStatus('${d.id}','open')" class="btn-success">🟢 OPEN</button><button onclick="setMarketStatus('${d.id}','close')" class="btn-warning">🟡 CLOSE</button><button onclick="setMarketStatus('${d.id}','closed')" class="btn-danger">🔴 CLOSED</button><button onclick="setMarketHoliday('${d.id}','${m.name}','${m.status}')" class="btn-warning">🎪 ${m.status==='holiday'?'Remove Holiday':'Set Holiday'}</button></div><div><input type="text" id="openPana_${d.id}" placeholder="Open Pana" maxlength="3" value="${openPana!=='***'?openPana:''}"><input type="text" id="openDigit_${d.id}" placeholder="Digit" maxlength="1" value="${openDigit!=='*'?openDigit:''}"><button onclick="declareOpenResult('${d.id}','${m.name}')">Declare OPEN</button></div><div><input type="text" id="closePana_${d.id}" placeholder="Close Pana" maxlength="3" value="${closePana!=='***'?closePana:''}"><input type="text" id="closeDigit_${d.id}" placeholder="Digit" maxlength="1" value="${closeDigit!=='*'?closeDigit:''}"><button onclick="declareCloseResult('${d.id}','${m.name}')">Declare CLOSE</button></div><div><button onclick="editMarket('${d.id}','${m.name}','${m.numbers||''}')">✏️ Edit</button><button onclick="resetMarketResult('${d.id}','${m.name}')" class="btn-reset">⟳ Reset</button></div></div></div></div>`; }); if(s.empty) html='<p style="color:#64748b; text-align:center; padding:30px;">No markets available</p>'; document.getElementById('marketsList').innerHTML=html; }); }
     async function setMarketStatus(mid,st){ await db.collection('markets').doc(mid).update({status:st,isHoliday:st==='holiday'}); alert(`✅ Status changed to ${st.toUpperCase()}`); }
     async function updateMarketTime(mid,fld,val){ await db.collection('markets').doc(mid).update({[fld]:val}); alert(`✅ ${fld} updated`); }
     async function changeSerialNumber(mid,curr){ let newS=prompt(`New serial number (current #${curr})`,curr); if(newS && !isNaN(newS) && parseInt(newS)>0){ let newNum=parseInt(newS); let existing=await db.collection('markets').get(); let existingId=null; for(let d of existing.docs){ if(d.data().serialNo===newNum && d.id!==mid){ existingId=d.id; break; } } if(existingId){ if(confirm(`Serial #${newNum} already used. Swap?`)){ let currMarket=await db.collection('markets').doc(mid).get(); let currNum=currMarket.data().serialNo; await db.collection('markets').doc(mid).update({serialNo:newNum}); await db.collection('markets').doc(existingId).update({serialNo:currNum}); alert('✅ Swapped!'); loadMarkets(); } }else{ await db.collection('markets').doc(mid).update({serialNo:newNum}); alert(`✅ Changed to #${newNum}`); loadMarkets(); } } }
     async function deleteAllMarkets(){ if(confirm("⚠️ DELETE ALL MARKETS?\nType 'DELETE' to confirm:")){ if(prompt('Type "DELETE" to confirm:')==='DELETE'){ let markets=await db.collection('markets').get(); let batch=db.batch(); markets.forEach(d=>batch.delete(d.ref)); await batch.commit(); alert(`✅ Deleted ${markets.size} markets!`); loadMarkets(); } } }
     async function setMarketHoliday(mid,name,st){ if(st==='holiday'){ if(confirm(`Remove HOLIDAY for "${name}"?`)){ await db.collection('markets').doc(mid).update({status:'closed',isHoliday:false}); loadMarkets(); } }else{ if(confirm(`Set "${name}" as HOLIDAY?`)){ await db.collection('markets').doc(mid).update({status:'holiday',isHoliday:true}); loadMarkets(); } } }
     
-    // Core Winning Calculation Engines
     async function declareOpenResult(mid,name){ 
         let openPana=document.getElementById(`openPana_${mid}`).value.trim(), openDigit=document.getElementById(`openDigit_${mid}`).value.trim(); 
         if(!openPana||!/^\d{3}$/.test(openPana)){ alert('Enter valid 3-digit Open Pana'); return; } 
@@ -286,8 +363,7 @@
     async function creditOpenWinners(mid,name,openPana,openDigit){ 
         let bids=await db.collection('bids').where('marketId','==',mid).where('status','==','pending').get(); 
         for(let b of bids.docs){ 
-            let bid=b.data(); 
-            let winning=false; 
+            let bid=b.data(); let winning=false; 
             let normalizedGame = (bid.gameType || bid.type || '').trim();
             if (bid.bidType === 'Open') {
                 if(normalizedGame==='Single Digit' && bid.value===openDigit) winning=true;
@@ -299,17 +375,14 @@
                 let user=await db.collection('users').doc(bid.userId).get(); 
                 await db.collection('users').doc(bid.userId).update({balance:(user.data().balance||0)+win}); 
                 await db.collection('transactions').add({userId:bid.userId,type:'credit',amount:win,status:'Completed',description:`🎉 Won on ${name} (OPEN) - ${normalizedGame}: ${bid.value}`,date:new Date()}); 
-            } else { 
-                if (bid.bidType === 'Open') { await b.ref.update({status:'lost'}); }
-            } 
+            } else { if (bid.bidType === 'Open') { await b.ref.update({status:'lost'}); } } 
         } 
     }
     
     async function creditCloseWinners(mid,name,openPana,openDigit,closePana,closeDigit,jodi){ 
         let bids=await db.collection('bids').where('marketId','==',mid).where('status','==','pending').get(); 
         for(let b of bids.docs){ 
-            let bid=b.data(); 
-            let winning=false; 
+            let bid=b.data(); let winning=false; 
             let normalizedGame = (bid.gameType || bid.type || '').trim();
             if(normalizedGame==='Single Digit' && bid.bidType==='Close' && bid.value===closeDigit) winning=true; 
             else if(normalizedGame==='Jodi' && bid.value===jodi) winning=true; 
@@ -317,65 +390,26 @@
             else if(normalizedGame==='Half Sangam A' && bid.value===''+openPana+'-'+closeDigit) winning=true; 
             else if(normalizedGame==='Half Sangam B' && bid.value===''+openDigit+'-'+closePana) winning=true; 
             else if(normalizedGame==='Full Sangam' && bid.value===''+openPana+'-'+closePana) winning=true; 
-            
             if(winning){ 
                 let win=bid.points*(gameRates[normalizedGame]||10); 
                 await b.ref.update({status:'won'}); 
                 let user=await db.collection('users').doc(bid.userId).get(); 
                 await db.collection('users').doc(bid.userId).update({balance:(user.data().balance||0)+win}); 
                 await db.collection('transactions').add({userId:bid.userId,type:'credit',amount:win,status:'Completed',description:`🎉 Won on ${name} - ${normalizedGame}: ${bid.value}`,date:new Date()}); 
-            }else{ 
-                await b.ref.update({status:'lost'}); 
-            } 
+            }else{ await b.ref.update({status:'lost'}); } 
         } 
     }
     
-    async function addMarket(){ 
-        let name=document.getElementById('marketNameInput').value; 
-        if(!name){ alert('Enter market name'); return; } 
-        let markets=await db.collection('markets').get(); 
-        let maxSerial=0; 
-        markets.forEach(d=>{ if(d.data().serialNo && d.data().serialNo>maxSerial) maxSerial=d.data().serialNo; }); 
-        await db.collection('markets').add({
-            name, numbers:document.getElementById('marketNumbersInput').value||'***-**-***', 
-            openBidEnd:document.getElementById('openBidEnd').value, closeBidEnd:document.getElementById('closeBidEnd').value, 
-            closedTime:document.getElementById('closedTime').value, status:document.getElementById('marketStatus').value, 
-            serialNo:maxSerial+1, isHoliday:document.getElementById('marketStatus').value==='holiday', 
-            openPana:'***', openDigit:'*', closePana:'***', closeDigit:'*', jodi:'**', closeDeclared:false 
-        }); 
-        document.getElementById('marketNameInput').value=''; 
-        document.getElementById('marketNumbersInput').value=''; 
-        document.getElementById('openBidEnd').value=''; 
-        document.getElementById('closeBidEnd').value=''; 
-        document.getElementById('closedTime').value=''; 
-        alert('Market added!'); 
-    }
+    async function addMarket(){ let name=document.getElementById('marketNameInput').value; if(!name){ alert('Enter market name'); return; } let markets=await db.collection('markets').get(); let maxSerial=0; markets.forEach(d=>{ if(d.data().serialNo && d.data().serialNo>maxSerial) maxSerial=d.data().serialNo; }); await db.collection('markets').add({name, numbers:document.getElementById('marketNumbersInput').value||'***-**-***', openBidEnd:document.getElementById('openBidEnd').value, closeBidEnd:document.getElementById('closeBidEnd').value, closedTime:document.getElementById('closedTime').value, status:document.getElementById('marketStatus').value, serialNo:maxSerial+1, isHoliday:document.getElementById('marketStatus').value==='holiday', openPana:'***', openDigit:'*', closePana:'***', closeDigit:'*', jodi:'**', closeDeclared:false }); document.getElementById('marketNameInput').value=''; document.getElementById('marketNumbersInput').value=''; document.getElementById('openBidEnd').value=''; document.getElementById('closeBidEnd').value=''; document.getElementById('closedTime').value=''; alert('Market added!'); }
     async function editMarket(id,oldName,oldNumbers){ let newName=prompt('New name',oldName); let newNumbers=prompt('New numbers',oldNumbers); if(newName) await db.collection('markets').doc(id).update({name:newName,numbers:newNumbers||'***-**-***'}); }
     async function deleteMarket(id){ if(confirm('Delete this market permanently?')) await db.collection('markets').doc(id).delete(); }
     
-    async function loadDeposits(){ let status=currentDepositTab==='pending'?'Pending':(currentDepositTab==='completed'?'Completed':'Rejected'); let snap=await db.collection('transactions').where('type','==','credit').where('status','==',status).get(); let deposits=[]; for(let d of snap.docs){ let t=d.data(); let user=await db.collection('users').doc(t.userId).get(); deposits.push({id:d.id,userId:t.userId,amount:t.amount,bonusAmount:t.bonusAmount,userUTR:t.userUTR,userMobile:t.userMobile,date:t.date?.toDate()||new Date(0),userName:user.data()?.name||'Unknown'}); } deposits.sort((a,b)=>b.date-a.date); let html=''; for(let d of deposits){ let isPending=currentDepositTab==='pending'; html+=`<div class="request-item"><div><b>👤 ${d.userName}</b><br><b>💰 Amount:</b> ₹${d.amount}<br><b>🎁 Bonus:</b> ₹${d.bonusAmount||0}<br><b>📋 UTR:</b> ${d.userUTR||'Not provided'}<br><b>📅 ${d.date.toLocaleString()}</b></div><div>${isPending?`<button onclick="approveDeposit('${d.id}',${d.amount},'${d.userId}')" class="btn-success">Approve</button><button onclick="rejectDeposit('${d.id}')" class="btn-danger">Reject</button>`:`<button onclick="deleteDepositRecord('${d.id}')" class="btn-delete">🗑️ Delete</button>`}</div></div>`; } document.getElementById('depositsList').innerHTML=html||'<p style="color:#888;">No deposits found</p>'; }
+    async function loadDeposits(){ let status=currentDepositTab==='pending'?'Pending':(currentDepositTab==='completed'?'Completed':'Rejected'); let snap=await db.collection('transactions').where('type','==','credit').where('status','==',status).get(); let deposits=[]; for(let d of snap.docs){ let t=d.data(); let user=await db.collection('users').doc(t.userId).get(); deposits.push({id:d.id,userId:t.userId,amount:t.amount,bonusAmount:t.bonusAmount,userUTR:t.userUTR,userMobile:t.userMobile,date:t.date?.toDate()||new Date(0),userName:user.data()?.name||'Unknown'}); } deposits.sort((a,b)=>b.date-a.date); let html=''; for(let d of deposits){ let isPending=currentDepositTab==='pending'; html+=`<div class="request-item"><div><b>👤 ${d.userName}</b><br><b>💰 Amount:</b> ₹${d.amount}<br><b>🎁 Bonus:</b> ₹${d.bonusAmount||0}<br><b>📋 UTR:</b> ${d.userUTR||'Not provided'}<br><b>📅 ${d.date.toLocaleString()}</b></div><div>${isPending?`<button onclick="approveDeposit('${d.id}',${d.amount},'${d.userId}')" class="btn-success">Approve</button><button onclick="rejectDeposit('${d.id}')" class="btn-danger">Reject</button>`:`<button onclick="deleteDepositRecord('${d.id}')" class="btn-delete">🗑️ Delete</button>`}</div></div>`; } document.getElementById('depositsList').innerHTML=html||'<p style="color:#64748b;">No deposits found</p>'; }
     async function approveDeposit(id,amount,uid){ if(confirm(`Approve deposit of ₹${amount}?`)){ let user=await db.collection('users').doc(uid).get(); await db.collection('users').doc(uid).update({balance:(user.data().balance||0)+amount}); await db.collection('transactions').doc(id).update({status:'Completed'}); alert('✅ Deposit approved!'); loadDeposits(); } }
     async function rejectDeposit(id){ if(confirm('Reject this deposit?')){ await db.collection('transactions').doc(id).update({status:'Rejected'}); alert('❌ Deposit rejected!'); loadDeposits(); } }
     async function deleteDepositRecord(id){ if(confirm('⚠️ Permanently delete this deposit record?')){ await db.collection('transactions').doc(id).delete(); alert('✅ Deleted!'); loadDeposits(); } }
     
-    async function loadWithdrawals(){ 
-        let status=currentWithdrawalTab==='pending'?'Pending':(currentWithdrawalTab==='completed'?'Completed':'Rejected'); 
-        let snap=await db.collection('withdrawRequests').where('status','==',status).get(); 
-        let withdrawals=[]; 
-        for(let d of snap.docs){ 
-            let w=d.data(); 
-            let user=await db.collection('users').doc(w.userId).get(); 
-            let bankDetails = w.bankDetails || {}; withdrawals.push({id:d.id, userId:w.userId, amount:w.amount, bankDetails:bankDetails, date:w.date?.toDate()||new Date(0), userName:user.data()?.name||'Unknown', userPhone:user.data()?.phone||'N/A'}); 
-        } 
-        withdrawals.sort((a,b)=>b.date-a.date); 
-        let html=''; 
-        for(let w of withdrawals){ 
-            let isPending=currentWithdrawalTab==='pending'; 
-            html+=`<div class="request-item"><div><b>👤 ${w.userName}</b><br><b>📞 Phone:</b> ${w.userPhone}<br><b>💰 Amount:</b> ₹${w.amount}<br><div class="bank-details-box"><span>🏦 BANK DETAILS:</span><br><span>Account Holder:</span> ${w.bankDetails.accountHolder || 'N/A'}<br><span>Bank Name:</span> ${w.bankDetails.bankName || 'N/A'}<br><span>Account Number:</span> ${w.bankDetails.accountNumber || 'N/A'}<br><span>IFSC Code:</span> ${w.bankDetails.ifscCode || 'N/A'}</div><b>📅 ${w.date.toLocaleString()}</b></div><div>${isPending?`<button onclick="approveWithdraw('${w.id}',${w.amount},'${w.userId}')" class="btn-success">Approve</button><button onclick="rejectWithdraw('${w.id}')" class="btn-danger">Reject</button>`:`<button onclick="deleteWithdrawalRecord('${w.id}')" class="btn-delete">🗑️ Delete</button>`}</div></div>`; 
-        } 
-        document.getElementById('withdrawalsList').innerHTML=html||'<p style="color:#888;">No withdrawals found</p>'; 
-    }
-    
+    async function loadWithdrawals(){ let status=currentWithdrawalTab==='pending'?'Pending':(currentWithdrawalTab==='completed'?'Completed':'Rejected'); let snap=await db.collection('withdrawRequests').where('status','==',status).get(); let withdrawals=[]; for(let d of snap.docs){ let w=d.data(); let user=await db.collection('users').doc(w.userId).get(); let bankDetails = w.bankDetails || {}; withdrawals.push({id:d.id, userId:w.userId, amount:w.amount, bankDetails:bankDetails, date:w.date?.toDate()||new Date(0), userName:user.data()?.name||'Unknown', userPhone:user.data()?.phone||'N/A'}); } withdrawals.sort((a,b)=>b.date-a.date); let html=''; for(let w of withdrawals){ let isPending=currentWithdrawalTab==='pending'; html+=`<div class="request-item"><div><b>👤 ${w.userName}</b><br><b>📞 Phone:</b> ${w.userPhone}<br><b>💰 Amount:</b> ₹${w.amount}<br><div class="bank-details-box"><span>🏦 BANK DETAILS:</span><br><span>Account Holder:</span> ${w.bankDetails.accountHolder || 'N/A'}<br><span>Bank Name:</span> ${w.bankDetails.bankName || 'N/A'}<br><span>Account Number:</span> ${w.bankDetails.accountNumber || 'N/A'}<br><span>IFSC Code:</span> ${w.bankDetails.ifscCode || 'N/A'}</div><b>📅 ${w.date.toLocaleString()}</b></div><div>${isPending?`<button onclick="approveWithdraw('${w.id}',${w.amount},'${w.userId}')" class="btn-success">Approve</button><button onclick="rejectWithdraw('${w.id}')" class="btn-danger">Reject</button>`:`<button onclick="deleteWithdrawalRecord('${w.id}')" class="btn-delete">🗑️ Delete</button>`}</div></div>`; } document.getElementById('withdrawalsList').innerHTML=html||'<p style="color:#64748b;">No withdrawals found</p>'; }
     async function approveWithdraw(id,amount,uid){ if(confirm(`Approve withdrawal of ₹${amount}?`)){ let user=await db.collection('users').doc(uid).get(); if((user.data().balance||0)<amount){ alert('Insufficient balance!'); return; } await db.collection('users').doc(uid).update({balance:(user.data().balance||0)-amount}); await db.collection('withdrawRequests').doc(id).update({status:'Completed'}); await db.collection('transactions').add({userId:uid,type:'debit',amount:amount,status:'Completed',description:'Withdrawal Approved',date:new Date()}); alert('✅ Withdrawal approved!'); loadWithdrawals(); } }
     async function rejectWithdraw(id){ if(confirm('Reject this withdrawal?')){ await db.collection('withdrawRequests').doc(id).update({status:'Rejected'}); alert('❌ Withdrawal rejected!'); loadWithdrawals(); } }
     async function deleteWithdrawalRecord(id){ if(confirm('⚠️ Permanently delete this withdrawal record?')){ await db.collection('withdrawRequests').doc(id).delete(); alert('✅ Deleted!'); loadWithdrawals(); } }
@@ -390,7 +424,27 @@
     async function updateUPI(){ await db.collection('settings').doc('upi').set({upiId:document.getElementById('upiId').value}); alert("UPI Updated"); }
     function loadNotice(){ db.collection('settings').doc('notice').onSnapshot(d=>{ document.getElementById('noticeText').value=d.exists?d.data().text:'Welcome to DURGA!'; }); }
     async function updateNotice(){ await db.collection('settings').doc('notice').set({text:document.getElementById('noticeText').value,updatedAt:new Date()}); document.getElementById('noticeMsg').innerHTML='✅ Notice updated!'; setTimeout(()=>document.getElementById('noticeMsg').innerHTML='',3000); }
-    function changePassword(){ let old=document.getElementById('oldPass').value, newP=document.getElementById('newPass').value; if(old===adminPassword){ adminPassword=newP; document.getElementById('passMsg').innerHTML='✅ Password changed!'; } else { document.getElementById('passMsg').innerHTML='❌ Wrong password!'; } setTimeout(()=>document.getElementById('passMsg').innerHTML='',3000); }
+    
+    // Persistent Cloud Database Password Settlement Integration Execution Node
+    async function changePassword(){ 
+        let old=document.getElementById('oldPass').value, newP=document.getElementById('newPass').value; 
+        await syncAdminCredentials();
+        if(old===dbPassword){ 
+            if(!newP || newP.trim().length < 4) {
+                let msg = document.getElementById('passMsg'); msg.innerText='❌ Passphrase key structural length insufficient.'; msg.style.color='#f87171'; return;
+            }
+            try {
+                await db.collection('settings').doc('admin').set({ password: newP.trim() });
+                dbPassword=newP.trim(); 
+                let msg = document.getElementById('passMsg'); msg.innerHTML='✅ System authentication credentials updated successfully!'; msg.style.color='#10b981';
+                document.getElementById('oldPass').value = ''; document.getElementById('newPass').value = '';
+            } catch(e) { document.getElementById('passMsg').innerHTML='❌ Database structural update fault.'; }
+        } else { 
+            let msg = document.getElementById('passMsg'); msg.innerHTML='❌ Existing master credential pass key mismatched!'; msg.style.color='#f87171';
+        } 
+        setTimeout(()=>document.getElementById('passMsg').innerHTML='',4000); 
+    }
+    
     function showSection(section){ ['markets','users','deposits','withdrawals','notice','settings','livechat'].forEach(s=>document.getElementById(`${s}Section`).classList.add('hidden')); document.getElementById(`${section}Section`).classList.remove('hidden'); if(section==='users') refreshTodayBidsForUsers(); if(section==='deposits') loadDeposits(); if(section==='withdrawals') loadWithdrawals(); if(section==='livechat') markAllChatsAsRead(); }
     async function markAllChatsAsRead(){ let unread=await db.collection('chats').where('unread','==',true).get(); let batch=db.batch(); unread.forEach(d=>batch.update(d.ref,{unread:false})); await batch.commit(); updateChatBadge(); }
     function logout(){ sessionStorage.removeItem('adminLoggedIn'); document.getElementById('loginScreen').style.display='flex'; document.getElementById('adminPanel').style.display='none'; document.getElementById('adminPass').value=''; }
