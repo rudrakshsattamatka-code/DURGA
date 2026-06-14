@@ -9,97 +9,114 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        body { background: #0f172a; color: #f8fafc; padding-top: 60px; padding-bottom: 110px; min-height: 100vh; overflow-x: hidden; }
-        .app-container { max-width: 480px; margin: 0 auto; background: #0f172a; min-height: 100vh; position: relative; }
+        body { background: #f4f6f9; color: #1e293b; padding-top: 60px; padding-bottom: 110px; min-height: 100vh; }
+        .app-container { max-width: 480px; margin: 0 auto; background: #f4f6f9; min-height: 100vh; position: relative; }
         
-        /* Premium Android App Header */
+        /* Premium Header Setup */
         .sticky-top-panel {
             position: fixed; top: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto;
             height: 60px; background: #0f172a; color: #fff; z-index: 1000;
             display: flex; align-items: center; justify-content: space-between; padding: 0 16px;
-            border-bottom: 1px solid #1e293b;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         .back-btn { background: none; border: none; color: #94a3b8; font-size: 24px; cursor: pointer; display: flex; align-items: center; }
         .market-header-info { flex: 1; margin-left: 14px; }
-        .market-meta-title { font-size: 16px; font-weight: 700; color: #f8fafc; letter-spacing: 0.5px; }
-        .balance-box-display { font-size: 12px; font-weight: 700; color: #10b981; margin-top: 1px; }
-        .bid-badge { background: #3b82f6; color: #fff; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .market-meta-title { font-size: 16px; font-weight: 700; color: #f8fafc; }
+        .balance-box-display { font-size: 12px; font-weight: 700; color: #10b981; }
+        .bid-badge { background: #3b82f6; color: #fff; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
 
         .main-scroll-content { padding: 16px; }
         .selection-title { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.75px; margin: 4px 4px 14px 4px; }
 
-        /* Professional Grid Framework for Game Types Selection Screen */
-        .game-types-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        .game-type-card { background: #1e293b; border-radius: 12px; padding: 20px 12px; text-align: center; cursor: pointer; border: 1px solid #334155; transition: all 0.2s ease; }
-        .game-type-card:active { background: #334155; transform: scale(0.98); }
-        .game-card-name { font-size: 14px; font-weight: 700; color: #f8fafc; letter-spacing: 0.3px; }
+        /* Exact Replica Grid Layout and Styling from Uploaded Image Spec */
+        .game-types-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; padding: 4px; }
+        .game-type-card { 
+            background: #ffffff; border-radius: 18px; padding: 24px 12px; text-align: center; 
+            cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: none; transition: transform 0.15s ease;
+        }
+        .game-type-card:active { transform: scale(0.97); }
+        
+        /* Styled Micro-Shapes Replacing Icons Precisely matching Color Scheme */
+        .card-shape-icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; }
+        .icon-red { color: #dc2626; }
+        .icon-green { color: #16a34a; }
+        .icon-blue { color: #2563eb; }
+        .icon-orange { color: #ea580c; }
+        .icon-purple { color: #7c3aed; }
+
+        .game-card-name { font-size: 14px; font-weight: 700; color: #1e293b; letter-spacing: -0.2px; }
+        .game-card-name.allcaps { text-transform: uppercase; font-weight: 900; }
 
         .bidding-panel { display: none; }
-        .bidding-sub-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; background: #1e293b; padding: 14px; border-radius: 12px; border: 1px solid #334155; }
-        .back-to-games { background: none; border: none; font-size: 20px; cursor: pointer; color: #94a3b8; display: flex; align-items: center; }
-        .selected-game-title { font-size: 15px; font-weight: 700; color: #f8fafc; letter-spacing: 0.3px; }
+        .bidding-sub-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; background: #fff; padding: 14px; border-radius: 12px; border: 1px solid #e2e8f0; }
+        .back-to-games { background: none; border: none; font-size: 20px; cursor: pointer; color: #475569; }
+        .selected-game-title { font-size: 15px; font-weight: 700; color: #0f172a; }
 
-        .game-panel-content { background: #1e293b; border-radius: 16px; padding: 16px; border: 1px solid #334155; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .game-panel-content { background: #fff; border-radius: 16px; padding: 16px; border: 1px solid #e2e8f0; margin-bottom: 16px; }
         .bid-row { margin-bottom: 16px; }
-        .bid-field { background: #0f172a; border-radius: 10px; padding: 12px; border: 1px solid #334155; }
-        .bid-label { font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .bid-input { width: 100%; padding: 2px 0; background: transparent; border: none; outline: none; font-size: 18px; font-weight: 700; color: #fff; }
+        .bid-field { background: #f1f5f9; border-radius: 10px; padding: 12px; }
+        .bid-label { font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 4px; text-transform: uppercase; }
+        .bid-input { width: 100%; padding: 2px 0; background: transparent; border: none; outline: none; font-size: 18px; font-weight: 700; color: #0f172a; }
 
-        .toggle-section { display: flex; gap: 8px; margin-bottom: 16px; background: #0f172a; padding: 4px; border-radius: 10px; border: 1px solid #334155; }
-        .toggle-option { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; color: #94a3b8; font-size: 13px; font-weight: 700; padding: 10px; border-radius: 8px; }
-        .toggle-option input { accent-color: #3b82f6; width: 16px; height: 16px; }
+        .toggle-section { display: flex; gap: 8px; margin-bottom: 16px; background: #f1f5f9; padding: 4px; border-radius: 10px; }
+        .toggle-option { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; color: #475569; font-size: 13px; font-weight: 700; padding: 10px; border-radius: 8px; }
+        .toggle-option input { accent-color: #3b82f6; }
         .toggle-option.active-pill { background: #3b82f6; color: #fff; }
 
         .digit-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 16px 0; }
-        .digit-btn { background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 16px 0; text-align: center; font-size: 18px; font-weight: 700; color: #f8fafc; cursor: pointer; }
-        .digit-btn:active { background: #3b82f6; border-color: #3b82f6; }
+        .digit-btn { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px 0; text-align: center; font-size: 18px; font-weight: 700; color: #0f172a; cursor: pointer; }
 
-        /* Large Touch-Responsive Jodi Display Board */
+        /* Highly Optimized High-Visibility Jodi Matrix Board */
         .jodi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 16px 0; max-height: 40vh; overflow-y: auto; padding-right: 2px; }
-        .jodi-btn { background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 18px 0; text-align: center; font-size: 18px; font-weight: 800; color: #f8fafc; cursor: pointer; }
-        .jodi-btn:active { background: #3b82f6; border-color: #3b82f6; }
+        .jodi-btn { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px 0; text-align: center; font-size: 16px; font-weight: 700; color: #0f172a; cursor: pointer; transition: all 0.15s ease; }
+        
+        /* Dynamic Visual Selection Highlight Markers for Active Selections */
+        .jodi-btn.number-selected-active { background: #3b82f6 !important; color: #ffffff !important; border-color: #3b82f6 !important; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3); }
 
         .manual-entry { display: flex; flex-direction: column; gap: 12px; margin: 12px 0; }
-        .manual-row { display: flex; align-items: center; background: #0f172a; padding: 12px 14px; border-radius: 10px; gap: 12px; border: 1px solid #334155; }
-        .manual-label { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; white-space: nowrap; width: 95px; letter-spacing: 0.5px; }
-        .manual-row input { flex: 1; padding: 2px 0; background: transparent; border: none; outline: none; font-size: 16px; color: #fff; font-weight: 700; }
-        .manual-row input::placeholder { color: #475569; }
+        .manual-row { display: flex; align-items: center; background: #f1f5f9; padding: 12px 14px; border-radius: 10px; gap: 12px; border: 1px solid #e2e8f0; }
+        .manual-label { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; white-space: nowrap; width: 95px; }
+        .manual-row input { flex: 1; padding: 2px 0; background: transparent; border: none; outline: none; font-size: 16px; color: #0f172a; font-weight: 700; }
 
-        .add-sangam-btn { width: 100%; padding: 12px; background: #3b82f6; border: none; border-radius: 10px; color: #fff; font-size: 13px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+        .add-sangam-btn { width: 100%; padding: 12px; background: #3b82f6; border: none; border-radius: 10px; color: #fff; font-size: 13px; font-weight: 700; cursor: pointer; text-transform: uppercase; margin-top: 4px; }
 
-        .family-info-text { font-size: 11px; font-weight: 600; color: #60a5fa; background: rgba(59, 130, 246, 0.1); padding: 10px 14px; border-radius: 8px; margin-top: 4px; text-align: center; border: 1px dashed rgba(59, 130, 246, 0.2); }
-        .bids-section { background: #0f172a; border-radius: 10px; margin: 16px 0; padding: 10px; border: 1px dashed #334155; display: flex; flex-direction: column; gap: 8px; }
-        .bid-item { background: #1e293b; padding: 12px 14px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #334155; }
-        .bid-info { display: flex; flex-direction: column; gap: 2px; }
-        .bid-type { font-weight: 700; color: #3b82f6; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .bid-game-title { font-size: 12px; font-weight: 700; color: #94a3b8; }
-        .bid-value { font-size: 16px; font-weight: 800; color: #fff; font-family: monospace; }
-        .bid-points { font-size: 13px; color: #10b981; font-weight: 700; }
-        .remove-bid { background: rgba(239, 68, 68, 0.1); border: none; width: 28px; height: 26px; border-radius: 6px; color: #f87171; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .family-info-text { font-size: 11px; font-weight: 600; color: #2563eb; background: #eff6ff; padding: 10px 14px; border-radius: 8px; margin-top: 4px; text-align: center; }
+        
+        /* Flat Minimalist Basket View Layout Frame Container (Outlines & Text Hidden) */
+        .bids-section { background: #f8fafc; border-radius: 10px; margin: 16px 0; padding: 8px; border: 1px dashed #cbd5e1; display: flex; flex-direction: column; gap: 6px; }
+        .bid-item { background: #fff; padding: 8px 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border: none; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+        .bid-info { display: flex; flex-direction: row; align-items: center; gap: 14px; }
+        
+        /* Hide text session and game type safely via css sizing suppression */
+        .bid-type, .bid-game-title { display: none !important; width: 0; height: 0; visibility: hidden; }
+        
+        .bid-value { font-size: 15px; font-weight: 700; color: #0f172a; font-family: monospace; }
+        .bid-points { font-size: 14px; color: #10b981; font-weight: 700; background: #f0fdf4; padding: 2px 8px; border-radius: 4px; }
+        .remove-bid { background: #fee2e2; border: none; width: 24px; height: 24px; border-radius: 6px; color: #ef4444; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 11px; }
 
-        /* Bottom Fixed Summary Control Panel */
         .fixed-bottom-summary-deck {
             position: fixed; bottom: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto;
-            background: #1e293b; border-top: 1px solid #334155; padding: 12px 16px 16px 16px; z-index: 1000;
-            display: flex; flex-direction: column; gap: 10px; box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+            background: #fff; border-top: 1px solid #e2e8f0; padding: 12px 16px 16px 16px; z-index: 1000;
+            display: flex; flex-direction: column; gap: 10px; box-shadow: 0 -4px 12px rgba(0,0,0,0.04);
         }
         .summary-mini-row { display: flex; justify-content: space-between; align-items: center; }
         .summary-item { display: flex; align-items: center; gap: 6px; }
-        .summary-label { font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
-        .summary-value { font-size: 15px; font-weight: 700; color: #fff; }
-        .submit-btn { width: 100%; padding: 14px; background: #22c55e; border: none; border-radius: 10px; color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2); }
+        .summary-label { font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 700; }
+        .summary-value { font-size: 15px; font-weight: 700; color: #0f172a; }
+        .submit-btn { width: 100%; padding: 14px; background: #22c55e; border: none; border-radius: 10px; color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; }
         .submit-btn:disabled { opacity: 0.5; }
 
         .message { text-align: center; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 600; margin-top: 10px; }
-        .error { background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
-        .success { background: rgba(16, 185, 129, 0.1); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.2); }
+        .error { background: #fee2e2; color: #b91c1c; }
+        .success { background: #dcfce7; color: #15803d; }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 <div class="app-container">
     <div class="sticky-top-panel">
-        <button class="back-btn" onclick="goBack()">←</button>
+        <button class="back-btn" onclick="handleNavigationHeaderBack()">←</button>
         <div class="market-header-info">
             <div class="market-meta-title" id="marketName">Loading...</div>
             <div class="balance-box-display">Wallet: ₹<span id="userBalance">0</span></div>
@@ -174,18 +191,19 @@
         ['400','450','455','559','590','900'], ['000','500','550','555']
     ];
 
+    // Image Specs Configurations with explicit styling anchors replacing external assets
     const allGameTypes = [
-        { name: 'Single Digit', hasOpenClose: true, availableInOpen: true, availableInClose: true },
-        { name: 'Jodi', hasOpenClose: false, availableInOpen: true, availableInClose: false },
-        { name: 'Single Pana', hasOpenClose: true, availableInOpen: true, availableInClose: true },
-        { name: 'Double Pana', hasOpenClose: true, availableInOpen: true, availableInClose: true },
-        { name: 'Triple Pana', hasOpenClose: true, availableInOpen: true, availableInClose: true },
-        { name: 'Family Jodi', hasOpenClose: false, availableInOpen: true, availableInClose: false },
-        { name: 'Family Red Jodi', hasOpenClose: false, availableInOpen: true, availableInClose: false },
-        { name: 'Family Pana', hasOpenClose: true, availableInOpen: true, availableInClose: true },
-        { name: 'Half Sangam A', hasOpenClose: false, availableInOpen: true, availableInClose: false },
-        { name: 'Half Sangam B', hasOpenClose: false, availableInOpen: true, availableInClose: false },
-        { name: 'Full Sangam', hasOpenClose: false, availableInOpen: true, availableInClose: false }
+        { name: 'Single Digit', hasOpenClose: true, availableInOpen: true, availableInClose: true, shape: '▪️', color: 'icon-red', isCaps: false },
+        { name: 'Family Red Jodi', hasOpenClose: false, availableInOpen: true, availableInClose: false, shape: '⁜', color: 'icon-red', isCaps: true },
+        { name: 'Jodi', hasOpenClose: false, availableInOpen: true, availableInClose: false, shape: '🎲', color: 'icon-green', isCaps: false },
+        { name: 'Family Jodi', hasOpenClose: false, availableInOpen: true, availableInClose: false, shape: '🎲', color: 'icon-green', isCaps: true },
+        { name: 'Single Pana', hasOpenClose: true, availableInOpen: true, availableInClose: true, shape: '♠', color: 'icon-blue', isCaps: false },
+        { name: 'Family Pana', hasOpenClose: true, availableInOpen: true, availableInClose: true, shape: '♠', color: 'icon-blue', isCaps: true },
+        { name: 'Double Pana', hasOpenClose: true, availableInOpen: true, availableInClose: true, shape: '♣', color: 'icon-orange', isCaps: false },
+        { name: 'Half Sangam A', hasOpenClose: false, availableInOpen: true, availableInClose: false, shape: '▲', color: 'icon-orange', isCaps: true },
+        { name: 'Triple Pana', hasOpenClose: true, availableInOpen: true, availableInClose: true, shape: '✦', color: 'icon-purple', isCaps: false },
+        { name: 'Half Sangam B', hasOpenClose: false, availableInOpen: true, availableInClose: false, shape: '▼', color: 'icon-purple', isCaps: true },
+        { name: 'Full Sangam', hasOpenClose: false, availableInOpen: true, availableInClose: false, shape: '✪', color: 'icon-green', isCaps: true }
     ];
 
     async function getServerTime() {
@@ -208,7 +226,12 @@
 
     function renderGameTypeSelection() {
         const games = (currentStatus === 'open') ? allGameTypes.filter(g => g.availableInOpen) : allGameTypes.filter(g => g.availableInClose);
-        document.getElementById('gameTypesGrid').innerHTML = games.map(g => `<div class="game-type-card" onclick="selectGame('${g.name}')"><div class="game-card-name">${g.name}</div></div>`).join('');
+        document.getElementById('gameTypesGrid').innerHTML = games.map(g => `
+            <div class="game-type-card" onclick="selectGame('${g.name}')">
+                <span class="card-shape-icon ${g.color}">${g.shape}</span>
+                <div class="game-card-name ${g.isCaps ? 'allcaps' : ''}">${g.name}</div>
+            </div>
+        `).join('');
     }
 
     async function selectGame(type) {
@@ -226,12 +249,21 @@
         bids = []; updateSummary();
     }
 
-    // Identifies the explicit payout category for proper Admin results matching
+    // Context Header Navigation Controller Back Logic Hook
+    function handleNavigationHeaderBack() {
+        const selectScreenVisibility = document.getElementById('gameSelectionScreen').style.display;
+        if(selectScreenVisibility === 'none') {
+            showGameSelection();
+        } else {
+            window.location.href = 'dashboard.html';
+        }
+    }
+
     function detectExplicitPanaType(val) {
         if (validTriplePanaList.includes(val)) return 'Triple Pana';
         if (validDoublePanaList.includes(val)) return 'Double Pana';
         if (validSinglePanaList.includes(val)) return 'Single Pana';
-        return 'Single Pana'; // Fallback safe type matching parameter
+        return 'Single Pana';
     }
 
     async function addToBidsDirectly(resolvedGameType, val, pts) {
@@ -278,6 +310,9 @@
             let exactPanaType = detectExplicitPanaType(val);
             addToBidsDirectly(exactPanaType, val, pts); el.value = '';
         }
+        else if(currentGameType.includes('Pana') && val.length === 3) {
+            addToBidsDirectly(currentGameType, val, pts); el.value = '';
+        }
     }
 
     function updateSummary() {
@@ -289,7 +324,10 @@
 
     async function submitBids() {
         if (isSubmitting || bids.length === 0) return;
+        
+        // Double-verification gate reading strict server timestamp directly before batch execution loop
         const check = await isBettingAllowed(); if (!check.allowed) { showMsg(check.message, true); return; }
+        
         const total = bids.reduce((s,b)=>s+b.points,0);
         const userDoc = await db.collection('users').doc(auth.currentUser.uid).get();
         const bal = userDoc.data().balance || 0;
@@ -309,7 +347,6 @@
         finally { isSubmitting = false; btn.disabled = false; }
     }
 
-    // Helper method to validate if manual Pana entry values exist inside the systems legal sets
     function checkPanaLegality(p) {
         return validSinglePanaList.includes(p) || validDoublePanaList.includes(p) || validTriplePanaList.includes(p);
     }
@@ -321,14 +358,14 @@
         if(isNaN(pts) || pts < 5) { alert('Min ₹5 required'); return; }
 
         if(currentGameType === 'Half Sangam A') {
-            if(!checkPanaLegality(v1)) { alert('Invalid Open Pana entry value'); return; }
+            if(!checkPanaLegality(v1)) { alert('Invalid Open Pana value'); return; }
             if(!/^\d$/.test(v2)) { alert('Close digit must be 1-Digit'); return; }
         } else if(currentGameType === 'Half Sangam B') {
             if(!/^\d$/.test(v1)) { alert('Open digit must be 1-Digit'); return; }
-            if(!checkPanaLegality(v2)) { alert('Invalid Close Pana entry value'); return; }
+            if(!checkPanaLegality(v2)) { alert('Invalid Close Pana value'); return; }
         } else if(currentGameType === 'Full Sangam') {
-            if(!checkPanaLegality(v1)) { alert('Invalid Open Pana entry value'); return; }
-            if(!checkPanaLegality(v2)) { alert('Invalid Close Pana entry value'); return; }
+            if(!checkPanaLegality(v1)) { alert('Invalid Open Pana value'); return; }
+            if(!checkPanaLegality(v2)) { alert('Invalid Close Pana value'); return; }
         }
 
         addToBidsDirectly(currentGameType, `${v1}-${v2}`, pts);
@@ -351,12 +388,18 @@
             let grid = ''; for(let i=0;i<=9;i++) grid += `<div class="digit-btn" onclick="addToBidsDirectly('Single Digit', '${i}', parseInt(document.getElementById('pointsInput').value))">${i}</div>`;
             p.innerHTML = `<div class="game-panel-content">${top}<div class="digit-grid">${grid}</div>${renderBids()}</div>`;
         } else if (currentGameType === 'Jodi') {
-            let grid = ''; for(let i=0;i<=99;i++) { let v = i.toString().padStart(2,'0'); grid += `<div class="jodi-btn" onclick="addToBidsDirectly('Jodi', '${v}', parseInt(document.getElementById('pointsInput').value))">${v}</div>`; }
+            let grid = ''; 
+            for(let i=0;i<=99;i++) { 
+                let v = i.toString().padStart(2,'0'); 
+                // Active calculation highlighting selected state anchors
+                let isSelectedClass = bids.some(b => b.type === 'Jodi' && b.value === v) ? 'number-selected-active' : '';
+                grid += `<div class="jodi-btn ${isSelectedClass}" onclick="addToBidsDirectly('Jodi', '${v}', parseInt(document.getElementById('pointsInput').value))">${v}</div>`; 
+            }
             p.innerHTML = `<div class="game-panel-content">${top}<div class="jodi-grid">${grid}</div>${renderBids()}</div>`;
         } else if (currentGameType === 'Family Jodi' || currentGameType === 'Family Red Jodi') {
-            p.innerHTML = `<div class="game-panel-content">${top}<div class="manual-entry"><div class="manual-row"><span class="manual-label">Jodi No:</span><input type="number" id="v1" placeholder="Enter base 2-digits" oninput="handleAutoAdd(this)"></div><div class="family-info-text">💡 Numbers are divided directly into Jodi format logs dynamically for settlement processing!</div></div>${renderBids()}</div>`;
+            p.innerHTML = `<div class="game-panel-content">${top}<div class="manual-entry"><div class="manual-row"><span class="manual-label">Jodi No:</span><input type="number" id="v1" placeholder="Enter base 2-digits" oninput="handleAutoAdd(this)"></div><div class="family-info-text">💡 Records are split directly into separate Jodi slots inside historical tables!</div></div>${renderBids()}</div>`;
         } else if (currentGameType === 'Family Pana') {
-            p.innerHTML = `<div class="game-panel-content">${top}<div class="manual-entry"><div class="manual-row"><span class="manual-label">Pana No:</span><input type="number" id="v1" placeholder="Enter base 3-digits" oninput="handleAutoAdd(this)"></div><div class="family-info-text">💡 Automatically divides into single, double, or triple pana slots inside historical tabs!</div></div>${renderBids()}</div>`;
+            p.innerHTML = `<div class="game-panel-content">${top}<div class="manual-entry"><div class="manual-row"><span class="manual-label">Pana No:</span><input type="number" id="v1" placeholder="Enter base 3-digits" oninput="handleAutoAdd(this)"></div><div class="family-info-text">💡 Automatically divides entries into single, double, or triple pana logs!</div></div>${renderBids()}</div>`;
         } else if (['Single Pana', 'Double Pana', 'Triple Pana'].includes(currentGameType)) {
             p.innerHTML = `
                 <div class="game-panel-content">${top}
@@ -382,10 +425,10 @@
         return bids.length ? `<div class="bids-section">${bids.map((b,i)=>`
             <div class="bid-item">
                 <div class="bid-info">
-                    <span class="bid-type">${b.bidType} Session</span>
+                    <span class="bid-type">${b.bidType}</span>
                     <span class="bid-game-title">${b.type}</span>
-                    <span class="bid-value">Number: ${b.value}</span>
-                    <span class="bid-points">Amt: ₹${b.points}</span>
+                    <span class="bid-value">No: ${b.value}</span>
+                    <span class="bid-points">₹${b.points}</span>
                 </div>
                 <button class="remove-bid" onclick="removeBid(${i})">✕</button>
             </div>`).join('')}</div>` : ''; 
