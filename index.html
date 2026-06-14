@@ -58,7 +58,6 @@
             position: relative;
             z-index: 10;
             padding: 12px 20px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
         }
 
         /* Centered High-Visibility Branding Title Layout */
@@ -149,19 +148,14 @@
         .timer { color: #f59e0b; font-size: 12px; font-weight: 700; margin-bottom: 8px; text-align: center; font-family: monospace; }
         .error-text { color: #f87171; font-size: 11px; text-align: center; margin-top: 4px; font-weight: 700; }
 
-        /* Minimal Divider Section Line */
+        /* Seamless Flat Transition Joint */
         .professional-divider {
             width: 100%;
-            height: 16px;
-            background: #0f172a;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            height: 1px;
+            background: #1e293b;
             position: relative;
             z-index: 20;
-            border-bottom: 1px solid #1e293b;
         }
-        .divider-bar { width: 32px; height: 4px; background: #1e293b; border-radius: 10px; }
 
         /* ----------------------------------------------------------------- */
         /* EXACT 60% VIEWPORT HEIGHT LOWER REAL-TIME RESULTS DOCK BANNER    */
@@ -189,7 +183,7 @@
             flex-direction: column;
             gap: 12px;
             padding: 14px 16px;
-            animation: scrollUp 14s linear infinite;
+            animation: scrollUp 20s linear infinite;
         }
 
         .marquee-wrapper:hover .marquee-content { animation-play-state: paused; }
@@ -227,7 +221,7 @@
         <div class="tagline">Official Satta Matka Platform</div>
         
         <div id="phoneScreen" class="screen">
-            <input type="tel" id="phoneNumber" class="input-field" placeholder="Enter Mobile Number" maxlength="10" inputmode="numeric">
+            <input type="tel" id="phoneNumber" class="input-field" placeholder="Enter Mobile Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/\\D/g,'')">
             <button class="btn" id="sendOtpBtn">Login with OTP</button>
             <div class="link" id="forgotPinLink">Forgot Password?</div>
             <div id="phoneError" class="error-text"></div>
@@ -236,7 +230,7 @@
         <div id="otpScreen" class="screen hidden">
             <div class="welcome-text">Enter OTP sent to your mobile</div>
             <div class="timer" id="timer">Second Remaining 60</div>
-            <input type="text" id="otpCode" class="input-field" placeholder="Enter OTP" maxlength="6" inputmode="numeric">
+            <input type="text" id="otpCode" class="input-field" placeholder="Enter OTP" maxlength="6" inputmode="numeric" oninput="this.value = this.value.replace(/\\D/g,'')">
             <button class="btn" id="verifyOtpBtn">VERIFY OTP</button>
             <div class="link" id="resendOtpBtn">Resend OTP</div>
             <div id="otpError" class="error-text"></div>
@@ -253,77 +247,19 @@
 
         <div id="resetPinScreen" class="screen hidden">
             <div class="welcome-text">Recover Account</div>
-            <input type="tel" id="resetPhone" class="input-field" placeholder="Enter Mobile Number" maxlength="10" inputmode="numeric">
+            <input type="tel" id="resetPhone" class="input-field" placeholder="Enter Mobile Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/\\D/g,'')">
             <button class="btn" id="sendResetOtpBtn">Send Verification OTP</button>
             <div class="link" id="backToLogin">Back to Login</div>
             <div id="resetError" class="error-text"></div>
         </div>
     </div>
 
-    <div class="professional-divider">
-        <div class="divider-bar"></div>
-    </div>
+    <div class="professional-divider"></div>
 
     <div class="bottom-half">
         <div class="marquee-wrapper">
-            <div class="marquee-content">
-                <div class="market-card">
-                    <div>
-                        <div class="market-name">MILAN MORNING</div>
-                        <div class="market-time">10:15 AM - 11:15 AM</div>
-                    </div>
-                    <div class="market-number">234-90-123</div>
-                </div>
-                <div class="market-card">
-                    <div>
-                        <div class="market-name">KALYAN MORNING</div>
-                        <div class="market-time">11:00 AM - 12:00 PM</div>
-                    </div>
-                    <div class="market-number">149-40-145</div>
-                </div>
-                <div class="market-card">
-                    <div>
-                        <div class="market-name">TIME BAZAR</div>
-                        <div class="market-time">01:00 PM - 02:00 PM</div>
-                    </div>
-                    <div class="market-number">456-55-230</div>
-                </div>
-                <div class="market-card">
-                    <div>
-                        <div class="market-name">MADHUR DAY</div>
-                        <div class="market-time">01:30 PM - 02:30 PM</div>
-                    </div>
-                    <div class="market-number">120-38-350</div>
-                </div>
-
-                <div class="market-card">
-                    <div>
-                        <div class="market-name">MILAN MORNING</div>
-                        <div class="market-time">10:15 AM - 11:15 AM</div>
-                    </div>
-                    <div class="market-number">234-90-123</div>
-                </div>
-                <div class="market-card">
-                    <div>
-                        <div class="market-name">KALYAN MORNING</div>
-                        <div class="market-time">11:00 AM - 12:00 PM</div>
-                    </div>
-                    <div class="market-number">149-40-145</div>
-                </div>
-                <div class="market-card">
-                    <div>
-                        <div class="market-name">TIME BAZAR</div>
-                        <div class="market-time">01:00 PM - 02:00 PM</div>
-                    </div>
-                    <div class="market-number">456-55-230</div>
-                </div>
-                <div class="market-card">
-                    <div>
-                        <div class="market-name">MADHUR DAY</div>
-                        <div class="market-time">01:30 PM - 02:30 PM</div>
-                    </div>
-                    <div class="market-number">120-38-350</div>
-                </div>
+            <div class="marquee-content" id="liveMarqueeResultsContainer">
+                <div style="text-align:center; padding-top:40px; color:#64748b; font-size:13px; font-weight:600;">Streaming live records...</div>
             </div>
         </div>
     </div>
@@ -356,17 +292,50 @@
         
         function showError(elementId, message) { const el = document.getElementById(elementId); if (el) { el.innerText = message; setTimeout(() => el.innerText = '', 4000); } }
         
-        function initRecaptcha() { if (!recaptchaVerifier) { const container = document.createElement('div'); container.id = 'recaptcha-container'; container.style.position = 'absolute'; container.style.left = '-9999px'; document.body.appendChild(container); recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { size: 'invisible' }); } return recaptchaVerifier; }
+        function initRecaptcha() { if (!recaptchaVerifier) { const container = document.createElement('div'); container.id = 'recaptcha-container'; container.style.position = 'absolute'; container.style.left = '-9999px'; document.body.appendChild(container); recaptVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { size: 'invisible' }); } return recaptchaVerifier; }
         
         function startTimer(seconds, timerElementId) { 
             countdown = seconds; 
             if (timerInterval) clearInterval(timerInterval); 
             timerInterval = setInterval(() => { if (countdown <= 1) clearInterval(timerInterval); const timerEl = document.getElementById(timerElementId); if (timerEl && countdown > 0) timerEl.innerText = `Second Remaining ${countdown}`; countdown--; }, 1000); 
         }
+
+        function formatTimeTo12Hour(t) {
+            if (!t) return '--:--'; let [h, m] = t.split(':'); let hr = parseInt(h);
+            let ampm = hr >= 12 ? 'PM' : 'AM'; hr = hr % 12 || 12;
+            return `${hr.toString().padStart(2, '0')}:${m} ${ampm}`;
+        }
+        
+        // Connects landing page ticker straight to dynamic dashboard database collection feeds
+        function listenToLiveResults() {
+            db.collection('markets').orderBy('serialNo', 'asc').onSnapshot(snapshot => {
+                const container = document.getElementById('liveMarqueeResultsContainer');
+                if (snapshot.empty) { container.innerHTML = '<div style="text-align:center; padding-top:40px; color:#64748b;">No open records.</div>'; return; }
+                
+                // Generates the double deck loop configuration string directly
+                let cardsHtml = snapshot.docs.map(doc => {
+                    let m = doc.data();
+                    let op = m.openPana || '***', od = m.openDigit || '*', cp = m.closePana || '***', cd = m.closeDigit || '*';
+                    let liveCombination = `${op}-${od}${cd}-${cp}`;
+                    
+                    return `
+                        <div class="market-card">
+                            <div>
+                                <div class="market-name">${m.name || 'Market'}</div>
+                                <div class="market-time">${formatTimeTo12Hour(m.openBidEnd)} - ${formatTimeTo12Hour(m.closeBidEnd)}</div>
+                            </div>
+                            <div class="market-number">${liveCombination}</div>
+                        </div>`;
+                }).join('');
+                
+                // Duplicates the calculated element block payload seamlessly to feed continuous cyclical execution rules
+                container.innerHTML = cardsHtml + cardsHtml;
+            });
+        }
         
         document.getElementById('sendOtpBtn').onclick = function() {
             const phone = document.getElementById('phoneNumber').value.replace(/\D/g, '');
-            if (!phone || phone.length < 10) { showError('phoneError', 'Enter valid 10-digit number'); return; }
+            if (!phone || phone.length !== 10) { showError('phoneError', 'Enter a valid 10-digit mobile number'); return; }
             currentPhone = '+91' + phone;
             isForgotFlow = false;
             sendVerificationPhone(currentPhone, this, 'phoneError');
@@ -374,7 +343,7 @@
         
         document.getElementById('sendResetOtpBtn').onclick = function() {
             const phone = document.getElementById('resetPhone').value.replace(/\D/g, '');
-            if (!phone || phone.length < 10) { showError('resetError', 'Enter valid 10-digit number'); return; }
+            if (!phone || phone.length !== 10) { showError('resetError', 'Enter a valid 10-digit mobile number'); return; }
             currentPhone = '+91' + phone;
             isForgotFlow = true;
             sendVerificationPhone(currentPhone, this, 'resetError');
@@ -453,6 +422,9 @@
             });
         };
         
+        // INITIALIZE DB STREAMS FOR RESULTS ON STARTUP RUN
+        listenToLiveResults();
+
         // AUTO-LOGIN RESUME MONITOR SYSTEM
         auth.onAuthStateChanged(user => { 
             if (user) { 
