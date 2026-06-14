@@ -51,7 +51,7 @@
         .main-scroll-view { padding: 0 12px; }
         .section-header-title { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.75px; margin: 8px 4px 12px 4px; }
 
-        /* Exact Replica Image Styling for Markets Cards */
+        /* Premium Adaptive Card Framework Matching Image Style Spec */
         .market-card-wrapper {
             background: #fff;
             border-radius: 16px;
@@ -62,7 +62,7 @@
             position: relative;
         }
         .market-main-row { display: flex; justify-content: space-between; align-items: flex-start; }
-        .market-identity-box { display: flex; flex-direction: column; gap: 4px; }
+        .market-identity-box { flex: 1; display: flex; flex-direction: column; gap: 4px; }
         
         .market-title-line { display: flex; align-items: center; gap: 6px; }
         .market-name-label { font-size: 18px; font-weight: 700; color: #1e293b; letter-spacing: 0.3px; text-transform: uppercase; }
@@ -71,10 +71,12 @@
         .market-numbers-display { font-size: 22px; font-weight: 800; color: #0f172a; letter-spacing: 0.5px; font-family: -apple-system, BlinkMacSystemFont, monospace; margin: 2px 0; }
         
         .market-status-text { font-size: 12px; font-weight: 700; }
-        .status-running { color: #10b981; }
+        .status-running-open { color: #10b981; }
+        .status-running-close { color: #f59e0b; }
         .status-closed-today { color: #ef4444; }
+        .status-holiday-today { color: #a78bfa; }
 
-        /* Media Control Buttons Mimicking the Play/Stop Matrix Indicators */
+        /* Context Interactive Navigation Nodes mimicking Play/Stop Circles */
         .market-action-btn-circle {
             width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.08); transition: transform 0.1s ease;
         }
@@ -89,7 +91,7 @@
         }
         .time-node span { color: #0f172a; font-weight: 700; }
 
-        /* High-Performance Hardware Accelerated Sliding Profile Drawer Overlay Stack */
+        /* High-Performance Drawer Overlay Layout Stack */
         .drawer-nav-backdrop {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); z-index: 2000; visibility: hidden; opacity: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -112,14 +114,14 @@
         .drawer-arrow-label { color: #475569; font-weight: bold; font-size: 12px; }
         .drawer-logout-btn { color: #ef4444; border-top: 1px solid #334155; margin-top: 8px; }
 
-        /* Bottom Fixed Navigation Bar Matching Core Specification Layout */
+        /* Bottom Fixed Navigation Bar Matching Specification Layout */
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto; background: #fff; display: flex; justify-content: space-around; align-items: center; padding: 10px 6px 14px 6px; border-top: 1px solid #e2e8f0; z-index: 1000; height: 75px; }
         .nav-item { text-align: center; color: #64748b; cursor: pointer; font-size: 13px; flex: 1; font-weight: 600; text-decoration: none; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; }
         .nav-item.active { color: #3b82f6; }
         .nav-item-home { position: relative; top: -20px; background: #3b82f6; color: #fff !important; width: 64px; height: 64px; max-width: 64px; border-radius: 50%; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4); border: 4px solid #f4f6f9; }
         .nav-item-home span { font-size: 12px; font-weight: 700; }
 
-        /* Overlay Popups Template Layout Modules */
+        /* Dynamic Popups Template Structure Overlay */
         .modal-popup-layer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 3000; justify-content: center; align-items: center; }
         .modal-popup-body { background: #fff; border-radius: 16px; padding: 24px; width: 90%; max-width: 340px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); color: #0f172a; }
         .modal-popup-body h3 { margin-bottom: 14px; text-align: center; font-size: 18px; font-weight: 700; }
@@ -141,13 +143,13 @@
     </div>
 
     <div class="notice-container" id="noticeContainerElement" onclick="triggerNoticePopup()">
-        <div class="notice-msg-text" id="dashboardNoticeTextField">Loading broadcast updates...</div>
+        <div class="notice-msg-text" id="dashboardNoticeTextField">Loading system notice boards...</div>
     </div>
     
     <div class="main-scroll-view">
         <div class="section-header-title">Live Trading Markets</div>
         <div id="marketListElementContainer">
-            <div style="text-align:center; padding:40px; color:#64748b; font-size:14px; font-weight:500;">Establishing database streams...</div>
+            <div style="text-align:center; padding:40px; color:#64748b; font-size:14px; font-weight:500;">Connecting secure channels...</div>
         </div>
     </div>
     
@@ -192,7 +194,7 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth(), db = firebase.firestore();
     
-    let currentUserData = null;
+    let currentUserData = null, cachedServerTimeOffset = 0;
 
     function showPageLoader() { 
         let div = document.createElement('div'); div.className = 'loader-overlay'; div.id = 'dashboardMainLoaderNode'; 
@@ -200,7 +202,6 @@
     }
     function hidePageLoader() { let el = document.getElementById('dashboardMainLoaderNode'); if(el) el.remove(); }
     
-    // Core User Account Context Parser
     async function syncUserContext() {
         const user = auth.currentUser; if (!user) { window.location.href = 'index.html'; return; }
         db.collection('users').doc(user.uid).onSnapshot(doc => {
@@ -211,7 +212,6 @@
                 document.getElementById('drawerLabelName').innerText = currentUserData.name || 'User Account';
                 document.getElementById('drawerLabelPhone').innerText = currentUserData.phone ? `📞 ${currentUserData.phone}` : '';
                 
-                // Pre-populates overlay configuration documents if parameters aren't blank
                 if(currentUserData.bankDetails) {
                     document.getElementById('bankHolderNameField').value = currentUserData.bankDetails.accountHolder || '';
                     document.getElementById('bankTitleField').value = currentUserData.bankDetails.bankName || '';
@@ -228,21 +228,47 @@
         return `${hr.toString().padStart(2, '0')}:${m} ${ampm}`;
     }
 
-    // Exact Replica Structural Render Engine for Image Specifications Map Loop
-    function syncMarketFeeds() {
+    function timeToMinutes(t) { if (!t) return 0; const p = t.split(':'); return parseInt(p[0]) * 60 + parseInt(p[1]); }
+
+    // Core Server-Time Calculated Status Engine Logic (Ignores phone clock cheating)
+    function computeMarketCurrentStatus(m, curMin) {
+        if (m.status === 'holiday') return { text: 'Holiday Today', css: 'status-holiday-today', allow: false, statusParam: 'holiday' };
+        if (m.status === 'closed') return { text: 'Market Closed For Today', css: 'status-closed-today', allow: false, statusParam: 'closed' };
+        
+        let opEnd = timeToMinutes(m.openBidEnd);
+        let clEnd = timeToMinutes(m.closeBidEnd);
+        
+        if (curMin < opEnd) {
+            return { text: 'Running For Bidding', css: 'status-running-open', allow: true, statusParam: 'open' };
+        } else if (curMin < clEnd) {
+            return { text: 'Running For Close Bidding', css: 'status-running-close', allow: true, statusParam: 'close' };
+        } else {
+            return { text: 'Market Closed For Today', css: 'status-closed-today', allow: false, statusParam: 'closed' };
+        }
+    }
+
+    async function syncMarketFeeds() {
+        // Obtains real server time offset initialization variable parameters
+        const docRef = db.collection('settings').doc('servertime');
+        await docRef.set({ timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        const timeDoc = await docRef.get();
+        const serverTime = timeDoc.data().timestamp.toDate();
+        
         db.collection('markets').orderBy('serialNo', 'asc').onSnapshot(snapshot => {
             const container = document.getElementById('marketListElementContainer');
-            if (snapshot.empty) { container.innerHTML = '<div style="text-align:center; padding:30px; color:#64748b;">No active trade panels detected.</div>'; return; }
+            if (snapshot.empty) { container.innerHTML = '<div style="text-align:center; padding:30px; color:#64748b;">No active panels.</div>'; return; }
+            
+            // Computes current active clock minutes based on forced server calculations
+            const curMin = serverTime.getHours() * 60 + serverTime.getMinutes();
             
             container.innerHTML = snapshot.docs.map(doc => {
                 let m = doc.data();
                 let op = m.openPana || '***', od = m.openDigit || '*', cp = m.closePana || '***', cd = m.closeDigit || '*';
-                let isClosedToday = m.status === 'closed' || m.status === 'holiday';
-                
                 let combinedNumbers = `${op}-${od}${cd}-${cp}`;
-                let statusLabelText = isClosedToday ? 'Closed For Today' : 'Running For Open';
-                let statusStyleClass = isClosedToday ? 'status-closed-today' : 'status-running';
-                let buttonStyleClass = isClosedToday ? 'btn-inactive-stop' : 'btn-active-play';
+                
+                // Real-time server calculated status outputs mapping logic
+                let calculatedState = computeMarketCurrentStatus(m, curMin);
+                let buttonStyleClass = calculatedState.allow ? 'btn-active-play' : 'btn-inactive-stop';
                 
                 return `
                     <div class="market-card-wrapper">
@@ -253,9 +279,9 @@
                                     <span class="info-bubble-icon">i</span>
                                 </div>
                                 <div class="market-numbers-display">${combinedNumbers}</div>
-                                <span class="market-status-text ${statusStyleClass}">${statusLabelText}</span>
+                                <span class="market-status-text ${calculatedState.css}">${calculatedState.text}</span>
                             </div>
-                            <button class="market-action-btn-circle ${buttonStyleClass}" onclick="navigateTradingSuite('${doc.id}', '${encodeURIComponent(m.name || '')}', '${m.status}')"></button>
+                            <button class="market-action-btn-circle ${buttonStyleClass}" onclick="navigateTradingSuite('${doc.id}', '${encodeURIComponent(m.name || '')}', '${calculatedState.statusParam}')"></button>
                         </div>
                         <div class="market-timing-footer-row">
                             <div class="time-node">Open Bids : <span>${formatTimeTo12Hour(m.openBidEnd)}</span></div>
@@ -266,9 +292,9 @@
         });
     }
 
-    function navigateTradingSuite(mid, name, status) {
-        if(status === 'holiday') { alert('⚠️ Market suspended today due to holiday declarations.'); return; }
-        window.location.href = `betting.html?marketId=${mid}&market=${name}&status=${status}`;
+    function navigateTradingSuite(mid, name, statusParam) {
+        if(statusParam === 'holiday' || statusParam === 'closed') { alert('⚠️ Market bidding windows for this card are currently closed.'); return; }
+        window.location.href = `betting.html?marketId=${mid}&market=${name}&status=${statusParam}`;
     }
 
     function toggleDrawerMenu(open) {
@@ -319,7 +345,6 @@
     function triggerNoticePopup() { alert(document.getElementById('dashboardNoticeTextField').innerText); }
     function executeSecureSignout() { auth.signOut().then(() => { sessionStorage.clear(); window.location.href = 'index.html'; }); }
     
-    // Heartbeat Broadcasting Observers
     db.collection('settings').doc('notice').onSnapshot(doc => {
         document.getElementById('dashboardNoticeTextField').innerText = doc.exists ? doc.data().text : 'Welcome to DURGA Trading Suite!';
     });
