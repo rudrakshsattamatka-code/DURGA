@@ -9,7 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        body { background: #f4f6f9; color: #1e293b; padding-top: 60px; padding-bottom: 100px; }
+        body { background: #f4f6f9; color: #1e293b; padding-top: 60px; padding-bottom: 110px; }
         .app-container { max-width: 480px; margin: 0 auto; background: #f4f6f9; min-height: 100vh; position: relative; }
         
         .sticky-top-panel {
@@ -47,6 +47,11 @@
 
         .digit-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 14px 0; }
         .digit-btn { background: #f8fafc; border: none; border-radius: 8px; padding: 14px; text-align: center; font-size: 18px; font-weight: 700; color: #0f172a; cursor: pointer; }
+
+        /* Upgraded Enlarged High-Visibility Jodi Selection Matrix Board Elements */
+        .jodi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 16px 0; }
+        .jodi-btn { background: #f8fafc; border: none; border-radius: 10px; padding: 18px 0; text-align: center; font-size: 18px; font-weight: 800; color: #0f172a; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+        .jodi-btn:active { background: #e2e8f0; }
 
         .manual-entry { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
         .manual-row { display: flex; align-items: center; background: #f1f5f9; padding: 10px 14px; border-radius: 8px; gap: 10px; }
@@ -131,35 +136,67 @@
     const validDoublePanaList = ['100','119','155','227','335','344','399','588','669','110','200','228','255','366','499','660','688','778','166','229','300','337','355','445','599','779','788','112','220','266','338','400','446','455','699','770','113','122','177','339','366','447','500','799','889','600','114','277','330','448','466','556','880','899','115','133','188','223','377','449','557','566','700','116','224','233','288','440','477','558','800','990','117','144','199','225','388','559','577','667','900','118','226','244','299','334','488','550','668','677'];
     const validTriplePanaList = ['111','222','333','444','555','666','777','888','999','000'];
 
-    // Family Jodi Group Maps
     const familyJodiGroups = [
-        ['12','17','21','26','62','67','71','76'],
-        ['13','18','31','36','63','68','81','86'],
-        ['14','19','41','46','64','69','91','96'],
-        ['01','06','10','15','51','56','60','65'],
-        ['23','28','32','37','73','78','82','87'],
-        ['24','29','42','47','74','79','92','97'],
-        ['02','07','20','25','52','57','70','75'],
-        ['34','39','43','48','84','89','93','98'],
-        ['03','08','30','35','53','58','80','85'],
-        ['04','09','40','45','54','59','90','95']
+        ['12','17','21','26','62','67','71','76'], ['13','18','31','36','63','68','81','86'],
+        ['14','19','41','46','64','69','91','96'], ['01','06','10','15','51','56','60','65'],
+        ['23','28','32','37','73','78','82','87'], ['24','29','42','47','74','79','92','97'],
+        ['02','07','20','25','52','57','70','75'], ['34','39','43','48','84','89','93','98'],
+        ['03','08','30','35','53','58','80','85'], ['04','09','40','45','54','59','90','95']
     ];
 
-    // Red Jodi Family Group Maps
     const redJodiGroups = [
-        ['05','00','50','55'],
-        ['11','16','61','66'],
-        ['22','27','72','77'],
-        ['38','33','83','88'],
-        ['49','44','94','99']
+        ['05','00','50','55'], ['11','16','61','66'], ['22','27','72','77'],
+        ['38','33','83','88'], ['49','44','94','99']
+    ];
+
+    // Consolidated Comprehensive Core Multi-Pana Groupings Matrix
+    const familyPanaGroups = [
+        ['111','116','166','666'],
+        ['112','117','126','167','266','667'],
+        ['113','118','136','168','366','668'],
+        ['114','119','146','169','466','669'],
+        ['110','115','156','160','566','660'],
+        ['122','127','177','226','267','677'],
+        ['123','128','137','178','236','268','367','678'],
+        ['124','129','147','179','246','269','467','679'],
+        ['120','125','157','170','256','260','567','670'],
+        ['133','138','188','336','368','688'],
+        ['134','139','148','189','346','369','468','689'],
+        ['130','135','158','180','356','360','568','680'],
+        ['144','149','199','446','469','699'],
+        ['140','145','159','190','456','460','569','690'],
+        ['100','150','155','556','560','600'],
+        ['222','227','277','777'],
+        ['223','228','237','278','377','778'],
+        ['224','229','247','279','477','779'],
+        ['220','225','257','270','577','770'],
+        ['233','238','288','337','378','788'],
+        ['234','239','248','289','347','379','478','789'],
+        ['230','235','258','280','357','370','578','780'],
+        ['244','249','299','447','479','799'],
+        ['240','245','259','290','457','470','579','790'],
+        ['200','250','255','557','570','700'],
+        ['333','338','388','888'],
+        ['334','339','348','389','488','889'],
+        ['330','335','358','380','588','880'],
+        ['344','349','399','448','489','899'],
+        ['340','345','359','390','458','480','589','890'],
+        ['300','350','355','558','580','800'],
+        ['444','449','499','999'],
+        ['440','445','459','490','599','990'],
+        ['400','450','455','559','590','900'],
+        ['000','500','550','555']
     ];
 
     const allGameTypes = [
         { name: 'Single Digit', hasOpenClose: true, availableInOpen: true, availableInClose: true, hasGrid: true },
-        { name: 'Jodi', hasOpenClose: false, availableInOpen: true, availableInClose: false, hasGrid: false },
+        { name: 'Jodi', hasOpenClose: false, availableInOpen: true, availableInClose: false, hasGrid: true },
         { name: 'Single Pana', hasOpenClose: true, availableInOpen: true, availableInClose: true, hasGrid: false },
         { name: 'Double Pana', hasOpenClose: true, availableInOpen: true, availableInClose: true, hasGrid: false },
         { name: 'Triple Pana', hasOpenClose: true, availableInOpen: true, availableInClose: true, hasGrid: false },
+        { name: 'Family Jodi', hasOpenClose: false, availableInOpen: true, availableInClose: false, hasGrid: false },
+        { name: 'Family Red Jodi', hasOpenClose: false, availableInOpen: true, availableInClose: false, hasGrid: false },
+        { name: 'Family Pana', hasOpenClose: true, availableInOpen: true, availableInClose: true, hasGrid: false },
         { name: 'Half Sangam A', hasOpenClose: false, availableInOpen: true, availableInClose: false, hasGrid: false },
         { name: 'Half Sangam B', hasOpenClose: false, availableInOpen: true, availableInClose: false, hasGrid: false },
         { name: 'Full Sangam', hasOpenClose: false, availableInOpen: true, availableInClose: false, hasGrid: false }
@@ -208,49 +245,45 @@
         if (!check.allowed) { alert(check.message); return; }
         if (!pts || pts < 5) { alert('Min ₹5 required'); return; }
         
-        if(currentGameType === 'Single Pana' && !validSinglePanaList.includes(val)) { alert('Invalid Single Pana'); return; }
-        if(currentGameType === 'Double Pana' && !validDoublePanaList.includes(val)) { alert('Invalid Double Pana'); return; }
-        if(currentGameType === 'Triple Pana' && !validTriplePanaList.includes(val)) { alert('Invalid Triple Pana'); return; }
+        let targetType = (['Single Digit', 'Single Pana', 'Double Pana', 'Triple Pana', 'Family Pana'].includes(currentGameType)) ? ((currentStatus === 'close') ? 'Close' : selectedOpenClose) : 'Close';
 
-        let type = (currentGameType === 'Jodi' || currentGameType.includes('Sangam')) ? 'Close' : ((currentStatus === 'close') ? 'Close' : selectedOpenClose);
-        
-        // Prevent duplicate local queue entries
-        const exists = bids.some(b => b.type === currentGameType && b.value === val && b.bidType === type);
+        // Prevents duplicate queue injection streams
+        const exists = bids.some(b => b.type === currentGameType && b.value === val && b.bidType === targetType);
         if(!exists) {
-            bids.push({ type: currentGameType, bidType: type, value: val, points: pts, market: currentMarket, marketId: currentMarketId });
+            bids.push({ type: currentGameType, bidType: targetType, value: val, points: pts, market: currentMarket, marketId: currentMarketId });
         }
         updateSummary(); renderPanel();
     }
 
-    // Handles the Auto-Add Family group feature cleanly
+    // Handles the Auto-Add Family group execution frameworks cleanly
     function handleAutoAdd(el) {
-        let val = el.value.trim();
+        const val = el.value.trim();
         const pts = parseInt(document.getElementById('pointsInput').value);
         if(isNaN(pts) || pts < 5) return;
 
-        if(currentGameType === 'Jodi' && val.length === 2) {
-            // Check Family Jodi Arrays
+        if((currentGameType === 'Family Jodi' || currentGameType === 'Family Red Jodi') && val.length === 2) {
             let matchedFamily = familyJodiGroups.find(arr => arr.includes(val));
             if(matchedFamily) {
                 matchedFamily.forEach(num => addToBids(num, pts));
-                showMsg("✨ Family Jodi Auto-Selected", false);
-                el.value = ''; return;
+                showMsg("✨ Family Jodi Added", false); el.value = ''; return;
             }
-
-            // Check Red Jodi Family Arrays
             let matchedRed = redJodiGroups.find(arr => arr.includes(val));
             if(matchedRed) {
                 matchedRed.forEach(num => addToBids(num, pts));
-                showMsg("✨ Red Jodi Family Auto-Selected", false);
-                el.value = ''; return;
+                showMsg("✨ Red Family Group Added", false); el.value = ''; return;
             }
-
-            // Standard fallback entry if no matches exist
-            addToBids(val, pts);
-            el.value = '';
-        } else if(currentGameType.includes('Pana') && val.length === 3) {
-            addToBids(val, pts);
-            el.value = '';
+            addToBids(val, pts); el.value = '';
+        } 
+        else if(currentGameType === 'Family Pana' && val.length === 3) {
+            let matchedPanaGroup = familyPanaGroups.find(arr => arr.includes(val));
+            if(matchedPanaGroup) {
+                matchedPanaGroup.forEach(num => addToBids(num, pts));
+                showMsg("✨ Pana Family Matrix Added", false); el.value = ''; return;
+            }
+            addToBids(val, pts); el.value = '';
+        }
+        else if(currentGameType.includes('Pana') && val.length === 3) {
+            addToBids(val, pts); el.value = '';
         }
     }
 
@@ -299,13 +332,19 @@
             let grid = ''; for(let i=0;i<=9;i++) grid += `<div class="digit-btn" onclick="addToBids('${i}', parseInt(document.getElementById('pointsInput').value))">${i}</div>`;
             p.innerHTML = `<div class="game-panel-content">${top}<div class="digit-grid">${grid}</div>${renderBids()}</div>`;
         } else if (currentGameType === 'Jodi') {
-            p.innerHTML = `<div class="game-panel-content">${top}<div class="manual-entry"><div class="manual-row"><span class="manual-label">Jodi No:</span><input type="number" id="v1" placeholder="Enter number" oninput="handleAutoAdd(this)"></div><div class="family-info-text">💡 Entering any number automatically registers its family group map bids instantly!</div></div>${renderBids()}</div>`;
-        } else if (currentGameType.includes('Pana')) {
-            p.innerHTML = `<div class="game-panel-content">${top}<div class="manual-entry"><div class="manual-row"><span class="manual-label">Pana No:</span><input type="number" id="v1" placeholder="3-Digits" oninput="handleAutoAdd(this)"></div></div>${renderBids()}</div>`;
+            let grid = ''; for(let i=0;i<=99;i++) { let v = i.toString().padStart(2,'0'); grid += `<div class="jodi-btn" onclick="addToBids('${v}', parseInt(document.getElementById('pointsInput').value))">${v}</div>`; }
+            p.innerHTML = `<div class="game-panel-content">${top}<div class="jodi-grid">${grid}</div>${renderBids()}</div>`;
+        } else if (currentGameType === 'Family Jodi' || currentGameType === 'Family Red Jodi') {
+            p.innerHTML = `<div class="game-panel-content">${top}<div class="manual-entry"><div class="manual-row"><span class="manual-label">Jodi No:</span><input type="number" id="v1" placeholder="Enter base 2-digits" oninput="handleAutoAdd(this)"></div><div class="family-info-text">💡 Typing a number auto-selects its reference family group matrix instantly!</div></div>${renderBids()}</div>`;
+        } else if (currentGameType === 'Family Pana' || currentGameType.includes('Pana')) {
+            p.innerHTML = `<div class="game-panel-content">${top}<div class="manual-entry"><div class="manual-row"><span class="manual-label">Pana No:</span><input type="number" id="v1" placeholder="Enter 3-Digits" oninput="handleAutoAdd(this)"></div></div>${renderBids()}</div>`;
         } else if (currentGameType.includes('Sangam')) {
             let labels = currentGameType === 'Half Sangam A' ? ['Open Pana', 'Close Digit'] : (currentGameType === 'Half Sangam B' ? ['Open Digit', 'Close Pana'] : ['Open Pana', 'Close Pana']);
             p.innerHTML = `<div class="game-panel-content">${top}<div class="manual-entry"><div class="manual-row"><span class="manual-label">${labels[0]}:</span><input type="number" id="v1"></div><div class="manual-row"><span class="manual-label">${labels[1]}:</span><input type="number" id="v2"></div></div><button class="add-btn" onclick="addToBids(document.getElementById('v1').value+'-'+document.getElementById('v2').value, parseInt(document.getElementById('pointsInput').value))">ADD</button>${renderBids()}</div>`;
         }
+        
+        const newPointsInput = document.getElementById('pointsInput');
+        if (newPointsInput && pts) { newPointsInput.value = pts; }
     }
 
     function renderBids() { 
