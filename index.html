@@ -131,17 +131,6 @@
         }
         .btn:active { background: #2563eb; transform: scale(0.98); }
 
-        .link {
-            text-align: center;
-            margin-top: 10px;
-            color: #94a3b8;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-        }
-        .link:hover { color: #3b82f6; }
-
         .welcome-text { color: #e2e8f0; font-size: 13px; margin-bottom: 8px; text-align: center; font-weight: 600; }
         .timer { color: #f59e0b; font-size: 12px; font-weight: 700; margin-bottom: 8px; text-align: center; font-family: monospace; }
         .error-text { color: #f87171; font-size: 11px; text-align: center; margin-top: 4px; font-weight: 700; }
@@ -219,7 +208,6 @@
         <div id="phoneScreen" class="screen">
             <input type="tel" id="phoneNumber" class="input-field" placeholder="Enter Mobile Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/\D/g,'')">
             <button class="btn" id="sendOtpBtn">Login with OTP</button>
-            <div class="link" id="forgotPinLink">Forgot Password?</div>
             <div id="phoneError" class="error-text"></div>
         </div>
 
@@ -228,25 +216,14 @@
             <div class="timer" id="timer">Second Remaining 60</div>
             <input type="text" id="otpCode" class="input-field" placeholder="Enter OTP" maxlength="6" inputmode="numeric" oninput="this.value = this.value.replace(/\D/g,'')">
             <button class="btn" id="verifyOtpBtn">VERIFY OTP</button>
-            <div class="link" id="resendOtpBtn">Resend OTP</div>
             <div id="otpError" class="error-text"></div>
         </div>
 
         <div id="registerScreen" class="screen hidden">
             <div class="welcome-text">Complete Your Profile</div>
             <input type="text" id="regName" class="input-field" placeholder="Full Name">
-            <input type="text" id="regCity" class="input-field" placeholder="City">
-            <input type="date" id="regDob" class="input-field" placeholder="Date of Birth">
             <button class="btn" id="registerBtn">Create Account & Login</button>
             <div id="regError" class="error-text"></div>
-        </div>
-
-        <div id="resetPinScreen" class="screen hidden">
-            <div class="welcome-text">Recover Account</div>
-            <input type="tel" id="resetPhone" class="input-field" placeholder="Enter Mobile Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/\D/g,'')">
-            <button class="btn" id="sendResetOtpBtn">Send Verification OTP</button>
-            <div class="link" id="backToLogin">Back to Login</div>
-            <div id="resetError" class="error-text"></div>
         </div>
     </div>
 
@@ -276,13 +253,11 @@
         auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
         
         let confirmationResult = null, currentPhone = null, countdown = 0, timerInterval = null, recaptchaVerifier = null;
-        let isForgotFlow = false;
         
         function showScreen(screen) {
             document.getElementById('phoneScreen').className = 'screen hidden';
             document.getElementById('otpScreen').className = 'screen hidden';
             document.getElementById('registerScreen').className = 'screen hidden';
-            document.getElementById('resetPinScreen').className = 'screen hidden';
             screen.className = 'screen';
         }
         
@@ -340,16 +315,7 @@
             const phone = document.getElementById('phoneNumber').value.replace(/\D/g, '');
             if (!phone || phone.length !== 10) { showError('phoneError', 'Enter a valid 10-digit mobile number'); return; }
             currentPhone = '+91' + phone;
-            isForgotFlow = false;
             sendVerificationPhone(currentPhone, this, 'phoneError');
-        };
-        
-        document.getElementById('sendResetOtpBtn').onclick = function() {
-            const phone = document.getElementById('resetPhone').value.replace(/\D/g, '');
-            if (!phone || phone.length !== 10) { showError('resetError', 'Enter a valid 10-digit mobile number'); return; }
-            currentPhone = '+91' + phone;
-            isForgotFlow = true;
-            sendVerificationPhone(currentPhone, this, 'resetError');
         };
 
         function sendVerificationPhone(phoneNumber, btnElement, errorId) {
@@ -360,7 +326,7 @@
                 showScreen(document.getElementById('otpScreen')); 
                 startTimer(60, 'timer'); 
                 btnElement.disabled = false; 
-                btnElement.innerText = btnElement.id === 'sendOtpBtn' ? 'Login with OTP' : 'Send Verification OTP'; 
+                btnElement.innerText = 'Login with OTP'; 
             }).catch(error => { showError(errorId, error.message); btnElement.disabled = false; });
         }
         
@@ -375,35 +341,16 @@
                     if (doc.exists) {
                         window.location.href = 'dashboard.html';
                     } else {
-                        if(isForgotFlow) {
-                            showError('otpError', 'No account found for this number.');
-                            btn.disabled = false; btn.innerText = 'VERIFY OTP';
-                        } else {
-                            showScreen(document.getElementById('registerScreen'));
-                            btn.disabled = false; btn.innerText = 'VERIFY OTP';
-                        }
+                        showScreen(document.getElementById('registerScreen'));
+                        btn.disabled = false; btn.innerText = 'VERIFY OTP';
                     }
                 }).catch(() => { showScreen(document.getElementById('registerScreen')); btn.disabled = false; }); 
             }).catch(error => { showError('otpError', 'Invalid OTP'); btn.disabled = false; });
         };
         
-        document.getElementById('resendOtpBtn').onclick = function() { 
-            if (!currentPhone) return; 
-            const verifier = initRecaptcha(); 
-            auth.signInWithPhoneNumber(currentPhone, verifier).then(confirmation => { confirmationResult = confirmation; startTimer(60, 'timer'); showError('otpError', 'OTP resent!'); }).catch(error => showError('otpError', error.message)); 
-        };
-        
-        document.getElementById('forgotPinLink').onclick = function() { showScreen(document.getElementById('resetPinScreen')); };
-        document.getElementById('backToLogin').onclick = function() { showScreen(document.getElementById('phoneScreen')); };
-        
         document.getElementById('registerBtn').onclick = function() {
             const name = document.getElementById('regName').value.trim();
-            const city = document.getElementById('regCity').value.trim();
-            const dob = document.getElementById('regDob').value;
-            
             if (!name) { showError('regError', 'Enter your name'); return; } 
-            if (!city) { showError('regError', 'Enter your city'); return; }
-            if (!dob) { showError('regError', 'Select your Date of Birth'); return; }
             
             const user = auth.currentUser; if (!user) { showError('regError', 'Session expired'); return; }
             const btn = this; btn.disabled = true; btn.innerText = 'Creating Account...';
@@ -412,8 +359,6 @@
                 uid: user.uid, 
                 phone: user.phoneNumber, 
                 name: name, 
-                city: city, 
-                dob: dob, 
                 balance: 0, 
                 role: 'user', 
                 createdAt: new Date() 
