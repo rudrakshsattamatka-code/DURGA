@@ -9,28 +9,29 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        body { background: #f4f6f9; color: #334155; padding-top: 56px; padding-bottom: 75px; min-height: 100vh; }
-        .app-container { max-width: 480px; margin: 0 auto; background: #f4f6f9; min-height: 100vh; position: relative; display: flex; flex-direction: column; }
+        body { background: #f4f6f9; color: #334155; padding-top: 56px; padding-bottom: 75px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        .app-container { max-width: 480px; margin: 0 auto; background: #f4f6f9; width: 100%; height: 100%; display: flex; flex-direction: column; position: relative; }
         
-        /* Exact Image Match Premium Teal Top Header Bar */
+        /* Premium Teal Top Header Bar Matching Image Coordinates */
         .sticky-top-panel {
             position: fixed; top: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto; height: 56px;
             background: linear-gradient(90deg, #136a7a, #1a8a9d); color: #fff; z-index: 1000;
             display: flex; align-items: center; justify-content: space-between; padding: 0 16px;
         }
-        .back-btn { background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; display: flex; align-items: center; }
+        .top-panel-back-arrow { background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; display: flex; align-items: center; }
         .market-header-info { flex: 1; margin-left: 16px; display: flex; align-items: center; justify-content: space-between; }
-        .market-meta-title { font-size: 16px; font-weight: 700; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px; }
+        .market-meta-title { font-size: 16px; font-weight: 700; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px; id: marketName; }
         .balance-box-display { font-size: 15px; font-weight: 600; color: #ffffff; display: flex; align-items: center; gap: 6px; }
         .wallet-icon-svg { width: 18px; height: 18px; fill: currentColor; }
+        .bid-badge { display: none !important; }
 
         /* Navigation Header Control Bar */
-        .app-navigation-control-bar { display: flex; align-items: center; padding: 12px 16px; background: #f4f6f9; }
+        .app-navigation-control-bar { display: flex; align-items: center; padding: 12px 16px; background: #f4f6f9; margin-top: 56px; }
         .back-navigation-btn { background: none; border: none; color: #1a8a9d; font-size: 13px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
         .navigation-view-title { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.75px; margin-left: auto; }
 
-        /* Game Grid Mode Content Views (Matching game type.jpeg) */
-        .game-types-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; padding: 4px 16px 16px 16px; }
+        /* Game Grid Mode Content Views */
+        .game-types-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; padding: 4px 16px 16px 16px; overflow-y: auto; flex: 1; }
         .game-type-card { 
             background: #ffffff; border-radius: 18px; padding: 24px 12px; text-align: center; 
             cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
@@ -43,15 +44,16 @@
         .icon-orange { color: #ea580c; }
         .icon-purple { color: #7c3aed; }
         .game-card-name { font-size: 14px; font-weight: 700; color: #1e293b; text-transform: capitalize; }
-        .game-card-name.allcaps { text-transform: uppercase; font-weight: 900; }
 
-        .bidding-panel { display: none; width: 100%; }
+        /* Bidding Main Subview Section Wrapper */
+        .bidding-panel { display: none; width: 100%; flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+        .bidding-panel-active { display: flex !important; flex-direction: column; }
 
-        /* Exact Layout Form Elements Matrix (Matching game style.jpeg) */
+        /* Exact Input Layout Forms Matrix Matching game style.jpeg */
         .game-panel-content { padding: 4px 16px 10px 16px; display: flex; flex-direction: column; gap: 14px; }
         
         .native-image-row { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 16px; }
-        .native-image-label { font-size: 15px; color: #475569; font-weight: 500; flex-shrink: 0; width: 120px; text-align: left; }
+        .native-image-label { font-size: 15px; color: #475569; font-weight: 500; flex-shrink: 0; width: 125px; text-align: left; }
         
         .select-native-dropdown-wrapper { flex: 1; position: relative; background: #fff; border-radius: 8px; border: 1px solid #cbd5e1; padding-right: 12px; }
         .select-native-input { width: 100%; padding: 10px 12px; background: transparent; border: none; outline: none; font-size: 14px; font-weight: 700; color: #000; appearance: none; -webkit-appearance: none; cursor: pointer; text-transform: uppercase; }
@@ -60,50 +62,62 @@
         .native-input-box-wrapper { flex: 1; background: #fff; border-radius: 8px; border: 1px solid #cbd5e1; }
         .native-form-input-field { width: 100%; padding: 10px 12px; background: transparent; border: none; outline: none; font-size: 15px; font-weight: 600; color: #000; }
 
+        .toggle-section { display: none !important; }
+        .bid-row, .bid-field, .bid-label, .bid-input { display: none !important; }
+
         .native-add-more-btn { 
             align-self: flex-end; background: #1a8a9d; color: #fff; border: none; 
             padding: 10px 44px; border-radius: 20px; font-size: 16px; font-weight: 600; 
             cursor: pointer; margin-top: 4px; box-shadow: 0 2px 6px rgba(26,138,157,0.2);
+            transition: opacity 0.1s;
         }
+        .native-add-more-btn:active { opacity: 0.9; }
+        .add-sangam-btn { display: none !important; }
 
-        /* Table Metadata Header List */
-        .table-metadata-header-row { display: flex; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid #cbd5e1; margin-top: 14px; background: #f4f6f9; }
-        .meta-col-label { font-size: 13px; font-weight: 600; color: #1a8a9d; flex: 1; text-align: center; }
-        .meta-col-label:first-child { text-align: left; }
-        .meta-col-label:last-child { text-align: right; }
+        /* Minimal Horizontal Separator Row Grid Layout */
+        .table-metadata-header-row { display: flex; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid #cbd5e1; border-top: 1px solid #cbd5e1; margin-top: 8px; background: #f4f6f9; width: 100%; }
+        .meta-col-label { font-size: 14px; font-weight: 600; color: #1a8a9d; flex: 1; text-align: center; }
+        .meta-col-label:first-child { text-align: left; padding-left: 12px; }
+        .meta-col-label:last-child { text-align: right; padding-right: 28px; }
 
-        /* Dynamic Scrollable Selection List Window Sheet */
-        .isolated-scroll-bids-window { max-height: 200px; overflow-y: auto; border-bottom: 1px solid #cbd5e1; margin-bottom: 10px; }
+        /* ----------------------------------------------------------------- */
+        /* ISOLATED SCROLL SELECTION SLIPS WINDOW SYSTEM BLOCK AREA          */
+        /* ----------------------------------------------------------------- */
+        .isolated-scroll-bids-window { flex: 1; overflow-y: auto; background: #ffffff; width: 100%; }
         .bids-section { display: flex; flex-direction: column; }
         
-        .bid-item { background: transparent; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; }
+        .bid-item { background: transparent; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; }
         .bid-info { display: flex; width: 100%; justify-content: space-between; align-items: center; }
-        .bid-value { font-size: 14px; font-weight: 600; color: #334155; flex: 1; text-align: left; }
-        .bid-points { font-size: 14px; color: #334155; font-weight: 600; flex: 1; text-align: center; }
-        .bid-resolved-type-label { font-size: 14px; color: #334155; font-weight: 600; flex: 1; text-align: right; }
-        .remove-bid { background: none; border: none; color: #ef4444; cursor: pointer; font-size: 14px; padding-left: 12px; font-weight: bold; }
+        .bid-value { font-size: 14px; font-weight: 500; color: #475569; flex: 1; text-align: left; }
+        .bid-points { font-size: 14px; color: #475569; font-weight: 500; flex: 1; text-align: center; }
+        .bid-resolved-type-label { font-size: 14px; color: #475569; font-weight: 500; flex: 1; text-align: right; }
+        
+        .bid-type, .bid-game-title { display: none !important; }
+        .remove-bid { background: none; border: none; color: #ef4444; cursor: pointer; font-size: 14px; padding-left: 16px; font-weight: bold; }
 
-        /* Dynamic Input Grid Displays */
-        .digit-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 4px 16px; margin-bottom: 10px; }
+        /* Layout Grid Modules Matrix Sheets */
+        .digit-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 4px 16px; margin-bottom: 4px; overflow-y: auto; max-height: 160px; }
         .digit-btn { background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px 0; text-align: center; font-size: 16px; font-weight: 700; color: #0f172a; cursor: pointer; }
         
-        .jodi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 4px 16px; max-height: 220px; overflow-y: auto; margin-bottom: 10px; }
+        .jodi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 4px 16px; max-height: 180px; overflow-y: auto; margin-bottom: 4px; }
         .jodi-btn { background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px 0; text-align: center; font-size: 15px; font-weight: 700; color: #0f172a; cursor: pointer; }
         .jodi-btn.number-selected-active { background: #1a8a9d !important; color: #ffffff !important; border-color: #1a8a9d !important; }
 
-        /* Fixed Bottom Summary Control Deck Bar (Matching game style.jpeg) */
+        .manual-entry { display: flex; flex-direction: column; gap: 12px; }
+
+        /* Fixed Bottom Summary Deck Bar Layout Elements Matching Specs */
         .fixed-bottom-summary-deck {
             position: fixed; bottom: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto;
-            background: #ffffff; border-top: 1px solid #cbd5e1; padding: 10px 20px 14px 24px; z-index: 1000;
+            background: #ffffff; border-top: 1px solid #cbd5e1; padding: 10px 24px 14px 24px; z-index: 1000;
             display: none; align-items: center; justify-content: space-between; height: 75px;
         }
-        .summary-metrics-tray { display: flex; gap: 40px; }
+        .summary-metrics-tray { display: flex; gap: 48px; }
         .summary-block { display: flex; flex-direction: column; align-items: center; }
-        .summary-label { font-size: 14px; color: #475569; font-weight: 500; margin-bottom: 1px; }
+        .summary-label { font-size: 14px; color: #475569; font-weight: 500; margin-bottom: 2px; }
         .summary-value { font-size: 16px; font-weight: 700; color: #000; }
         
         .submit-btn { 
-            background: #136a7a; color: #fff; border: none; padding: 10px 44px; 
+            background: #136a7a; color: #fff; border: none; padding: 11px 48px; 
             border-radius: 20px; font-size: 16px; font-weight: 600; cursor: pointer; 
             box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
         }
@@ -118,9 +132,9 @@
 <div class="app-container">
     
     <div class="sticky-top-panel">
-        <button class="back-btn" onclick="handleNavigationHeaderBack()">←</button>
+        <button class="top-panel-back-arrow" onclick="handleNavigationHeaderBack()">←</button>
         <div class="market-header-info">
-            <div class="market-meta-title" id="marketNameTitle">TIME BAZAR</div>
+            <div class="market-meta-title" id="marketName">TIME BAZAR</div>
             <div class="balance-box-display">
                 <svg class="wallet-icon-svg" viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
                 <span id="userBalance">0.00</span>
@@ -128,12 +142,12 @@
         </div>
     </div>
 
-    <div class="app-navigation-control-bar" style="margin-top: 56px;">
+    <div class="app-navigation-control-bar">
         <button class="back-navigation-btn" id="headerBackBtn" onclick="handleNavigationHeaderBack()">← Markets</button>
         <span class="navigation-view-title" id="navViewTitleLabel">Game Modes</span>
     </div>
 
-    <div id="gameSelectionScreen">
+    <div id="gameSelectionScreen" style="display: block;">
         <div class="game-types-grid" id="gameTypesGrid"></div>
     </div>
 
@@ -144,8 +158,8 @@
 
     <div class="fixed-bottom-summary-deck" id="bottomSummaryDeck">
         <div class="summary-metrics-tray">
-            <div class="summary-block"><span class="summary-label">Bids</span><span class="summary-value" id="totalBidsSummaryLabel">0</span></div>
-            <div class="summary-block"><span class="summary-label">Points</span><span class="summary-value" id="totalPointsSummaryLabel">0</span></div>
+            <div class="summary-block"><span class="summary-label">Bids</span><span class="summary-value" id="totalBids">0</span></div>
+            <div class="summary-block"><span class="summary-label">Points</span><span class="summary-value" id="totalPoints">0</span></div>
         </div>
         <button class="submit-btn" id="submitBtn" onclick="submitBids()">Submit</button>
     </div>
@@ -194,17 +208,17 @@
     ];
 
     const allGameTypes = [
-        { name: 'Single Digit', availableInOpen: true, availableInClose: true, shape: '▪️', color: 'icon-red', isCaps: false },
-        { name: 'Family Red Jodi', availableInOpen: true, availableInClose: false, shape: '⁜', color: 'icon-red', isCaps: true },
-        { name: 'Jodi', availableInOpen: true, availableInClose: false, shape: '🎲', color: 'icon-green', isCaps: false },
-        { name: 'Family Jodi', availableInOpen: true, availableInClose: false, shape: '🎲', color: 'icon-green', isCaps: true },
-        { name: 'Single Pana', availableInOpen: true, availableInClose: true, shape: '♠', color: 'icon-blue', isCaps: false },
-        { name: 'Family Pana', availableInOpen: true, availableInClose: true, shape: '♠', color: 'icon-blue', isCaps: true },
-        { name: 'Double Pana', availableInOpen: true, availableInClose: true, shape: '♣', color: 'icon-orange', isCaps: false },
-        { name: 'Half Sangam A', availableInOpen: true, availableInClose: false, shape: '▲', color: 'icon-orange', isCaps: true },
-        { name: 'Triple Pana', availableInOpen: true, availableInClose: true, shape: '✦', color: 'icon-purple', isCaps: false },
-        { name: 'Half Sangam B', availableInOpen: true, availableInClose: false, shape: '▼', color: 'icon-purple', isCaps: true },
-        { name: 'Full Sangam', availableInOpen: true, availableInClose: false, shape: '✪', color: 'icon-green', isCaps: true }
+        { name: 'Single Digit', availableInOpen: true, availableInClose: true, shape: '▪️', color: 'icon-red' },
+        { name: 'Family Red Jodi', availableInOpen: true, availableInClose: false, shape: '⁜', color: 'icon-red' },
+        { name: 'Jodi', availableInOpen: true, availableInClose: false, shape: '🎲', color: 'icon-green' },
+        { name: 'Family Jodi', availableInOpen: true, availableInClose: false, shape: '🎲', color: 'icon-green' },
+        { name: 'Single Pana', availableInOpen: true, availableInClose: true, shape: '♠', color: 'icon-blue' },
+        { name: 'Family Pana', availableInOpen: true, availableInClose: true, shape: '♠', color: 'icon-blue' },
+        { name: 'Double Pana', availableInOpen: true, availableInClose: true, shape: '♣', color: 'icon-orange' },
+        { name: 'Half Sangam A', availableInOpen: true, availableInClose: false, shape: '▲', color: 'icon-orange' },
+        { name: 'Triple Pana', availableInOpen: true, availableInClose: true, shape: '✦', color: 'icon-purple' },
+        { name: 'Half Sangam B', availableInOpen: true, availableInClose: false, shape: '▼', color: 'icon-purple' },
+        { name: 'Full Sangam', availableInOpen: true, availableInClose: false, shape: '✪', color: 'icon-green' }
     ];
 
     async function getServerTime() {
@@ -230,7 +244,7 @@
         document.getElementById('gameTypesGrid').innerHTML = games.map(g => `
             <div class="game-type-card" onclick="selectGame('${g.name}')">
                 <span class="card-shape-icon ${g.color}">${g.shape}</span>
-                <div class="game-card-name ${g.isCaps ? 'allcaps' : ''}">${g.name}</div>
+                <div class="game-card-name">${g.name}</div>
             </div>
         `).join('');
     }
@@ -239,23 +253,21 @@
         const check = await isBettingAllowed(); if (!check.allowed) { showMsg(check.message, true); return; }
         currentGameType = type;
         document.getElementById('gameSelectionScreen').style.display = 'none';
-        document.getElementById('biddingPanel').style.display = 'block';
+        document.getElementById('biddingPanel').classList.add('bidding-panel-active');
         document.getElementById('bottomSummaryDeck').style.display = 'flex';
         document.getElementById('headerBackBtn').innerText = "← Games";
         document.getElementById('navViewTitleLabel').innerText = type;
-        document.getElementById('marketNameTitle').innerText = `${currentMarket} - ${type}`;
         
         window.history.pushState({ inSubPanel: true }, "");
         renderPanel();
     }
 
     function showGameSelection() {
-        document.getElementById('biddingPanel').style.display = 'none';
+        document.getElementById('biddingPanel').classList.remove('bidding-panel-active');
         document.getElementById('bottomSummaryDeck').style.display = 'none';
         document.getElementById('gameSelectionScreen').style.display = 'block';
         document.getElementById('headerBackBtn').innerText = "← Markets";
         document.getElementById('navViewTitleLabel').innerText = "Game Modes";
-        document.getElementById('marketNameTitle').innerText = currentMarket;
         bids = []; updateSummary();
     }
 
@@ -268,7 +280,7 @@
         }
     }
 
-    window.addEventListener('popstate', function() {
+    window.addEventListener('popstate', function(event) {
         const selectScreenVisibility = document.getElementById('gameSelectionScreen').style.display;
         if (selectScreenVisibility === 'none') {
             showGameSelection();
@@ -358,9 +370,14 @@
         }
     }
 
+    function handleAutoAdd(el) {
+        // Fallback backward compatibility route channel mapping logic
+        handleAutoAddManualButton();
+    }
+
     function updateSummary() {
-        document.getElementById('totalBidsSummaryLabel').innerText = bids.length;
-        document.getElementById('totalPointsSummaryLabel').innerText = bids.reduce((s,b)=>s+b.points,0);
+        document.getElementById('totalBids').innerText = bids.length;
+        document.getElementById('totalPoints').innerText = bids.reduce((s,b)=>s+b.points,0);
     }
 
     function removeBid(i) { bids.splice(i,1); updateSummary(); renderPanel(); }
@@ -385,6 +402,30 @@
             showMsg('Success!', false); bids = []; updateSummary(); renderPanel();
         } catch(e) { showMsg('Error', true); }
         finally { isSubmitting = false; btn.disabled = false; }
+    }
+
+    function checkPanaLegality(p) {
+        return validSinglePanaList.includes(p) || validDoublePanaList.includes(p) || validTriplePanaList.includes(p);
+    }
+
+    function addSangamPlacements() {
+        let v1 = document.getElementById('v1').value.trim();
+        let v2 = document.getElementById('v2').value.trim();
+        let pts = parseInt(document.getElementById('pointsInput').value);
+        if(isNaN(pts) || pts < 5) { alert('Min ₹5 required'); return; }
+
+        if(currentGameType === 'Half Sangam A') {
+            if(!checkPanaLegality(v1)) { alert('Invalid Open Pana value'); return; }
+            if(!/^\d$/.test(v2)) { alert('Close digit must be 1-Digit'); return; }
+        } else if(currentGameType === 'Half Sangam B') {
+            if(!/^\d$/.test(v1)) { alert('Open digit must be 1-Digit'); return; }
+            if(!checkPanaLegality(v2)) { alert('Invalid Close Pana value'); return; }
+        } else if(currentGameType === 'Full Sangam') {
+            if(!checkPanaLegality(v1)) { alert('Invalid Open Pana value'); return; }
+            if(!checkPanaLegality(v2)) { alert('Invalid Close Pana value'); return; }
+        }
+
+        addToBidsDirectly(currentGameType, `${v1}-${v2}`, pts);
     }
 
     function renderPanel() {
@@ -481,13 +522,11 @@
     function showMsg(m, e) { const d = document.getElementById('message'); d.innerText = m; d.className = `message ${e?'error':'success'}`; d.classList.remove('hidden'); setTimeout(()=>d.classList.add('hidden'), 2000); }
     function goBack() { window.location.href = 'dashboard.html'; }
 
-    window.history.pushState({ inSelectionScreen: true }, "");
-
     const url = new URLSearchParams(window.location.search);
     currentMarket = decodeURIComponent(url.get('market') || 'Market');
     currentMarketId = url.get('marketId') || '';
     currentStatus = url.get('status') || 'open';
-    document.getElementById('marketNameTitle').innerText = currentMarket;
+    document.getElementById('marketName').innerText = currentMarket;
     document.getElementById('bidTypeBadge').innerText = currentStatus.toUpperCase();
 
     db.collection('markets').doc(currentMarketId).get().then(d => {
