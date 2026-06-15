@@ -42,8 +42,9 @@
         .icon-blue { color: #2563eb; }
         .icon-orange { color: #ea580c; }
         .icon-purple { color: #7c3aed; }
-        .game-card-name { font-size: 13.5px; font-weight: 700; color: #1e293b; text-transform: capitalize; }
-        .game-card-name.allcaps { text-transform: uppercase; font-weight: 900; }
+        
+        /* Unified Game Card Text Style Setup - Bold, Standard Case, and Sized Uniformly */
+        .game-card-name { font-size: 13.5px; font-weight: 700; color: #1e293b; text-transform: uppercase; letter-spacing: 0.3px; }
 
         /* Form Subview Layout Setup */
         .bidding-panel { display: none; width: 100%; flex: 1; flex-direction: column; overflow: hidden; }
@@ -75,17 +76,17 @@
         .meta-col-label:last-child { text-align: right; padding-right: 24px; }
 
         /* ----------------------------------------------------------------- */
-        /* ISOLATED & ENHANCED SCROLLABLE SELECTED BIDS CONTAINER WINDOW     */
+        /* FIXED INNER VIEWPORT BIDS WINDOW SHEET WITH SCROLL LOCK REPAIR     */
         /* ----------------------------------------------------------------- */
         .isolated-scroll-bids-window { 
             flex: 1; 
-            overflow-y: auto; 
+            overflow-y: auto !important; 
             background: #ffffff; 
             width: 100%; 
-            height: calc(100vh - 310px); /* Strict boundary locking to enable inner overflow scrolling */
+            display: block;
             -webkit-overflow-scrolling: touch; 
         }
-        .bids-section { display: flex; flex-direction: column; }
+        .bids-section { display: flex; flex-direction: column; padding-bottom: 20px; }
         
         .bid-item { background: transparent; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; }
         .bid-info { display: flex; width: 100%; justify-content: space-between; align-items: center; }
@@ -98,7 +99,7 @@
         .digit-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 2px 16px; width: 100%; flex-shrink: 0; }
         .digit-btn { background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 0; text-align: center; font-size: 15px; font-weight: 700; color: #0f172a; cursor: pointer; }
         
-        .jodi-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; padding: 2px 16px; max-height: 155px; overflow-y: auto; width: 100%; flex-shrink: 0; }
+        .jodi-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; padding: 2px 16px; max-height: 150px; overflow-y: auto; width: 100%; flex-shrink: 0; }
         .jodi-btn { background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 0; text-align: center; font-size: 14px; font-weight: 700; color: #0f172a; cursor: pointer; }
         .jodi-btn.number-selected-active { background: #1a8a9d !important; color: #ffffff !important; border-color: #1a8a9d !important; }
 
@@ -148,7 +149,7 @@
     </div>
 
     <div id="biddingPanel" class="bidding-panel">
-        <div id="gamePanel"></div>
+        <div id="gamePanel" style="display: flex; flex-direction: column; flex: 1; overflow: hidden;"></div>
         <div id="message" class="message hidden"></div>
     </div>
 
@@ -240,7 +241,7 @@
         document.getElementById('gameTypesGrid').innerHTML = games.map(g => `
             <div class="game-type-card" onclick="selectGame('${g.name}')">
                 <span class="card-shape-icon ${g.color}">${g.shape}</span>
-                <div class="game-card-name ${g.isCaps ? 'allcaps' : ''}">${g.name}</div>
+                <div class="game-card-name">${g.name}</div>
             </div>
         `).join('');
     }
@@ -395,30 +396,6 @@
         finally { isSubmitting = false; btn.disabled = false; }
     }
 
-    function checkPanaLegality(p) {
-        return validSinglePanaList.includes(p) || validDoublePanaList.includes(p) || validTriplePanaList.includes(p);
-    }
-
-    function addSangamPlacements() {
-        let v1 = document.getElementById('v1').value.trim();
-        let v2 = document.getElementById('v2').value.trim();
-        let pts = parseInt(document.getElementById('pointsInput').value);
-        if(isNaN(pts) || pts < 5) { alert('Min ₹5 required'); return; }
-
-        if(currentGameType === 'Half Sangam A') {
-            if(!checkPanaLegality(v1)) { alert('Invalid Open Pana value'); return; }
-            if(!/^\d$/.test(v2)) { alert('Close digit must be 1-Digit'); return; }
-        } else if(currentGameType === 'Half Sangam B') {
-            if(!/^\d$/.test(v1)) { alert('Open digit must be 1-Digit'); return; }
-            if(!checkPanaLegality(v2)) { alert('Invalid Close Pana value'); return; }
-        } else if(currentGameType === 'Full Sangam') {
-            if(!checkPanaLegality(v1)) { alert('Invalid Open Pana value'); return; }
-            if(!checkPanaLegality(v2)) { alert('Invalid Close Pana value'); return; }
-        }
-
-        addToBidsDirectly(currentGameType, `${v1}-${v2}`, pts);
-    }
-
     function renderPanel() {
         const p = document.getElementById('gamePanel');
         const pts = document.getElementById('pointsInput')?.value || '';
@@ -446,8 +423,8 @@
                     ${dropdownSelectionHeader}
                     <div class="native-image-row"><span class="native-image-label">Enter Points</span><div class="native-input-box-wrapper"><input type="number" id="pointsInput" class="native-form-input-field" value="${pts||''}" placeholder="Enter Points"></div></div>
                     <div class="digit-grid">${grid}</div>
-                    ${renderTableWrapper()}
-                </div>`;
+                </div>
+                ${renderTableWrapper()}`;
         } else if (currentGameType === 'Jodi') {
             let grid = ''; 
             for(let i=0;i<=99;i++) { 
@@ -460,8 +437,8 @@
                     ${dropdownSelectionHeader}
                     <div class="native-image-row"><span class="native-image-label">Enter Points</span><div class="native-input-box-wrapper"><input type="number" id="pointsInput" class="native-form-input-field" value="${pts||''}" placeholder="Enter Points"></div></div>
                     <div class="jodi-grid">${grid}</div>
-                    ${renderTableWrapper()}
-                </div>`;
+                </div>
+                ${renderTableWrapper()}`;
         } else if (currentGameType.includes('Sangam')) {
             let labels = currentGameType === 'Half Sangam A' ? ['Open Pana', 'Close Digit'] : (currentGameType === 'Half Sangam B' ? ['Open Digit', 'Close Pana'] : ['Open Pana', 'Close Pana']);
             p.innerHTML = `
@@ -471,8 +448,8 @@
                     <div class="native-image-row"><span class="native-image-label">${labels[1]}</span><div class="native-input-box-wrapper"><input type="number" id="v2" class="native-form-input-field" placeholder="${labels[1]}"></div></div>
                     <div class="native-image-row"><span class="native-image-label">Enter Points</span><div class="native-input-box-wrapper"><input type="number" id="pointsInput" class="native-form-input-field" value="${pts||''}" placeholder="Enter Points"></div></div>
                     <button class="native-add-more-btn" onclick="addSangamPlacements()">Add More</button>
-                    ${renderTableWrapper()}
-                </div>`;
+                </div>
+                ${renderTableWrapper()}`;
         } else {
             p.innerHTML = `
                 <div class="game-panel-content">
@@ -480,8 +457,8 @@
                     <div class="native-image-row"><span class="native-image-label">${labelStringText}</span><div class="native-input-box-wrapper"><input type="number" id="v1" class="native-form-input-field" placeholder="${labelStringText}"></div></div>
                     <div class="native-image-row"><span class="native-image-label">Enter Points</span><div class="native-input-box-wrapper"><input type="number" id="pointsInput" class="native-form-input-field" value="${pts||''}" placeholder="Enter Points"></div></div>
                     <button class="native-add-more-btn" onclick="handleAutoAddManualButton()">Add More</button>
-                    ${renderTableWrapper()}
-                </div>`;
+                </div>
+                ${renderTableWrapper()}`;
         }
     }
 
@@ -493,12 +470,12 @@
                 <span class="meta-col-label" style="text-align: right;">Game Type</span>
             </div>
             <div class="isolated-scroll-bids-window">
-                <div id="bidsContainerTargetBlock">${renderBidsOnly()}</div>
+                <div id="bidsContainerTargetBlock" class="bids-section">${renderBidsOnly()}</div>
             </div>`;
     }
 
     function renderBidsOnly() { 
-        return bids.length ? `<div class="bids-section">${bids.map((b,i)=>`
+        return bids.length ? bids.map((b,i)=>`
             <div class="bid-item">
                 <div class="bid-info">
                     <span class="bid-value">${b.value}</span>
@@ -506,7 +483,7 @@
                     <span class="bid-resolved-type-label">${b.type}</span>
                 </div>
                 <button class="remove-bid" onclick="removeBid(${i})">✕</button>
-            </div>`).join('')}</div>` : ''; 
+            </div>`).join('') : ''; 
     }
     
     function showMsg(m, e) { const d = document.getElementById('message'); d.innerText = m; d.className = `message ${e?'error':'success'}`; d.classList.remove('hidden'); setTimeout(()=>d.classList.add('hidden'), 2000); }
