@@ -9,10 +9,10 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        body { background: #f4f6f9; color: #334155; padding-top: 56px; padding-bottom: 75px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        body { background: #f4f6f9; color: #475569; padding-top: 56px; padding-bottom: 75px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         .app-container { max-width: 480px; margin: 0 auto; background: #f4f6f9; width: 100%; height: 100%; display: flex; flex-direction: column; position: relative; }
         
-        /* Premium Teal Top Header Bar Matching Image Coordinates */
+        /* Premium Teal Top Header Bar Matching Image Specs */
         .sticky-top-panel {
             position: fixed; top: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto; height: 56px;
             background: linear-gradient(90deg, #136a7a, #1a8a9d); color: #fff; z-index: 1000;
@@ -20,17 +20,16 @@
         }
         .top-panel-back-arrow { background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; display: flex; align-items: center; }
         .market-header-info { flex: 1; margin-left: 16px; display: flex; align-items: center; justify-content: space-between; }
-        .market-meta-title { font-size: 16px; font-weight: 700; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px; id: marketName; }
+        .market-meta-title { font-size: 16px; font-weight: 700; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px; }
         .balance-box-display { font-size: 15px; font-weight: 600; color: #ffffff; display: flex; align-items: center; gap: 6px; }
         .wallet-icon-svg { width: 18px; height: 18px; fill: currentColor; }
-        .bid-badge { display: none !important; }
 
         /* Navigation Header Control Bar */
-        .app-navigation-control-bar { display: flex; align-items: center; padding: 12px 16px; background: #f4f6f9; margin-top: 56px; }
+        .app-navigation-control-bar { display: flex; align-items: center; padding: 12px 16px; background: #f4f6f9; margin-top: 56px; flex-shrink: 0; }
         .back-navigation-btn { background: none; border: none; color: #1a8a9d; font-size: 13px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
         .navigation-view-title { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.75px; margin-left: auto; }
 
-        /* Game Grid Mode Content Views */
+        /* Game Grid Mode Content Views (Matching game type.jpeg) */
         .game-types-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; padding: 4px 16px 16px 16px; overflow-y: auto; flex: 1; }
         .game-type-card { 
             background: #ffffff; border-radius: 18px; padding: 24px 12px; text-align: center; 
@@ -44,26 +43,24 @@
         .icon-orange { color: #ea580c; }
         .icon-purple { color: #7c3aed; }
         .game-card-name { font-size: 14px; font-weight: 700; color: #1e293b; text-transform: capitalize; }
+        .game-card-name.allcaps { text-transform: uppercase; font-weight: 900; }
 
-        /* Bidding Main Subview Section Wrapper */
-        .bidding-panel { display: none; width: 100%; flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+        /* Form Subview Layout Setup */
+        .bidding-panel { display: none; width: 100%; flex: 1; overflow: hidden; }
         .bidding-panel-active { display: flex !important; flex-direction: column; }
 
-        /* Exact Input Layout Forms Matrix Matching game style.jpeg */
-        .game-panel-content { padding: 4px 16px 10px 16px; display: flex; flex-direction: column; gap: 14px; }
+        /* Exact Form Input Layout Forms Matrix (Matching game style 2.jpeg) */
+        .game-panel-content { padding: 4px 16px 10px 16px; display: flex; flex-direction: column; gap: 14px; flex-shrink: 0; }
         
         .native-image-row { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 16px; }
         .native-image-label { font-size: 15px; color: #475569; font-weight: 500; flex-shrink: 0; width: 125px; text-align: left; }
         
-        .select-native-dropdown-wrapper { flex: 1; position: relative; background: #fff; border-radius: 8px; border: 1px solid #cbd5e1; padding-right: 12px; }
-        .select-native-input { width: 100%; padding: 10px 12px; background: transparent; border: none; outline: none; font-size: 14px; font-weight: 700; color: #000; appearance: none; -webkit-appearance: none; cursor: pointer; text-transform: uppercase; }
-        .select-native-dropdown-wrapper::after { content: '▼'; font-size: 10px; color: #475569; position: absolute; right: 12px; top: 14px; pointer-events: none; }
+        .select-native-dropdown-wrapper { flex: 1; position: relative; background: #fff; border-radius: 20px; border: 1px solid #cbd5e1; padding-right: 12px; }
+        .select-native-input { width: 100%; padding: 10px 16px; background: transparent; border: none; outline: none; font-size: 14px; font-weight: 700; color: #000; appearance: none; -webkit-appearance: none; cursor: pointer; text-transform: uppercase; }
+        .select-native-dropdown-wrapper::after { content: '▼'; font-size: 10px; color: #475569; position: absolute; right: 16px; top: 14px; pointer-events: none; }
 
-        .native-input-box-wrapper { flex: 1; background: #fff; border-radius: 8px; border: 1px solid #cbd5e1; }
+        .native-input-box-wrapper { flex: 1; background: #fff; border-radius: 6px; border: 1px solid #cbd5e1; }
         .native-form-input-field { width: 100%; padding: 10px 12px; background: transparent; border: none; outline: none; font-size: 15px; font-weight: 600; color: #000; }
-
-        .toggle-section { display: none !important; }
-        .bid-row, .bid-field, .bid-label, .bid-input { display: none !important; }
 
         .native-add-more-btn { 
             align-self: flex-end; background: #1a8a9d; color: #fff; border: none; 
@@ -72,16 +69,15 @@
             transition: opacity 0.1s;
         }
         .native-add-more-btn:active { opacity: 0.9; }
-        .add-sangam-btn { display: none !important; }
 
-        /* Minimal Horizontal Separator Row Grid Layout */
-        .table-metadata-header-row { display: flex; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid #cbd5e1; border-top: 1px solid #cbd5e1; margin-top: 8px; background: #f4f6f9; width: 100%; }
+        /* Minimal Grid Separator Header Row Line */
+        .table-metadata-header-row { display: flex; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid #cbd5e1; border-top: 1px solid #cbd5e1; background: #f4f6f9; width: 100%; flex-shrink: 0; }
         .meta-col-label { font-size: 14px; font-weight: 600; color: #1a8a9d; flex: 1; text-align: center; }
         .meta-col-label:first-child { text-align: left; padding-left: 12px; }
         .meta-col-label:last-child { text-align: right; padding-right: 28px; }
 
         /* ----------------------------------------------------------------- */
-        /* ISOLATED SCROLL SELECTION SLIPS WINDOW SYSTEM BLOCK AREA          */
+        /* ISOLATED SCROLLABLE BASKET WINDOW SYSTEM                          */
         /* ----------------------------------------------------------------- */
         .isolated-scroll-bids-window { flex: 1; overflow-y: auto; background: #ffffff; width: 100%; }
         .bids-section { display: flex; flex-direction: column; }
@@ -91,21 +87,19 @@
         .bid-value { font-size: 14px; font-weight: 500; color: #475569; flex: 1; text-align: left; }
         .bid-points { font-size: 14px; color: #475569; font-weight: 500; flex: 1; text-align: center; }
         .bid-resolved-type-label { font-size: 14px; color: #475569; font-weight: 500; flex: 1; text-align: right; }
-        
-        .bid-type, .bid-game-title { display: none !important; }
         .remove-bid { background: none; border: none; color: #ef4444; cursor: pointer; font-size: 14px; padding-left: 16px; font-weight: bold; }
 
-        /* Layout Grid Modules Matrix Sheets */
-        .digit-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 4px 16px; margin-bottom: 4px; overflow-y: auto; max-height: 160px; }
+        /* Functional Selection Board Layout Matrix Units */
+        .digit-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 12px 0; width: 100%; }
         .digit-btn { background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px 0; text-align: center; font-size: 16px; font-weight: 700; color: #0f172a; cursor: pointer; }
         
-        .jodi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 4px 16px; max-height: 180px; overflow-y: auto; margin-bottom: 4px; }
+        .jodi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 12px 0; max-height: 180px; overflow-y: auto; width: 100%; }
         .jodi-btn { background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px 0; text-align: center; font-size: 15px; font-weight: 700; color: #0f172a; cursor: pointer; }
         .jodi-btn.number-selected-active { background: #1a8a9d !important; color: #ffffff !important; border-color: #1a8a9d !important; }
 
-        .manual-entry { display: flex; flex-direction: column; gap: 12px; }
+        .manual-entry-form-stack { display: flex; flex-direction: column; gap: 14px; width: 100%; }
 
-        /* Fixed Bottom Summary Deck Bar Layout Elements Matching Specs */
+        /* Fixed Bottom Summary Control Deck Bar (Matching image specs) */
         .fixed-bottom-summary-deck {
             position: fixed; bottom: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto;
             background: #ffffff; border-top: 1px solid #cbd5e1; padding: 10px 24px 14px 24px; z-index: 1000;
@@ -123,7 +117,7 @@
         }
         .submit-btn:disabled { opacity: 0.5; }
 
-        .message { text-align: center; padding: 10px; border-radius: 6px; font-size: 13px; font-weight: 600; margin: 8px 16px; }
+        .message { text-align: center; padding: 10px; border-radius: 6px; font-size: 13px; font-weight: 600; margin: 8px 16px; flex-shrink: 0; }
         .error { background: #fee2e2; color: #b91c1c; }
         .success { background: #dcfce7; color: #15803d; }
     </style>
@@ -208,17 +202,17 @@
     ];
 
     const allGameTypes = [
-        { name: 'Single Digit', availableInOpen: true, availableInClose: true, shape: '▪️', color: 'icon-red' },
-        { name: 'Family Red Jodi', availableInOpen: true, availableInClose: false, shape: '⁜', color: 'icon-red' },
-        { name: 'Jodi', availableInOpen: true, availableInClose: false, shape: '🎲', color: 'icon-green' },
-        { name: 'Family Jodi', availableInOpen: true, availableInClose: false, shape: '🎲', color: 'icon-green' },
-        { name: 'Single Pana', availableInOpen: true, availableInClose: true, shape: '♠', color: 'icon-blue' },
-        { name: 'Family Pana', availableInOpen: true, availableInClose: true, shape: '♠', color: 'icon-blue' },
-        { name: 'Double Pana', availableInOpen: true, availableInClose: true, shape: '♣', color: 'icon-orange' },
-        { name: 'Half Sangam A', availableInOpen: true, availableInClose: false, shape: '▲', color: 'icon-orange' },
-        { name: 'Triple Pana', availableInOpen: true, availableInClose: true, shape: '✦', color: 'icon-purple' },
-        { name: 'Half Sangam B', availableInOpen: true, availableInClose: false, shape: '▼', color: 'icon-purple' },
-        { name: 'Full Sangam', availableInOpen: true, availableInClose: false, shape: '✪', color: 'icon-green' }
+        { name: 'Single Digit', availableInOpen: true, availableInClose: true, shape: '▪️', color: 'icon-red', isCaps: false },
+        { name: 'Family Red Jodi', availableInOpen: true, availableInClose: false, shape: '⁜', color: 'icon-red', isCaps: true },
+        { name: 'Jodi', availableInOpen: true, availableInClose: false, shape: '🎲', color: 'icon-green', isCaps: false },
+        { name: 'Family Jodi', availableInOpen: true, availableInClose: false, shape: '🎲', color: 'icon-green', isCaps: true },
+        { name: 'Single Pana', availableInOpen: true, availableInClose: true, shape: '♠', color: 'icon-blue', isCaps: false },
+        { name: 'Family Pana', availableInOpen: true, availableInClose: true, shape: '♠', color: 'icon-blue', isCaps: true },
+        { name: 'Double Pana', availableInOpen: true, availableInClose: true, shape: '♣', color: 'icon-orange', isCaps: false },
+        { name: 'Half Sangam A', availableInOpen: true, availableInClose: false, shape: '▲', color: 'icon-orange', isCaps: true },
+        { name: 'Triple Pana', availableInOpen: true, availableInClose: true, shape: '✦', color: 'icon-purple', isCaps: false },
+        { name: 'Half Sangam B', availableInOpen: true, availableInClose: false, shape: '▼', color: 'icon-purple', isCaps: true },
+        { name: 'Full Sangam', availableInOpen: true, availableInClose: false, shape: '✪', color: 'icon-green', isCaps: true }
     ];
 
     async function getServerTime() {
@@ -244,7 +238,7 @@
         document.getElementById('gameTypesGrid').innerHTML = games.map(g => `
             <div class="game-type-card" onclick="selectGame('${g.name}')">
                 <span class="card-shape-icon ${g.color}">${g.shape}</span>
-                <div class="game-card-name">${g.name}</div>
+                <div class="game-card-name ${g.isCaps ? 'allcaps' : ''}">${g.name}</div>
             </div>
         `).join('');
     }
@@ -370,11 +364,6 @@
         }
     }
 
-    function handleAutoAdd(el) {
-        // Fallback backward compatibility route channel mapping logic
-        handleAutoAddManualButton();
-    }
-
     function updateSummary() {
         document.getElementById('totalBids').innerText = bids.length;
         document.getElementById('totalPoints').innerText = bids.reduce((s,b)=>s+b.points,0);
@@ -446,14 +435,14 @@
                 </div>
             </div>` : ''}`;
 
-        let labelStringText = currentGameType.includes('Pana') ? 'Single Pana' : (currentGameType.includes('Digit') ? 'Enter Digit' : 'Enter Number');
+        let labelStringText = currentGameType;
 
         if (currentGameType === 'Single Digit') {
             let grid = ''; for(let i=0;i<=9;i++) grid += `<div class="digit-btn" onclick="addToBidsDirectly('Single Digit', '${i}', parseInt(document.getElementById('pointsInput').value))">${i}</div>`;
             p.innerHTML = `
                 <div class="game-panel-content">
                     ${dropdownSelectionHeader}
-                    <div class="native-image-row"><span class="native-image-label">Enter Points</span><div class="native-input-box-wrapper"><input type="number" id="pointsInput" class="native-form-input-field" value="${pts||10}"></div></div>
+                    <div class="native-image-row"><span class="native-image-label">Enter Points</span><div class="native-input-box-wrapper"><input type="number" id="pointsInput" class="native-form-input-field" value="${pts||''}" placeholder="Enter Points"></div></div>
                     <div class="digit-grid">${grid}</div>
                     ${renderTableWrapper()}
                 </div>`;
@@ -467,7 +456,7 @@
             p.innerHTML = `
                 <div class="game-panel-content">
                     ${dropdownSelectionHeader}
-                    <div class="native-image-row"><span class="native-image-label">Enter Points</span><div class="native-input-box-wrapper"><input type="number" id="pointsInput" class="native-form-input-field" value="${pts||10}"></div></div>
+                    <div class="native-image-row"><span class="native-image-label">Enter Points</span><div class="native-input-box-wrapper"><input type="number" id="pointsInput" class="native-form-input-field" value="${pts||''}" placeholder="Enter Points"></div></div>
                     <div class="jodi-grid">${grid}</div>
                     ${renderTableWrapper()}
                 </div>`;
@@ -476,9 +465,9 @@
             p.innerHTML = `
                 <div class="game-panel-content">
                     ${dropdownSelectionHeader}
-                    <div class="native-image-row"><span class="native-image-label">${labels[0]}</span><div class="native-input-box-wrapper"><input type="number" id="v1" class="native-form-input-field"></div></div>
-                    <div class="native-image-row"><span class="native-image-label">${labels[1]}</span><div class="native-input-box-wrapper"><input type="number" id="v2" class="native-form-input-field"></div></div>
-                    <div class="native-image-row"><span class="native-image-label">Enter Points</span><div class="native-input-box-wrapper"><input type="number" id="pointsInput" class="native-form-input-field" value="${pts||10}"></div></div>
+                    <div class="native-image-row"><span class="native-image-label">${labels[0]}</span><div class="native-input-box-wrapper"><input type="number" id="v1" class="native-form-input-field" placeholder="${labels[0]}"></div></div>
+                    <div class="native-image-row"><span class="native-image-label">${labels[1]}</span><div class="native-input-box-wrapper"><input type="number" id="v2" class="native-form-input-field" placeholder="${labels[1]}"></div></div>
+                    <div class="native-image-row"><span class="native-image-label">Enter Points</span><div class="native-input-box-wrapper"><input type="number" id="pointsInput" class="native-form-input-field" value="${pts||''}" placeholder="Enter Points"></div></div>
                     <button class="native-add-more-btn" onclick="addSangamPlacements()">Add More</button>
                     ${renderTableWrapper()}
                 </div>`;
@@ -486,8 +475,8 @@
             p.innerHTML = `
                 <div class="game-panel-content">
                     ${dropdownSelectionHeader}
-                    <div class="native-image-row"><span class="native-image-label">${labelStringText}</span><div class="native-input-box-wrapper"><input type="number" id="v1" class="native-form-input-field"></div></div>
-                    <div class="native-image-row"><span class="native-image-label">Enter Points</span><div class="native-input-box-wrapper"><input type="number" id="pointsInput" class="native-form-input-field" value="${pts||10}"></div></div>
+                    <div class="native-image-row"><span class="native-image-label">${labelStringText}</span><div class="native-input-box-wrapper"><input type="number" id="v1" class="native-form-input-field" placeholder="${labelStringText}"></div></div>
+                    <div class="native-image-row"><span class="native-image-label">Enter Points</span><div class="native-input-box-wrapper"><input type="number" id="pointsInput" class="native-form-input-field" value="${pts||''}" placeholder="Enter Points"></div></div>
                     <button class="native-add-more-btn" onclick="handleAutoAddManualButton()">Add More</button>
                     ${renderTableWrapper()}
                 </div>`;
@@ -495,7 +484,7 @@
     }
 
     function renderTableWrapper() {
-        let labelNameDisplay = currentGameType.includes('Pana') ? 'Single Pana' : (currentGameType.includes('Digit') ? 'Digit' : 'Number');
+        let labelNameDisplay = currentGameType;
         return `
             <div class="table-metadata-header-row">
                 <span class="meta-col-label" style="text-align: left;">${labelNameDisplay}</span>
@@ -527,7 +516,6 @@
     currentMarketId = url.get('marketId') || '';
     currentStatus = url.get('status') || 'open';
     document.getElementById('marketName').innerText = currentMarket;
-    document.getElementById('bidTypeBadge').innerText = currentStatus.toUpperCase();
 
     db.collection('markets').doc(currentMarketId).get().then(d => {
         if(d.exists) {
