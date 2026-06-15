@@ -3,49 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>DURGA - Download Official App</title>
+    <title>DURGA - Download Official Android App</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
         
-        body { background: #0f172a; color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-        .promo-container { max-width: 420px; width: 100%; text-align: center; background: #1e293b; padding: 32px 24px; border-radius: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); }
-        
-        /* Brand Glow Animation */
-        .brand-logo { width: 70px; height: 70px; background: linear-gradient(135deg, #136a7a, #1a8a9d); border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 900; color: #fff; margin: 0 auto 16px auto; box-shadow: 0 4px 14px rgba(26,138,157,0.4); }
-        
-        .brand-name { font-size: 28px; font-weight: 900; letter-spacing: 2px; background: linear-gradient(45deg, #3b82f6, #f43f5e, #10b981, #fbbf24, #3b82f6); background-size: 400% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: gradientShift 6s ease infinite; margin-bottom: 4px; }
-        @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        
-        .tagline { font-size: 12px; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 24px; }
-        
-        /* Feature Grid Setup */
-        .features-stack { display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; text-align: left; }
-        .feature-card { background: #0f172a; padding: 14px 16px; border-radius: 12px; display: flex; align-items: center; gap: 14px; border: 1px solid rgba(255,255,255,0.02); }
-        .feature-icon { font-size: 20px; flex-shrink: 0; }
-        .feature-info { display: flex; flex-direction: column; }
-        .feature-title { font-size: 14px; font-weight: 700; color: #f8fafc; }
-        .feature-desc { font-size: 12px; color: #64748b; margin-top: 1px; font-weight: 500; }
-
-        /* Pulsing Premium Android Download Button */
-        .download-btn { 
-            width: 100%; padding: 14px; background: linear-gradient(90deg, #136a7a, #1a8a9d); 
-            border: none; border-radius: 25px; color: #ffffff; font-weight: 700; font-size: 15px; 
-            text-transform: uppercase; letter-spacing: 1px; cursor: pointer; text-decoration: none;
-            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-            box-shadow: 0 4px 12px rgba(26,138,157,0.3); animation: pulse Glow 2s infinite; transition: transform 0.1s ease;
+        body { 
+            background: #0f172a; 
+            color: #f8fafc; 
+            min-height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 24px 16px;
         }
-        .download-btn:active { transform: scale(0.98); }
+
+        /* Promotion Main Content Grid Box Area */
+        .promo-container { 
+            max-width: 440px; 
+            width: 100%; 
+            text-align: center; 
+            background: #1e293b; 
+            padding: 36px 24px 24px 24px; 
+            border-radius: 28px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4); 
+            border: 1px solid rgba(255,255,255,0.06); 
+        }
+        
+        /* Premium Gradient Brand Logo Header Deck */
+        .brand-logo { 
+            width: 72px; 
+            height: 72px; 
+            background: linear-gradient(135deg, #136a7a, #1a8a9d); 
+            border-radius: 20px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 34px; 
+            font-weight: 900; 
+            color: #fff; 
+            margin: 0 auto 16px auto; 
+            box-shadow: 0 6px 20px rgba(26,138,157,0.4); 
+        }
+        
+        .brand-name { 
+            font-size: 30px; 
+            font-weight: 900; 
+            letter-spacing: 2px; 
+            background: linear-gradient(45deg, #3b82f6, #f43f5e, #10b981, #fbbf24, #3b82f6); 
+            background-size: 400% auto; 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            animation: textGradientShift 6s ease infinite; 
+            margin-bottom: 4px; 
+        }
+        @keyframes textGradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        
+        .tagline { font-size: 11px; color: #94a3b8; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 24px; }
+        
+        /* Realistic Styled CSS Smartphone App Mockup Component Frame */
+        .device-mockup-wrapper {
+            position: relative;
+            width: 160px;
+            height: 310px;
+            background: #090d16;
+            border-radius: 28px;
+            margin: 0 auto 28px auto;
+            border: 5px solid #475569;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.5), inset 0 0 8px rgba(255,255,255,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        /* Top Screen Dynamic Speaker Sensor Notch Capsule */
+        .device-notch {
+            position: absolute;
+            top: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 11px;
+            background: #475569;
+            border-radius: 10px;
+            z-index: 10;
+        }
+        /* Simulated UI Screens Inside Phone Container Grid */
+        .mock-app-screen {
+            flex: 1;
+            padding: 20px 8px 10px 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: #f4f6f9;
+        }
+        .mock-app-header {
+            height: 24px;
+            background: linear-gradient(90deg, #136a7a, #1a8a9d);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 6px;
+        }
+        .mock-header-dot { width: 6px; height: 6px; background: rgba(255,255,255,0.4); border-radius: 50%; }
+        .mock-header-bar { width: 45px; height: 5px; background: #fff; border-radius: 2px; }
+        
+        .mock-app-balance-card {
+            height: 35px;
+            background: #ffffff;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+            gap: 6px;
+        }
+        .mock-balance-icon { width: 10px; height: 10px; background: #1a8a9d; border-radius: 50%; }
+        .mock-balance-line { width: 35px; height: 5px; background: #cbd5e1; border-radius: 2px; }
+        
+        .mock-games-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+            flex: 1;
+        }
+        .mock-game-card {
+            background: #ffffff;
+            border-radius: 6px;
+            border: 1px solid rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+        .mock-card-icon { width: 12px; height: 12px; background: #f1f5f9; border-radius: 4px; }
+        .mock-card-text { width: 30px; height: 4px; background: #94a3b8; border-radius: 2px; }
+        .mock-card-text-short { width: 18px; height: 4px; background: #cbd5e1; border-radius: 2px; }
+
+        /* Feature Row Layout Cards Stack */
+        .features-stack { display: flex; flex-direction: column; gap: 10px; margin-bottom: 26px; text-align: left; }
+        .feature-card { background: #0f172a; padding: 12px 14px; border-radius: 12px; display: flex; align-items: center; gap: 12px; border: 1px solid rgba(255,255,255,0.01); }
+        .feature-icon { font-size: 18px; flex-shrink: 0; }
+        .feature-info { display: flex; flex-direction: column; }
+        .feature-title { font-size: 13.5px; font-weight: 700; color: #f8fafc; }
+        .feature-desc { font-size: 11.5px; color: #64748b; margin-top: 1px; font-weight: 500; }
+
+        /* Pulse Glowing Hyperlink Styled Download Call-to-Action Trigger Box */
+        .download-btn { 
+            width: 100%; 
+            padding: 14px; 
+            background: linear-gradient(90deg, #136a7a, #1a8a9d); 
+            border: none; 
+            border-radius: 25px; 
+            color: #ffffff; 
+            font-weight: 700; 
+            font-size: 14.5px; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            cursor: pointer; 
+            text-decoration: none;
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 8px;
+            box-shadow: 0 4px 14px rgba(26,138,157,0.35); 
+            animation: pulseGlowAnimation 2s infinite; 
+            transition: transform 0.1s ease;
+        }
+        .download-btn:active { transform: scale(0.97); }
         .android-icon { width: 18px; height: 18px; fill: currentColor; }
 
-        @keyframes pulseGlow {
-            0% { box-shadow: 0 0 0 0 rgba(26,138,157,0.5); }
-            70% { box-shadow: 0 0 0 12px rgba(26,138,157,0); }
+        @keyframes pulseGlowAnimation {
+            0% { box-shadow: 0 0 0 0 rgba(26,138,157,0.6); }
+            70% { box-shadow: 0 0 0 14px rgba(26,138,157,0); }
             100% { box-shadow: 0 0 0 0 rgba(26,138,157,0); }
         }
 
-        .already-installed-box { display: none; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); padding: 14px; border-radius: 12px; color: #34d399; font-size: 14px; font-weight: 700; }
+        .already-installed-box { 
+            display: none; 
+            background: rgba(16, 185, 129, 0.1); 
+            border: 1px solid rgba(16, 185, 129, 0.2); 
+            padding: 14px; 
+            border-radius: 25px; 
+            color: #34d399; 
+            font-size: 14px; 
+            font-weight: 700; 
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
         
-        .footer-note { font-size: 11px; color: #475569; margin-top: 20px; font-weight: 600; }
+        .footer-note { font-size: 11px; color: #475569; margin-top: 20px; font-weight: 600; letter-spacing: 0.2px; }
     </style>
 </head>
 <body>
@@ -55,46 +202,70 @@
     <div class="brand-name">DURGA</div>
     <div class="tagline">Official Android Application</div>
     
+    <div class="device-mockup-wrapper">
+        <div class="device-notch"></div>
+        <div class="mock-app-screen">
+            <div class="mock-app-header">
+                <div class="mock-header-dot"></div>
+                <div class="mock-header-bar"></div>
+                <div class="mock-header-dot"></div>
+            </div>
+            <div class="mock-app-balance-card">
+                <div class="mock-balance-icon"></div>
+                <div style="display:flex; flex-direction:column; gap:3px;">
+                    <div class="mock-balance-line"></div>
+                    <div class="mock-balance-line" style="width:20px; height:3px;"></div>
+                </div>
+            </div>
+            <div class="mock-games-grid">
+                <div class="mock-game-card"><div class="mock-card-icon"></div><div class="mock-card-text"></div><div class="mock-card-text-short"></div></div>
+                <div class="mock-game-card"><div class="mock-card-icon" style="background:#ef4444; opacity:0.2;"></div><div class="mock-card-text"></div><div class="mock-card-text-short"></div></div>
+                <div class="mock-game-card"><div class="mock-card-icon" style="background:#2563eb; opacity:0.2;"></div><div class="mock-card-text"></div><div class="mock-card-text-short"></div></div>
+                <div class="mock-game-card"><div class="mock-card-icon" style="background:#16a34a; opacity:0.2;"></div><div class="mock-card-text"></div><div class="mock-card-text-short"></div></div>
+            </div>
+        </div>
+    </div>
+
     <div class="features-stack">
         <div class="feature-card">
             <span class="feature-icon">⚡</span>
             <div class="feature-info">
                 <span class="feature-title">Ultra Fast Withdrawals</span>
-                <span class="feature-desc">Winnings paid out safely within 10 minutes flat.</span>
+                <span class="feature-desc">Winnings processed cleanly directly within 10 minutes.</span>
             </div>
         </div>
         <div class="feature-card">
             <span class="feature-icon">🎯</span>
             <div class="feature-info">
-                <span class="feature-title">Live Results Streaming</span>
-                <span class="feature-desc">Instant real-time market updates straight to your pocket.</span>
+                <span class="feature-title">Real-Time Market Feeds</span>
+                <span class="feature-desc">Live open and close result declarations inside your pocket.</span>
             </div>
         </div>
         <div class="feature-card">
-            <span class="feature-icon">👑</span>
+            <span class="feature-icon">🔒</span>
             <div class="feature-info">
-                <span class="feature-title">100% Trusted Platform</span>
-                <span class="feature-desc">Full Payout Rates with zero middleman deductions.</span>
+                <span class="feature-title">Secure Standalone Platform</span>
+                <span class="feature-desc">Encrypted cloud database connections keeping accounts safe.</span>
             </div>
         </div>
     </div>
 
-    <a href="durga_official.apk" class="download-btn" id="downloadActionAnchor">
-        <svg class="android-icon" viewBox="0 0 24 24"><path d="M17.52 2.14l1.22-1.22a.5.5 0 0 1 .71 0l.02.02a.5.5 0 0 1 0 .71l-1.29 1.29A10.03 10.03 0 0 1 22 11.5v1a.5.5 0 0 1-.5.5h-19a.5.5 0 0 1-.5-.5v-1c0-3.32 1.63-6.26 4.14-8.06L4.85 1.65a.5.5 0 0 1 0-.71l.02-.02a.5.5 0 0 1 .71 0l1.22 1.22A9.92 9.04 0 0 1 12 1.5c2.01 0 3.91.59 5.52 1.64zM7 7.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm10 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM2 14.5a.5.5 0 0 1 .5-.5h19a.5.5 0 0 1 .5./5v4c0 2.5-2 4.5-4.5 4.5h-10A4.5 4.5 0 0 1 2 18.5v-4z"/></svg>
+    <a href="https://github.com/rudrakshsattamatka-code/DURGA/releases/download/v1.0.0/durga.apk" class="download-btn" id="downloadActionAnchor" download>
+        <svg class="android-icon" viewBox="0 0 24 24"><path d="M17.52 2.14l1.22-1.22a.5.5 0 0 1 .71 0l.02.02a.5.5 0 0 1 0 .71l-1.29 1.29A10.03 10.03 0 0 1 22 11.5v1a.5.5 0 0 1-.5.5h-19a.5.5 0 0 1-.5-.5v-1c0-3.32 1.63-6.26 4.14-8.06L4.85 1.65a.5.5 0 0 1 0-.71l.02-.02a.5.5 0 0 1 .71 0l1.22 1.22A9.92 9.04 0 0 1 12 1.5c2.01 0 3.91.59 5.52 1.64zM7 7.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm10 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM2 14.5a.5.5 0 0 1 .5-.5h19a.5.5 0 0 1 .5.5v4c0 2.5-2 4.5-4.5 4.5h-10A4.5 4.5 0 0 1 2 18.5v-4z"/></svg>
         Download Android App
     </a>
 
     <div class="already-installed-box" id="alreadyActivePill">
-        Premium Android App Active! 🚀
+        Premium App Container Active! 🚀
     </div>
 
-    <div class="footer-note">Secure APK verification • V1.0.2 • Supports Android 5.0+</div>
+    <div class="footer-note">Secure APK verification • V1.0.0 • Supports Android 5.0+</div>
 </div>
 
 <script>
-    // Intelligent detector snippet checking if client request environment is already inside a WebView container setup
+    // Comprehensive browser execution environment analysis rule setup mapping
     const userAgentString = navigator.userAgent || navigator.vendor || window.opera;
-    const isInsideWebViewApp = (userAgentString.includes('wv') || userAgentString.includes('WebView'));
+    const isInsideWebViewApp = (userAgentString.includes('wv') || userAgentString.includes('WebView') || userAgentString.includes('Crosswalk'));
 
     if (isInsideWebViewApp) {
         document.getElementById('downloadActionAnchor').style.display = 'none';
