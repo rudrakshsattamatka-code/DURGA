@@ -10,7 +10,7 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
         body { background: #f4f6f9; color: #475569; padding-top: 56px; padding-bottom: 75px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        .app-container { max-width: 480px; margin: 0 auto; background: #f4f6f9; width: 100%; height: 100%; display: flex; flex-direction: column; position: relative; }
+        .app-container { max-width: 480px; margin: 0 auto; background: #f4f6f9; width: 100%; height: 100%; display: flex; flex-direction: column; position: relative; overflow: hidden; }
         
         /* Premium Teal Top Header Bar Matching Image Specs */
         .sticky-top-panel {
@@ -25,99 +25,101 @@
         .wallet-icon-svg { width: 18px; height: 18px; fill: currentColor; }
 
         /* Navigation Header Control Bar */
-        .app-navigation-control-bar { display: flex; align-items: center; padding: 12px 16px; background: #f4f6f9; margin-top: 56px; flex-shrink: 0; }
+        .app-navigation-control-bar { display: flex; align-items: center; padding: 8px 16px; background: #f4f6f9; margin-top: 56px; flex-shrink: 0; }
         .back-navigation-btn { background: none; border: none; color: #1a8a9d; font-size: 13px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
         .navigation-view-title { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.75px; margin-left: auto; }
 
         /* Game Grid Mode Content Views (Matching game type.jpeg) */
-        .game-types-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; padding: 4px 16px 16px 16px; overflow-y: auto; flex: 1; }
+        .game-types-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 4px 16px 16px 16px; overflow-y: auto; flex: 1; }
         .game-type-card { 
-            background: #ffffff; border-radius: 18px; padding: 24px 12px; text-align: center; 
-            cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03); border: none; min-height: 110px;
+            background: #ffffff; border-radius: 14px; padding: 18px 12px; text-align: center; 
+            cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02); border: none; min-height: 95px;
         }
-        .card-shape-icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; }
+        .card-shape-icon { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; }
         .icon-red { color: #dc2626; }
         .icon-green { color: #16a34a; }
         .icon-blue { color: #2563eb; }
         .icon-orange { color: #ea580c; }
         .icon-purple { color: #7c3aed; }
-        .game-card-name { font-size: 14px; font-weight: 700; color: #1e293b; text-transform: capitalize; }
+        .game-card-name { font-size: 13.5px; font-weight: 700; color: #1e293b; text-transform: capitalize; }
         .game-card-name.allcaps { text-transform: uppercase; font-weight: 900; }
 
         /* Form Subview Layout Setup */
-        .bidding-panel { display: none; width: 100%; flex: 1; overflow: hidden; }
-        .bidding-panel-active { display: flex !important; flex-direction: column; }
+        .bidding-panel { display: none; width: 100%; flex: 1; flex-direction: column; overflow: hidden; }
+        .bidding-panel-active { display: flex !important; }
 
-        /* Exact Form Input Layout Forms Matrix (Matching game style 2.jpeg) */
-        .game-panel-content { padding: 4px 16px 10px 16px; display: flex; flex-direction: column; gap: 14px; flex-shrink: 0; }
+        /* Compact Layout Form Elements Matrix (Matching game style 2.jpeg) */
+        .game-panel-content { padding: 4px 16px 6px 16px; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; }
         
-        .native-image-row { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 16px; }
-        .native-image-label { font-size: 15px; color: #475569; font-weight: 500; flex-shrink: 0; width: 125px; text-align: left; }
+        .native-image-row { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 12px; }
+        .native-image-label { font-size: 14px; color: #475569; font-weight: 600; flex-shrink: 0; width: 115px; text-align: left; }
         
         .select-native-dropdown-wrapper { flex: 1; position: relative; background: #fff; border-radius: 20px; border: 1px solid #cbd5e1; padding-right: 12px; }
-        .select-native-input { width: 100%; padding: 10px 16px; background: transparent; border: none; outline: none; font-size: 14px; font-weight: 700; color: #000; appearance: none; -webkit-appearance: none; cursor: pointer; text-transform: uppercase; }
-        .select-native-dropdown-wrapper::after { content: '▼'; font-size: 10px; color: #475569; position: absolute; right: 16px; top: 14px; pointer-events: none; }
+        .select-native-input { width: 100%; padding: 8px 14px; background: transparent; border: none; outline: none; font-size: 13.5px; font-weight: 700; color: #000; appearance: none; -webkit-appearance: none; cursor: pointer; text-transform: uppercase; }
+        .select-native-dropdown-wrapper::after { content: '▼'; font-size: 9px; color: #475569; position: absolute; right: 14px; top: 12px; pointer-events: none; }
 
         .native-input-box-wrapper { flex: 1; background: #fff; border-radius: 6px; border: 1px solid #cbd5e1; }
-        .native-form-input-field { width: 100%; padding: 10px 12px; background: transparent; border: none; outline: none; font-size: 15px; font-weight: 600; color: #000; }
+        .native-form-input-field { width: 100%; padding: 8px 12px; background: transparent; border: none; outline: none; font-size: 14.5px; font-weight: 600; color: #000; }
 
         .native-add-more-btn { 
             align-self: flex-end; background: #1a8a9d; color: #fff; border: none; 
-            padding: 10px 44px; border-radius: 20px; font-size: 16px; font-weight: 600; 
-            cursor: pointer; margin-top: 4px; box-shadow: 0 2px 6px rgba(26,138,157,0.2);
-            transition: opacity 0.1s;
+            padding: 8px 36px; border-radius: 20px; font-size: 15px; font-weight: 600; 
+            cursor: pointer; margin-top: 2px; box-shadow: 0 2px 4px rgba(26,138,157,0.15);
         }
-        .native-add-more-btn:active { opacity: 0.9; }
 
-        /* Minimal Grid Separator Header Row Line */
-        .table-metadata-header-row { display: flex; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid #cbd5e1; border-top: 1px solid #cbd5e1; background: #f4f6f9; width: 100%; flex-shrink: 0; }
-        .meta-col-label { font-size: 14px; font-weight: 600; color: #1a8a9d; flex: 1; text-align: center; }
-        .meta-col-label:first-child { text-align: left; padding-left: 12px; }
-        .meta-col-label:last-child { text-align: right; padding-right: 28px; }
+        /* Table Metadata Header Row Line */
+        .table-metadata-header-row { display: flex; justify-content: space-between; padding: 8px 16px; border-bottom: 1px solid #cbd5e1; border-top: 1px solid #cbd5e1; background: #f4f6f9; width: 100%; flex-shrink: 0; }
+        .meta-col-label { font-size: 13.5px; font-weight: 700; color: #1a8a9d; flex: 1; text-align: center; }
+        .meta-col-label:first-child { text-align: left; padding-left: 8px; }
+        .meta-col-label:last-child { text-align: right; padding-right: 24px; }
 
         /* ----------------------------------------------------------------- */
-        /* ISOLATED SCROLLABLE BASKET WINDOW SYSTEM                          */
+        /* ISOLATED & ENHANCED SCROLLABLE SELECTED BIDS CONTAINER WINDOW     */
         /* ----------------------------------------------------------------- */
-        .isolated-scroll-bids-window { flex: 1; overflow-y: auto; background: #ffffff; width: 100%; }
+        .isolated-scroll-bids-window { 
+            flex: 1; 
+            overflow-y: auto; 
+            background: #ffffff; 
+            width: 100%; 
+            height: calc(100vh - 310px); /* Strict boundary locking to enable inner overflow scrolling */
+            -webkit-overflow-scrolling: touch; 
+        }
         .bids-section { display: flex; flex-direction: column; }
         
-        .bid-item { background: transparent; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; }
+        .bid-item { background: transparent; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; }
         .bid-info { display: flex; width: 100%; justify-content: space-between; align-items: center; }
-        .bid-value { font-size: 14px; font-weight: 500; color: #475569; flex: 1; text-align: left; }
-        .bid-points { font-size: 14px; color: #475569; font-weight: 500; flex: 1; text-align: center; }
-        .bid-resolved-type-label { font-size: 14px; color: #475569; font-weight: 500; flex: 1; text-align: right; }
-        .remove-bid { background: none; border: none; color: #ef4444; cursor: pointer; font-size: 14px; padding-left: 16px; font-weight: bold; }
+        .bid-value { font-size: 14px; font-weight: 600; color: #334155; flex: 1; text-align: left; }
+        .bid-points { font-size: 14px; color: #334155; font-weight: 600; flex: 1; text-align: center; }
+        .bid-resolved-type-label { font-size: 13.5px; color: #475569; font-weight: 600; flex: 1; text-align: right; }
+        .remove-bid { background: none; border: none; color: #ef4444; cursor: pointer; font-size: 14px; padding-left: 14px; font-weight: bold; }
 
-        /* Functional Selection Board Layout Matrix Units */
-        .digit-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 12px 0; width: 100%; }
-        .digit-btn { background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px 0; text-align: center; font-size: 16px; font-weight: 700; color: #0f172a; cursor: pointer; }
+        /* Dense Performance Grid Units Panels */
+        .digit-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 2px 16px; width: 100%; flex-shrink: 0; }
+        .digit-btn { background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 0; text-align: center; font-size: 15px; font-weight: 700; color: #0f172a; cursor: pointer; }
         
-        .jodi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 12px 0; max-height: 180px; overflow-y: auto; width: 100%; }
-        .jodi-btn { background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px 0; text-align: center; font-size: 15px; font-weight: 700; color: #0f172a; cursor: pointer; }
+        .jodi-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; padding: 2px 16px; max-height: 155px; overflow-y: auto; width: 100%; flex-shrink: 0; }
+        .jodi-btn { background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 0; text-align: center; font-size: 14px; font-weight: 700; color: #0f172a; cursor: pointer; }
         .jodi-btn.number-selected-active { background: #1a8a9d !important; color: #ffffff !important; border-color: #1a8a9d !important; }
 
-        .manual-entry-form-stack { display: flex; flex-direction: column; gap: 14px; width: 100%; }
-
-        /* Fixed Bottom Summary Control Deck Bar (Matching image specs) */
+        /* Fixed Bottom Summary Control Deck Bar */
         .fixed-bottom-summary-deck {
             position: fixed; bottom: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto;
-            background: #ffffff; border-top: 1px solid #cbd5e1; padding: 10px 24px 14px 24px; z-index: 1000;
-            display: none; align-items: center; justify-content: space-between; height: 75px;
+            background: #ffffff; border-top: 1px solid #cbd5e1; padding: 8px 20px 12px 24px; z-index: 1000;
+            display: none; align-items: center; justify-content: space-between; height: 65px; flex-shrink: 0;
         }
-        .summary-metrics-tray { display: flex; gap: 48px; }
+        .summary-metrics-tray { display: flex; gap: 40px; }
         .summary-block { display: flex; flex-direction: column; align-items: center; }
-        .summary-label { font-size: 14px; color: #475569; font-weight: 500; margin-bottom: 2px; }
-        .summary-value { font-size: 16px; font-weight: 700; color: #000; }
+        .summary-label { font-size: 13.5px; color: #475569; font-weight: 600; margin-bottom: 1px; }
+        .summary-value { font-size: 15px; font-weight: 700; color: #000; }
         
         .submit-btn { 
-            background: #136a7a; color: #fff; border: none; padding: 11px 48px; 
-            border-radius: 20px; font-size: 16px; font-weight: 600; cursor: pointer; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+            background: #136a7a; color: #fff; border: none; padding: 9px 40px; 
+            border-radius: 20px; font-size: 15px; font-weight: 600; cursor: pointer; 
         }
         .submit-btn:disabled { opacity: 0.5; }
 
-        .message { text-align: center; padding: 10px; border-radius: 6px; font-size: 13px; font-weight: 600; margin: 8px 16px; flex-shrink: 0; }
+        .message { text-align: center; padding: 8px; border-radius: 6px; font-size: 13px; font-weight: 600; margin: 4px 16px; flex-shrink: 0; }
         .error { background: #fee2e2; color: #b91c1c; }
         .success { background: #dcfce7; color: #15803d; }
     </style>
@@ -141,7 +143,7 @@
         <span class="navigation-view-title" id="navViewTitleLabel">Game Modes</span>
     </div>
 
-    <div id="gameSelectionScreen" style="display: block;">
+    <div id="gameSelectionScreen" style="display: block; overflow-y: auto; flex: 1;">
         <div class="game-types-grid" id="gameTypesGrid"></div>
     </div>
 
@@ -267,7 +269,7 @@
 
     function handleNavigationHeaderBack() {
         const selectScreenVisibility = document.getElementById('gameSelectionScreen').style.display;
-        if(selectScreenVisibility === 'none') {
+        if(selectScreenVisibility === 'none' || selectScreenVisibility === '') {
             showGameSelection();
         } else {
             window.location.href = 'dashboard.html';
@@ -276,7 +278,7 @@
 
     window.addEventListener('popstate', function(event) {
         const selectScreenVisibility = document.getElementById('gameSelectionScreen').style.display;
-        if (selectScreenVisibility === 'none') {
+        if (selectScreenVisibility === 'none' || selectScreenVisibility === '') {
             showGameSelection();
         } else {
             window.location.href = 'dashboard.html';
@@ -484,10 +486,9 @@
     }
 
     function renderTableWrapper() {
-        let labelNameDisplay = currentGameType;
         return `
             <div class="table-metadata-header-row">
-                <span class="meta-col-label" style="text-align: left;">${labelNameDisplay}</span>
+                <span class="meta-col-label" style="text-align: left;">${currentGameType}</span>
                 <span class="meta-col-label" style="text-align: center;">Points</span>
                 <span class="meta-col-label" style="text-align: right;">Game Type</span>
             </div>
