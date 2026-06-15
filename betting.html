@@ -9,35 +9,32 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        body { background: #f4f6f9; color: #334155; padding-top: 56px; padding-bottom: 75px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        .app-container { max-width: 480px; margin: 0 auto; background: #f4f6f9; width: 100%; height: 100%; display: flex; flex-direction: column; position: relative; }
+        body { background: #f4f6f9; color: #334155; padding-top: 56px; padding-bottom: 75px; min-height: 100vh; }
+        .app-container { max-width: 480px; margin: 0 auto; background: #f4f6f9; min-height: 100vh; position: relative; display: flex; flex-direction: column; }
         
         /* Exact Image Match Premium Teal Top Header Bar */
         .sticky-top-panel {
-            position: absolute; top: 0; left: 0; right: 0; height: 56px;
+            position: fixed; top: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto; height: 56px;
             background: linear-gradient(90deg, #136a7a, #1a8a9d); color: #fff; z-index: 1000;
             display: flex; align-items: center; justify-content: space-between; padding: 0 16px;
         }
-        .back-btn { background: none; border: none; color: #fff; font-size: 22px; cursor: pointer; display: flex; align-items: center; }
-        .market-header-info { flex: 1; margin-left: 16px; display: flex; align-items: center; justify-content: space-between; padding-right: 4px; }
+        .back-btn { background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; display: flex; align-items: center; }
+        .market-header-info { flex: 1; margin-left: 16px; display: flex; align-items: center; justify-content: space-between; }
         .market-meta-title { font-size: 16px; font-weight: 700; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px; }
-        .balance-box-display { font-size: 15px; font-weight: 600; color: #ffffff; display: flex; align-items: center; gap: 4px; }
-        .wallet-icon-svg { width: 18px; height: 18px; fill: currentColor; opacity: 0.9; }
+        .balance-box-display { font-size: 15px; font-weight: 600; color: #ffffff; display: flex; align-items: center; gap: 6px; }
+        .wallet-icon-svg { width: 18px; height: 18px; fill: currentColor; }
 
-        /* Scrollable Area Mapped Under Header */
-        .main-scroll-content { flex: 1; overflow-y: auto; padding: 0; display: flex; flex-direction: column; background: #f4f6f9; margin-top: 56px; }
-
-        /* Native Android Mode Navigation Step Line */
+        /* Navigation Header Control Bar */
         .app-navigation-control-bar { display: flex; align-items: center; padding: 12px 16px; background: #f4f6f9; }
         .back-navigation-btn { background: none; border: none; color: #1a8a9d; font-size: 13px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
         .navigation-view-title { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.75px; margin-left: auto; }
 
-        /* Game Grid Mode Content Views */
+        /* Game Grid Mode Content Views (Matching game type.jpeg) */
         .game-types-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; padding: 4px 16px 16px 16px; }
         .game-type-card { 
             background: #ffffff; border-radius: 18px; padding: 24px 12px; text-align: center; 
             cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02); border: none; min-height: 110px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03); border: none; min-height: 110px;
         }
         .card-shape-icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; }
         .icon-red { color: #dc2626; }
@@ -45,75 +42,69 @@
         .icon-blue { color: #2563eb; }
         .icon-orange { color: #ea580c; }
         .icon-purple { color: #7c3aed; }
-        .game-card-name { font-size: 13.5px; font-weight: 700; color: #1e293b; text-transform: capitalize; }
+        .game-card-name { font-size: 14px; font-weight: 700; color: #1e293b; text-transform: capitalize; }
+        .game-card-name.allcaps { text-transform: uppercase; font-weight: 900; }
 
         .bidding-panel { display: none; width: 100%; }
 
-        /* Exact Image Replication Form Elements Matrix */
+        /* Exact Layout Form Elements Matrix (Matching game style.jpeg) */
         .game-panel-content { padding: 4px 16px 10px 16px; display: flex; flex-direction: column; gap: 14px; }
         
         .native-image-row { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 16px; }
         .native-image-label { font-size: 15px; color: #475569; font-weight: 500; flex-shrink: 0; width: 120px; text-align: left; }
         
-        /* Premium Native Dropdown Segment Component */
-        .select-native-dropdown-wrapper { flex: 1; position: relative; background: #fff; border-radius: 20px; border: 1px solid #e2e8f0; padding-right: 12px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.01); }
-        .select-native-input { width: 100%; padding: 10px 16px; background: transparent; border: none; outline: none; font-size: 14px; font-weight: 700; color: #000; appearance: none; -webkit-appearance: none; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; }
-        .select-native-dropdown-wrapper::after { content: '▼'; font-size: 10px; color: #475569; position: absolute; right: 16px; top: 14px; pointer-events: none; }
+        .select-native-dropdown-wrapper { flex: 1; position: relative; background: #fff; border-radius: 8px; border: 1px solid #cbd5e1; padding-right: 12px; }
+        .select-native-input { width: 100%; padding: 10px 12px; background: transparent; border: none; outline: none; font-size: 14px; font-weight: 700; color: #000; appearance: none; -webkit-appearance: none; cursor: pointer; text-transform: uppercase; }
+        .select-native-dropdown-wrapper::after { content: '▼'; font-size: 10px; color: #475569; position: absolute; right: 12px; top: 14px; pointer-events: none; }
 
-        .native-input-box-wrapper { flex: 1; background: #fff; border-radius: 6px; border: 1px solid #e2e8f0; box-shadow: inset 0 1px 2px rgba(0,0,0,0.01); }
-        .native-form-input-field { width: 100%; padding: 8px 12px; background: transparent; border: none; outline: none; font-size: 15px; font-weight: 500; color: #000; }
+        .native-input-box-wrapper { flex: 1; background: #fff; border-radius: 8px; border: 1px solid #cbd5e1; }
+        .native-form-input-field { width: 100%; padding: 10px 12px; background: transparent; border: none; outline: none; font-size: 15px; font-weight: 600; color: #000; }
 
-        /* Cyan Dynamic Action Trigger Capsule */
         .native-add-more-btn { 
             align-self: flex-end; background: #1a8a9d; color: #fff; border: none; 
-            padding: 10px 40px; border-radius: 20px; font-size: 16px; font-weight: 600; 
-            cursor: pointer; margin-top: 4px; box-shadow: 0 2px 6px rgba(26,138,157,0.2); 
-            transition: opacity 0.1s;
+            padding: 10px 44px; border-radius: 20px; font-size: 16px; font-weight: 600; 
+            cursor: pointer; margin-top: 4px; box-shadow: 0 2px 6px rgba(26,138,157,0.2);
         }
-        .native-add-more-btn:active { opacity: 0.9; }
 
-        /* Metadata Column Header Row Line Mapped exactly to image specification template */
-        .table-metadata-header-row { display: flex; justify-content: space-between; padding: 10px 24px; border-bottom: 1px solid #cbd5e1; margin-top: 14px; background: #f4f6f9; }
-        .meta-col-label { font-size: 13px; font-weight: 600; color: #1a8a9d; text-transform: capitalize; flex: 1; text-align: center; }
+        /* Table Metadata Header List */
+        .table-metadata-header-row { display: flex; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid #cbd5e1; margin-top: 14px; background: #f4f6f9; }
+        .meta-col-label { font-size: 13px; font-weight: 600; color: #1a8a9d; flex: 1; text-align: center; }
         .meta-col-label:first-child { text-align: left; }
         .meta-col-label:last-child { text-align: right; }
 
-        /* ----------------------------------------------------------------- */
-        /* ISOLATED SCROLLABLE BASKET BASKET CONTAINER WINDOW SHEET         */
-        /* ----------------------------------------------------------------- */
-        .isolated-scroll-bids-window { flex: 1; overflow-y: auto; padding: 0 16px; margin-bottom: 10px; }
-        .bids-section { display: flex; flex-direction: column; gap: 2px; padding-top: 4px; }
+        /* Dynamic Scrollable Selection List Window Sheet */
+        .isolated-scroll-bids-window { max-height: 200px; overflow-y: auto; border-bottom: 1px solid #cbd5e1; margin-bottom: 10px; }
+        .bids-section { display: flex; flex-direction: column; }
         
-        .bid-item { background: transparent; padding: 10px 8px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; }
-        .bid-info { display: flex; width: 100%; justify-content: space-between; align-items: center; padding-right: 8px; }
+        .bid-item { background: transparent; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; }
+        .bid-info { display: flex; width: 100%; justify-content: space-between; align-items: center; }
         .bid-value { font-size: 14px; font-weight: 600; color: #334155; flex: 1; text-align: left; }
         .bid-points { font-size: 14px; color: #334155; font-weight: 600; flex: 1; text-align: center; }
-        .bid-resolved-type-label { font-size: 14px; color: #334155; font-weight: 600; flex: 1; text-align: right; text-transform: capitalize; }
-        .remove-bid { background: none; border: none; color: #ef4444; cursor: pointer; font-size: 14px; padding-left: 8px; font-weight: bold; }
+        .bid-resolved-type-label { font-size: 14px; color: #334155; font-weight: 600; flex: 1; text-align: right; }
+        .remove-bid { background: none; border: none; color: #ef4444; cursor: pointer; font-size: 14px; padding-left: 12px; font-weight: bold; }
 
-        /* Grid Selection Panels Content Containers */
+        /* Dynamic Input Grid Displays */
         .digit-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 4px 16px; margin-bottom: 10px; }
-        .digit-btn { background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px 0; text-align: center; font-size: 16px; font-weight: 700; color: #0f172a; cursor: pointer; }
+        .digit-btn { background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px 0; text-align: center; font-size: 16px; font-weight: 700; color: #0f172a; cursor: pointer; }
         
-        .jodi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 4px 16px; max-height: 32vh; overflow-y: auto; margin-bottom: 10px; }
-        .jodi-btn { background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px 0; text-align: center; font-size: 15px; font-weight: 700; color: #0f172a; cursor: pointer; }
+        .jodi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 4px 16px; max-height: 220px; overflow-y: auto; margin-bottom: 10px; }
+        .jodi-btn { background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px 0; text-align: center; font-size: 15px; font-weight: 700; color: #0f172a; cursor: pointer; }
         .jodi-btn.number-selected-active { background: #1a8a9d !important; color: #ffffff !important; border-color: #1a8a9d !important; }
 
-        /* Fixed Bottom Summary Control Deck Bar exactly matching Image Specs */
+        /* Fixed Bottom Summary Control Deck Bar (Matching game style.jpeg) */
         .fixed-bottom-summary-deck {
-            position: absolute; bottom: 0; left: 0; right: 0;
-            background: #ffffff; border-top: 1px solid #cbd5e1; padding: 8px 16px 12px 16px; z-index: 1000;
-            display: flex; align-items: center; justify-content: space-between; height: 70px;
+            position: fixed; bottom: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto;
+            background: #ffffff; border-top: 1px solid #cbd5e1; padding: 10px 20px 14px 24px; z-index: 1000;
+            display: none; align-items: center; justify-content: space-between; height: 75px;
         }
-        .summary-metrics-tray { display: flex; gap: 32px; }
+        .summary-metrics-tray { display: flex; gap: 40px; }
         .summary-block { display: flex; flex-direction: column; align-items: center; }
-        .summary-label { font-size: 14px; color: #334155; font-weight: 500; margin-bottom: 2px; }
-        .summary-value { font-size: 15px; font-weight: 700; color: #000; }
+        .summary-label { font-size: 14px; color: #475569; font-weight: 500; margin-bottom: 1px; }
+        .summary-value { font-size: 16px; font-weight: 700; color: #000; }
         
-        /* Rounded Slate Green Submission Button */
         .submit-btn { 
-            background: #136a7a; color: #fff; border: none; padding: 10px 36px; 
-            border-radius: 20px; font-size: 15px; font-weight: 600; cursor: pointer; 
+            background: #136a7a; color: #fff; border: none; padding: 10px 44px; 
+            border-radius: 20px; font-size: 16px; font-weight: 600; cursor: pointer; 
             box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
         }
         .submit-btn:disabled { opacity: 0.5; }
@@ -121,7 +112,6 @@
         .message { text-align: center; padding: 10px; border-radius: 6px; font-size: 13px; font-weight: 600; margin: 8px 16px; }
         .error { background: #fee2e2; color: #b91c1c; }
         .success { background: #dcfce7; color: #15803d; }
-        .hidden { display: none !important; }
     </style>
 </head>
 <body>
@@ -138,20 +128,18 @@
         </div>
     </div>
 
-    <div class="main-scroll-content">
-        <div class="app-navigation-control-bar">
-            <button class="back-navigation-btn" id="headerBackBtn" onclick="handleNavigationHeaderBack()">← Markets</button>
-            <span class="navigation-view-title" id="navViewTitleLabel">Game Modes</span>
-        </div>
+    <div class="app-navigation-control-bar" style="margin-top: 56px;">
+        <button class="back-navigation-btn" id="headerBackBtn" onclick="handleNavigationHeaderBack()">← Markets</button>
+        <span class="navigation-view-title" id="navViewTitleLabel">Game Modes</span>
+    </div>
 
-        <div id="gameSelectionScreen">
-            <div class="game-types-grid" id="gameTypesGrid"></div>
-        </div>
+    <div id="gameSelectionScreen">
+        <div class="game-types-grid" id="gameTypesGrid"></div>
+    </div>
 
-        <div id="biddingPanel" class="bidding-panel">
-            <div id="gamePanel"></div>
-            <div id="message" class="message hidden"></div>
-        </div>
+    <div id="biddingPanel" class="bidding-panel">
+        <div id="gamePanel"></div>
+        <div id="message" class="message hidden"></div>
     </div>
 
     <div class="fixed-bottom-summary-deck" id="bottomSummaryDeck">
@@ -206,17 +194,17 @@
     ];
 
     const allGameTypes = [
-        { name: 'Single Digit', availableInOpen: true, availableInClose: true, shape: '▪️', color: 'icon-red' },
-        { name: 'Family Red Jodi', availableInOpen: true, availableInClose: false, shape: '⁜', color: 'icon-red' },
-        { name: 'Jodi', availableInOpen: true, availableInClose: false, shape: '🎲', color: 'icon-green' },
-        { name: 'Family Jodi', availableInOpen: true, availableInClose: false, shape: '🎲', color: 'icon-green' },
-        { name: 'Single Pana', availableInOpen: true, availableInClose: true, shape: '♠', color: 'icon-blue' },
-        { name: 'Family Pana', availableInOpen: true, availableInClose: true, shape: '♠', color: 'icon-blue' },
-        { name: 'Double Pana', availableInOpen: true, availableInClose: true, shape: '♣', color: 'icon-orange' },
-        { name: 'Half Sangam A', availableInOpen: true, availableInClose: false, shape: '▲', color: 'icon-orange' },
-        { name: 'Triple Pana', availableInOpen: true, availableInClose: true, shape: '✦', color: 'icon-purple' },
-        { name: 'Half Sangam B', availableInOpen: true, availableInClose: false, shape: '▼', color: 'icon-purple' },
-        { name: 'Full Sangam', availableInOpen: true, availableInClose: false, shape: '✪', color: 'icon-green' }
+        { name: 'Single Digit', availableInOpen: true, availableInClose: true, shape: '▪️', color: 'icon-red', isCaps: false },
+        { name: 'Family Red Jodi', availableInOpen: true, availableInClose: false, shape: '⁜', color: 'icon-red', isCaps: true },
+        { name: 'Jodi', availableInOpen: true, availableInClose: false, shape: '🎲', color: 'icon-green', isCaps: false },
+        { name: 'Family Jodi', availableInOpen: true, availableInClose: false, shape: '🎲', color: 'icon-green', isCaps: true },
+        { name: 'Single Pana', availableInOpen: true, availableInClose: true, shape: '♠', color: 'icon-blue', isCaps: false },
+        { name: 'Family Pana', availableInOpen: true, availableInClose: true, shape: '♠', color: 'icon-blue', isCaps: true },
+        { name: 'Double Pana', availableInOpen: true, availableInClose: true, shape: '♣', color: 'icon-orange', isCaps: false },
+        { name: 'Half Sangam A', availableInOpen: true, availableInClose: false, shape: '▲', color: 'icon-orange', isCaps: true },
+        { name: 'Triple Pana', availableInOpen: true, availableInClose: true, shape: '✦', color: 'icon-purple', isCaps: false },
+        { name: 'Half Sangam B', availableInOpen: true, availableInClose: false, shape: '▼', color: 'icon-purple', isCaps: true },
+        { name: 'Full Sangam', availableInOpen: true, availableInClose: false, shape: '✪', color: 'icon-green', isCaps: true }
     ];
 
     async function getServerTime() {
@@ -242,7 +230,7 @@
         document.getElementById('gameTypesGrid').innerHTML = games.map(g => `
             <div class="game-type-card" onclick="selectGame('${g.name}')">
                 <span class="card-shape-icon ${g.color}">${g.shape}</span>
-                <div class="game-card-name">${g.name}</div>
+                <div class="game-card-name ${g.isCaps ? 'allcaps' : ''}">${g.name}</div>
             </div>
         `).join('');
     }
@@ -454,7 +442,6 @@
                     ${renderTableWrapper()}
                 </div>`;
         } else {
-            // General Form Handling UI mapped exactly to 'game style.jpeg' layout rules
             p.innerHTML = `
                 <div class="game-panel-content">
                     ${dropdownSelectionHeader}
