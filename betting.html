@@ -43,7 +43,7 @@
         .icon-orange { color: #ea580c; }
         .icon-purple { color: #7c3aed; }
         
-        /* Unified Game Card Text Style Setup - Bold, Standard Case, and Sized Uniformly */
+        /* Unified Game Card Text Style Setup */
         .game-card-name { font-size: 13.5px; font-weight: 700; color: #1e293b; text-transform: uppercase; letter-spacing: 0.3px; }
 
         /* Form Subview Layout Setup */
@@ -75,9 +75,7 @@
         .meta-col-label:first-child { text-align: left; padding-left: 8px; }
         .meta-col-label:last-child { text-align: right; padding-right: 24px; }
 
-        /* ----------------------------------------------------------------- */
-        /* FIXED INNER VIEWPORT BIDS WINDOW SHEET WITH SCROLL LOCK REPAIR     */
-        /* ----------------------------------------------------------------- */
+        /* Fixed Inner Scrollable Selection Window Panel Box */
         .isolated-scroll-bids-window { 
             flex: 1; 
             overflow-y: auto !important; 
@@ -394,6 +392,33 @@
             showMsg('Success!', false); bids = []; updateSummary(); renderPanel();
         } catch(e) { showMsg('Error', true); }
         finally { isSubmitting = false; btn.disabled = false; }
+    }
+
+    function checkPanaLegality(p) {
+        return validSinglePanaList.includes(p) || validDoublePanaList.includes(p) || validTriplePanaList.includes(p);
+    }
+
+    // FIXED: Adjusted to reference correct point inputs cleanly
+    function addSangamPlacements() {
+        let v1 = document.getElementById('v1').value.trim();
+        let v2 = document.getElementById('v2').value.trim();
+        let pts = parseInt(document.getElementById('pointsInput').value);
+        
+        if(isNaN(pts) || pts < 5) { alert('Min ₹5 required'); return; }
+        if(!v1 || !v2) { alert('Please enter both value entries'); return; }
+
+        if(currentGameType === 'Half Sangam A') {
+            if(!checkPanaLegality(v1)) { alert('Invalid Open Pana value'); return; }
+            if(!/^\d$/.test(v2)) { alert('Close digit must be 1-Digit'); return; }
+        } else if(currentGameType === 'Half Sangam B') {
+            if(!/^\d$/.test(v1)) { alert('Open digit must be 1-Digit'); return; }
+            if(!checkPanaLegality(v2)) { alert('Invalid Close Pana value'); return; }
+        } else if(currentGameType === 'Full Sangam') {
+            if(!checkPanaLegality(v1)) { alert('Invalid Open Pana value'); return; }
+            if(!checkPanaLegality(v2)) { alert('Invalid Close Pana value'); return; }
+        }
+
+        addToBidsDirectly(currentGameType, `${v1}-${v2}`, pts);
     }
 
     function renderPanel() {
