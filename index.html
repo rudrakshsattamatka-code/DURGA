@@ -45,9 +45,7 @@
             100% { transform: translate3d(-100%, 0, 0); }
         }
 
-        /* ----------------------------------------------------------------- */
-        /* EXACT 40% VIEWPORT HEIGHT UPPER LOGIN CONSOLE WORKSPACE BLOCK    */
-        /* ----------------------------------------------------------------- */
+        /* 40% Viewport Height Login Panel */
         .top-half {
             height: calc(40vh - 30px);
             background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.98) 100%);
@@ -90,7 +88,7 @@
             font-weight: 700;
         }
 
-        /* Mobile Form Card Elements Stack Layout controls */
+        /* Mobile Form Card Elements Stack */
         .screen { width: 100%; max-width: 320px; display: flex; flex-direction: column; }
         .hidden { display: none !important; }
 
@@ -148,7 +146,7 @@
         .timer { color: #f59e0b; font-size: 12px; font-weight: 700; margin-bottom: 8px; text-align: center; font-family: monospace; }
         .error-text { color: #f87171; font-size: 11px; text-align: center; margin-top: 4px; font-weight: 700; }
 
-        /* Seamless Flat Transition Joint */
+        /* Seamless Flat Joint Line */
         .professional-divider {
             width: 100%;
             height: 1px;
@@ -157,9 +155,7 @@
             z-index: 20;
         }
 
-        /* ----------------------------------------------------------------- */
-        /* EXACT 60% VIEWPORT HEIGHT LOWER REAL-TIME RESULTS DOCK BANNER    */
-        /* ----------------------------------------------------------------- */
+        /* 60% Viewport Height Lower Real-Time Results Container */
         .bottom-half {
             height: 60vh;
             background: #0f172a;
@@ -221,7 +217,7 @@
         <div class="tagline">Official Satta Matka Platform</div>
         
         <div id="phoneScreen" class="screen">
-            <input type="tel" id="phoneNumber" class="input-field" placeholder="Enter Mobile Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/\\D/g,'')">
+            <input type="tel" id="phoneNumber" class="input-field" placeholder="Enter Mobile Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/\D/g,'')">
             <button class="btn" id="sendOtpBtn">Login with OTP</button>
             <div class="link" id="forgotPinLink">Forgot Password?</div>
             <div id="phoneError" class="error-text"></div>
@@ -230,7 +226,7 @@
         <div id="otpScreen" class="screen hidden">
             <div class="welcome-text">Enter OTP sent to your mobile</div>
             <div class="timer" id="timer">Second Remaining 60</div>
-            <input type="text" id="otpCode" class="input-field" placeholder="Enter OTP" maxlength="6" inputmode="numeric" oninput="this.value = this.value.replace(/\\D/g,'')">
+            <input type="text" id="otpCode" class="input-field" placeholder="Enter OTP" maxlength="6" inputmode="numeric" oninput="this.value = this.value.replace(/\D/g,'')">
             <button class="btn" id="verifyOtpBtn">VERIFY OTP</button>
             <div class="link" id="resendOtpBtn">Resend OTP</div>
             <div id="otpError" class="error-text"></div>
@@ -247,7 +243,7 @@
 
         <div id="resetPinScreen" class="screen hidden">
             <div class="welcome-text">Recover Account</div>
-            <input type="tel" id="resetPhone" class="input-field" placeholder="Enter Mobile Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/\\D/g,'')">
+            <input type="tel" id="resetPhone" class="input-field" placeholder="Enter Mobile Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/\D/g,'')">
             <button class="btn" id="sendResetOtpBtn">Send Verification OTP</button>
             <div class="link" id="backToLogin">Back to Login</div>
             <div id="resetError" class="error-text"></div>
@@ -259,7 +255,7 @@
     <div class="bottom-half">
         <div class="marquee-wrapper">
             <div class="marquee-content" id="liveMarqueeResultsContainer">
-                <div style="text-align:center; padding-top:40px; color:#64748b; font-size:13px; font-weight:600;">Streaming live records...</div>
+                <div style="text-align:center; padding-top:40px; color:#64748b; font-size:13px; font-weight:600;">Streaming live panel records...</div>
             </div>
         </div>
     </div>
@@ -283,16 +279,26 @@
         let isForgotFlow = false;
         
         function showScreen(screen) {
-            document.getElementById('phoneScreen').classList.add('hidden');
-            document.getElementById('otpScreen').classList.add('hidden');
-            document.getElementById('registerScreen').classList.add('hidden');
-            document.getElementById('resetPinScreen').classList.add('hidden');
-            screen.classList.remove('hidden');
+            document.getElementById('phoneScreen').className = 'screen hidden';
+            document.getElementById('otpScreen').className = 'screen hidden';
+            document.getElementById('registerScreen').className = 'screen hidden';
+            document.getElementById('resetPinScreen').className = 'screen hidden';
+            screen.className = 'screen';
         }
         
         function showError(elementId, message) { const el = document.getElementById(elementId); if (el) { el.innerText = message; setTimeout(() => el.innerText = '', 4000); } }
         
-        function initRecaptcha() { if (!recaptchaVerifier) { const container = document.createElement('div'); container.id = 'recaptcha-container'; container.style.position = 'absolute'; container.style.left = '-9999px'; document.body.appendChild(container); recaptVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { size: 'invisible' }); } return recaptchaVerifier; }
+        function initRecaptcha() { 
+            if (!recaptchaVerifier) { 
+                const container = document.createElement('div'); 
+                container.id = 'recaptcha-container'; 
+                container.style.position = 'absolute'; 
+                container.style.left = '-9999px'; 
+                document.body.appendChild(container); 
+                recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { size: 'invisible' }); 
+            } 
+            return recaptchaVerifier; 
+        }
         
         function startTimer(seconds, timerElementId) { 
             countdown = seconds; 
@@ -306,13 +312,11 @@
             return `${hr.toString().padStart(2, '0')}:${m} ${ampm}`;
         }
         
-        // Connects landing page ticker straight to dynamic dashboard database collection feeds
         function listenToLiveResults() {
             db.collection('markets').orderBy('serialNo', 'asc').onSnapshot(snapshot => {
                 const container = document.getElementById('liveMarqueeResultsContainer');
-                if (snapshot.empty) { container.innerHTML = '<div style="text-align:center; padding-top:40px; color:#64748b;">No open records.</div>'; return; }
+                if (snapshot.empty) { container.innerHTML = '<div style="text-align:center; padding-top:40px; color:#64748b;">No active entries found.</div>'; return; }
                 
-                // Generates the double deck loop configuration string directly
                 let cardsHtml = snapshot.docs.map(doc => {
                     let m = doc.data();
                     let op = m.openPana || '***', od = m.openDigit || '*', cp = m.closePana || '***', cd = m.closeDigit || '*';
@@ -328,7 +332,6 @@
                         </div>`;
                 }).join('');
                 
-                // Duplicates the calculated element block payload seamlessly to feed continuous cyclical execution rules
                 container.innerHTML = cardsHtml + cardsHtml;
             });
         }
@@ -354,7 +357,7 @@
             const verifier = initRecaptcha();
             auth.signInWithPhoneNumber(phoneNumber, verifier).then(confirmation => { 
                 confirmationResult = confirmation; 
-                showScreen(otpScreen); 
+                showScreen(document.getElementById('otpScreen')); 
                 startTimer(60, 'timer'); 
                 btnElement.disabled = false; 
                 btnElement.innerText = btnElement.id === 'sendOtpBtn' ? 'Login with OTP' : 'Send Verification OTP'; 
@@ -376,11 +379,11 @@
                             showError('otpError', 'No account found for this number.');
                             btn.disabled = false; btn.innerText = 'VERIFY OTP';
                         } else {
-                            showScreen(registerScreen);
+                            showScreen(document.getElementById('registerScreen'));
                             btn.disabled = false; btn.innerText = 'VERIFY OTP';
                         }
                     }
-                }).catch(() => { showScreen(registerScreen); btn.disabled = false; }); 
+                }).catch(() => { showScreen(document.getElementById('registerScreen')); btn.disabled = false; }); 
             }).catch(error => { showError('otpError', 'Invalid OTP'); btn.disabled = false; });
         };
         
@@ -390,8 +393,8 @@
             auth.signInWithPhoneNumber(currentPhone, verifier).then(confirmation => { confirmationResult = confirmation; startTimer(60, 'timer'); showError('otpError', 'OTP resent!'); }).catch(error => showError('otpError', error.message)); 
         };
         
-        document.getElementById('forgotPinLink').onclick = function() { showScreen(resetPinScreen); };
-        document.getElementById('backToLogin').onclick = function() { showScreen(phoneScreen); };
+        document.getElementById('forgotPinLink').onclick = function() { showScreen(document.getElementById('resetPinScreen')); };
+        document.getElementById('backToLogin').onclick = function() { showScreen(document.getElementById('phoneScreen')); };
         
         document.getElementById('registerBtn').onclick = function() {
             const name = document.getElementById('regName').value.trim();
@@ -422,21 +425,19 @@
             });
         };
         
-        // INITIALIZE DB STREAMS FOR RESULTS ON STARTUP RUN
         listenToLiveResults();
 
-        // AUTO-LOGIN RESUME MONITOR SYSTEM
         auth.onAuthStateChanged(user => { 
             if (user) { 
                 db.collection('users').doc(user.uid).get().then(doc => { 
                     if (doc.exists) { 
                         window.location.href = 'dashboard.html'; 
                     } else { 
-                        showScreen(registerScreen); 
+                        showScreen(document.getElementById('registerScreen')); 
                     } 
-                }).catch(() => showScreen(phoneScreen)); 
+                }).catch(() => showScreen(document.getElementById('phoneScreen'))); 
             } else { 
-                showScreen(phoneScreen); 
+                showScreen(document.getElementById('phoneScreen')); 
             } 
         });
     </script>
