@@ -7,238 +7,69 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Roboto", -apple-system, BlinkMacSystemFont, Arial, sans-serif; }
         
-        body { 
-            background: #ffffff; 
-            color: #202124; 
-            min-height: 100vh; 
-            display: flex; 
-            justify-content: center; 
-            align-items: flex-start;
-        }
+        body { background: #ffffff; color: #202124; min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; }
+        .play-store-wrapper { max-width: 480px; width: 100%; background: #ffffff; min-height: 100vh; padding: 16px; position: relative; padding-bottom: 40px; }
 
-        .play-store-wrapper {
-            max-width: 480px;
-            width: 100%;
-            background: #ffffff;
-            min-height: 100vh;
-            padding: 20px 16px;
-            position: relative;
-        }
+        /* Play Store Top Header Layout Grid */
+        .app-main-header { display: flex; align-items: flex-start; gap: 20px; margin-bottom: 16px; margin-top: 10px; }
+        .play-app-icon { width: 88px; height: 88px; background: linear-gradient(135deg, #136a7a, #1a8a9d); border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 38px; font-weight: 900; color: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.06); flex-shrink: 0; }
+        .app-title-block { display: flex; flex-direction: column; justify-content: center; }
+        .play-app-title { font-size: 22px; font-weight: 500; color: #202124; line-height: 1.2; margin-bottom: 2px; }
+        .play-developer-team { font-size: 13.5px; font-weight: 500; color: #01875f; text-decoration: none; margin-bottom: 2px; }
+        .play-verified-badge { font-size: 12px; color: #5f6368; display: flex; align-items: center; gap: 4px; }
 
-        /* Play Store Main App Info Header Deck */
-        .app-main-header {
-            display: flex;
-            align-items: flex-start;
-            gap: 24px;
-            margin-bottom: 20px;
-            margin-top: 10px;
-        }
+        /* Stats Strip Counter Dashboard */
+        .play-stats-row { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e8eaed; padding-bottom: 14px; margin-bottom: 16px; text-align: center; }
+        .stat-box { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; }
+        .stat-box:not(:last-child)::after { content: ''; position: absolute; right: 0; top: 20%; height: 60%; width: 1px; background: #e8eaed; }
+        .stat-value { font-size: 14px; font-weight: 500; color: #202124; }
+        .stat-label { font-size: 11px; color: #5f6368; margin-top: 2px; }
 
-        .play-app-icon {
-            width: 96px;
-            height: 96px;
-            background: linear-gradient(135deg, #136a7a, #1a8a9d);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 42px;
-            font-weight: 900;
-            color: #ffffff;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            flex-shrink: 0;
-        }
+        /* Live Top Winners Marquee Ribbon Deck */
+        .winners-marquee-ribbon { background: #f8fafc; border: 1px solid #e8eaed; border-radius: 8px; height: 34px; display: flex; align-items: center; overflow: hidden; margin-bottom: 16px; }
+        .winners-scroll-track { display: inline-block; white-space: nowrap; padding-left: 100%; animation: scrollWinnersTrack 28s linear infinite; }
+        .winner-pill-node { display: inline-block; font-size: 12px; font-weight: 700; color: #0f172a; margin-right: 24px; background: #e2e8f0; padding: 2px 10px; border-radius: 12px; }
+        .winner-pill-node span { color: #16a34a; }
+        @keyframes scrollWinnersTrack { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
 
-        .app-title-block {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .play-app-title {
-            font-size: 24px;
-            font-weight: 500;
-            color: #202124;
-            line-height: 1.25;
-            margin-bottom: 4px;
-        }
-
-        .play-developer-team {
-            font-size: 14px;
-            font-weight: 500;
-            color: #01875f; /* Official Play Store Green tint */
-            text-decoration: none;
-            margin-bottom: 4px;
-        }
-
-        .play-verified-badge {
-            font-size: 12px;
-            color: #5f6368;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-weight: 400;
-        }
-
-        /* Play Store Stat Row Metrics Container */
-        .play-stats-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid #e8eaed;
-            padding-bottom: 16px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .stat-box {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-        }
-
-        .stat-box:not(:last-child)::after {
-            content: '';
-            position: absolute;
-            right: 0;
-            top: 20%;
-            height: 60%;
-            width: 1px;
-            background: #e8eaed;
-        }
-
-        .stat-value {
-            font-size: 14px;
-            font-weight: 500;
-            color: #202124;
-            display: flex;
-            align-items: center;
-            gap: 2px;
-        }
-
-        .stat-label {
-            font-size: 11px;
-            color: #5f6368;
-            margin-top: 4px;
-        }
-
-        /* Large Official Green Install Button Component Trigger Box */
-        .play-install-btn {
-            width: 100%;
-            padding: 11px 24px;
-            background: #01875f;
-            color: #ffffff;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 24px;
-            text-align: center;
-            transition: background 0.15s;
-        }
+        /* Official Action Call Install Button Setup */
+        .play-install-btn { width: 100%; padding: 11px; background: #01875f; color: #ffffff; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; text-decoration: none; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; transition: background 0.1s; }
         .play-install-btn:active { background: #006e4e; }
+        .already-installed-box { display: none; width: 100%; padding: 11px; background: #f1f3f4; border-radius: 8px; color: #01875f; font-size: 14px; font-weight: 500; text-align: center; margin-bottom: 18px; }
 
-        .already-installed-box { 
-            display: none; 
-            width: 100%;
-            padding: 11px 24px;
-            background: #f1f3f4;
-            border-radius: 8px;
-            color: #01875f;
-            font-size: 14px;
-            font-weight: 500;
-            text-align: center;
-            margin-bottom: 24px;
-        }
+        .play-section-title { font-size: 16px; font-weight: 500; color: #202124; margin-bottom: 10px; margin-top: 6px; }
 
-        /* Horizontal Scrolling App Screenshot Carousel */
-        .screenshot-carousel-container {
-            margin-left: -16px;
-            margin-right: -16px;
-            padding-left: 16px;
-            padding-right: 16px;
-            overflow-x: auto;
-            display: flex;
-            gap: 12px;
-            margin-bottom: 24px;
-            -webkit-overflow-scrolling: touch;
-        }
-        .screenshot-carousel-container::-webkit-scrollbar { display: none; }
+        /* Premium Game Multiplier Rates Table Display Card */
+        .game-rates-matrix-board { background: #f8fafc; border: 1px solid #e8eaed; border-radius: 12px; padding: 4px 14px; margin-bottom: 20px; }
+        .rate-matrix-row { display: flex; justify-content: space-between; padding: 9px 0; font-size: 13.5px; font-weight: 500; color: #3c4043; }
+        .rate-matrix-row:not(:last-child) { border-bottom: 1px solid #e8eaed; }
+        .rate-multiplier-badge { color: #01875f; font-weight: 700; }
 
-        .mock-phone-screenshot-frame {
-            width: 150px;
-            height: 270px;
-            background: #1e293b;
-            border-radius: 12px;
-            flex-shrink: 0;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid #e8eaed;
-        }
+        .play-app-description-text { font-size: 13.5px; color: #5f6368; line-height: 1.5; margin-bottom: 20px; }
 
-        .screenshot-app-ui {
-            flex: 1;
-            padding: 16px 8px 8px 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            background: #f4f6f9;
-        }
-        .screenshot-header-bar { height: 18px; background: linear-gradient(90deg, #136a7a, #1a8a9d); border-radius: 3px; }
-        .screenshot-balance-pill { height: 28px; background: #ffffff; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
-        .screenshot-grid-box { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; flex: 1; }
-        .screenshot-grid-card { background: #ffffff; border-radius: 5px; border: 1px solid rgba(0,0,0,0.02); }
+        /* Google Play Store Ratings & Simulation Review Dashboard Engine */
+        .reviews-summary-display-box { display: flex; align-items: center; gap: 28px; margin-bottom: 16px; background: #f8fafc; padding: 12px; border-radius: 10px; }
+        .huge-rating-number { font-size: 44px; font-weight: 400; color: #202124; }
+        .review-stars-static { color: #01875f; font-size: 13px; margin-top: -4px; }
+        
+        .interactive-user-review-panel { border-top: 1px solid #e8eaed; padding-top: 14px; margin-bottom: 18px; }
+        .review-input-box { width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13.5px; outline: none; margin-bottom: 8px; resize: none; color: #202124; }
+        .review-input-box:focus { border-color: #01875f; }
+        .review-submit-action-btn { background: #01875f; color: #fff; border: none; padding: 6px 16px; border-radius: 4px; font-size: 12.5px; font-weight: 500; cursor: pointer; }
+        
+        .static-review-slip { margin-bottom: 14px; border-bottom: 1px solid #f1f3f4; padding-bottom: 10px; }
+        .review-user-row { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+        .review-user-avatar { width: 24px; height: 24px; background: #e8eaed; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #5f6368; }
+        .review-user-name { font-size: 13px; font-weight: 500; color: #202124; }
+        .review-body-text { font-size: 12.5px; color: #5f6368; line-height: 1.4; padding-left: 34px; }
 
-        /* About This App Description Section Block */
-        .play-section-heading-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-        }
-
-        .play-section-title {
-            font-size: 18px;
-            font-weight: 500;
-            color: #202124;
-        }
-
-        .play-section-arrow {
-            color: #5f6368;
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .play-app-description-text {
-            font-size: 14px;
-            color: #5f6368;
-            line-height: 1.5;
-            margin-bottom: 24px;
-            font-weight: 400;
-        }
-
-        .play-safety-card {
-            background: #ffffff;
-            border: 1px solid #e8eaed;
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 20px;
-        }
-        .safety-row-item { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 12px; }
+        .play-safety-card { background: #ffffff; border: 1px solid #e8eaed; border-radius: 8px; padding: 14px; margin-bottom: 20px; }
+        .safety-row-item { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
         .safety-row-item:last-child { margin-bottom: 0; }
-        .safety-icon { font-size: 16px; margin-top: 1px; }
+        .safety-icon { font-size: 15px; }
         .safety-text-block { display: flex; flex-direction: column; }
         .safety-title { font-size: 13px; font-weight: 500; color: #202124; }
-        .safety-desc { font-size: 12px; color: #5f6368; margin-top: 1px; }
+        .safety-desc { font-size: 12px; color: #5f6368; }
     </style>
 </head>
 <body>
@@ -251,100 +82,120 @@
             <h1 class="play-app-title">DURGA</h1>
             <a href="#" class="play-developer-team">Durga Official Lab</a>
             <div class="play-verified-badge">
-                <svg style="width:14px; height:14px; fill:#01875f;" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L11 8l-9 9z"/></svg>
-                Contains ads • Verified
+                <svg style="width:13px; height:13px; fill:#01875f; margin-right:3px;" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L11 8l-9 9z"/></svg>
+                Verified • Founded in 2021
             </div>
         </div>
     </div>
 
     <div class="play-stats-row">
-        <div class="stat-box">
-            <span class="stat-value">4.9 ★</span>
-            <span class="stat-label">12K reviews</span>
-        </div>
-        <div class="stat-box">
-            <span class="stat-value">5M+</span>
-            <span class="stat-label">Downloads</span>
-        </div>
-        <div class="stat-box">
-            <span class="stat-value">E</span>
-            <span class="stat-label">Rated for 18+</span>
+        <div class="stat-box"><span class="stat-value">4.9 ★</span><span class="stat-label">18K reviews</span></div>
+        <div class="stat-box"><span class="stat-value">10M+</span><span class="stat-label">Downloads</span></div>
+        <div class="stat-box"><span class="stat-value">E</span><span class="stat-label">Rated for 18+</span></div>
+    </div>
+
+    <div class="winners-marquee-ribbon">
+        <div class="winners-scroll-track">
+            <div class="winner-pill-node">Rohit: <span>₹45,000 Won</span></div>
+            <div class="winner-pill-node">Amit Kumar: <span>₹28,500 Won</span></div>
+            <div class="winner-pill-node">Vikram Singh: <span>₹90,000 Won</span></div>
+            <div class="winner-pill-node">Deepak Raj: <span>₹15,000 Won</span></div>
+            <div class="winner-pill-node">Sanjay: <span>₹35,400 Won</span></div>
+            <div class="winner-pill-node">Rajesh Yadav: <span>₹62,000 Won</span></div>
+            <div class="winner-pill-node">Anil Sharma: <span>₹19,000 Won</span></div>
+            <div class="winner-pill-node">Manoj: <span>₹78,500 Won</span></div>
+            <div class="winner-pill-node">Sunil Verma: <span>₹41,000 Won</span></div>
+            <div class="winner-pill-node">Vijay: <span>₹55,000 Won</span></div>
+            <div class="winner-pill-node">Rakesh: <span>₹23,000 Won</span></div>
+            <div class="winner-pill-node">Pankaj Mishra: <span>₹85,000 Won</span></div>
+            <div class="winner-pill-node">Ravi Teja: <span>₹32,400 Won</span></div>
+            <div class="winner-pill-node">Dinesh: <span>₹12,500 Won</span></div>
+            <div class="winner-pill-node">Surendra: <span>₹50,000 Won</span></div>
+            <div class="winner-pill-node">Alok Singh: <span>₹67,000 Won</span></div>
         </div>
     </div>
 
-    <a href="https://github.com/rudrakshsattamatka-code/DURGA/releases/download/v1.0.0/durga.apk" class="play-install-btn" id="downloadActionAnchor" download>
-        Install
-    </a>
+    <a href="https://github.com/rudrakshsattamatka-code/DURGA/releases/download/v1.0.0/durga.apk" class="play-install-btn" id="downloadActionAnchor" download>Install</a>
+    <div class="already-installed-box" id="alreadyActivePill">Installed</div>
 
-    <div class="already-installed-box" id="alreadyActivePill">
-        Installed
+    <h2 class="play-section-title">Official Game Rates</h2>
+    <div class="game-rates-matrix-board">
+        <div class="rate-matrix-row"><span>Single Digit</span><span class="rate-multiplier-badge">10x Payout</span></div>
+        <div class="rate-matrix-row"><span>Jodi Game</span><span class="rate-multiplier-badge">100x Payout</span></div>
+        <div class="rate-matrix-row"><span>Single Pana</span><span class="rate-multiplier-badge">160x Payout</span></div>
+        <div class="rate-matrix-row"><span>Double Pana</span><span class="rate-multiplier-badge">320x Payout</span></div>
+        <div class="rate-matrix-row"><span>Triple Pana</span><span class="rate-multiplier-badge">1000x Payout</span></div>
+        <div class="rate-matrix-row"><span>Half Sangam A/B</span><span class="rate-multiplier-badge">1000x Payout</span></div>
+        <div class="rate-matrix-row"><span>Full Sangam</span><span class="rate-multiplier-badge">10000x Payout</span></div>
     </div>
 
-    <div class="screenshot-carousel-container">
-        <div class="mock-phone-screenshot-frame">
-            <div class="screenshot-app-ui">
-                <div class="screenshot-header-bar"></div>
-                <div class="screenshot-balance-pill"></div>
-                <div class="screenshot-grid-box">
-                    <div class="screenshot-grid-card"></div>
-                    <div class="screenshot-grid-card"></div>
-                </div>
-            </div>
-        </div>
-        <div class="mock-phone-screenshot-frame">
-            <div class="screenshot-app-ui">
-                <div class="screenshot-header-bar" style="background: linear-gradient(90deg, #136a7a, #dc2626);"></div>
-                <div class="screenshot-balance-pill"></div>
-                <div class="screenshot-grid-box">
-                    <div class="screenshot-grid-card" style="background:rgba(220,38,38,0.03);"></div>
-                    <div class="screenshot-grid-card"></div>
-                </div>
-            </div>
-        </div>
-        <div class="mock-phone-screenshot-frame">
-            <div class="screenshot-app-ui">
-                <div class="screenshot-header-bar" style="background: linear-gradient(90deg, #136a7a, #7c3aed);"></div>
-                <div class="screenshot-balance-pill"></div>
-                <div class="screenshot-grid-box">
-                    <div class="screenshot-grid-card"></div>
-                    <div class="screenshot-grid-card" style="background:rgba(124,58,237,0.03);"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="play-section-heading-row">
-        <h2 class="play-section-title">About this app</h2>
-        <span class="play-section-arrow">→</span>
-    </div>
+    <h2 class="play-section-title">About this app</h2>
     <p class="play-app-description-text">
-        Experience lightning-fast result updates and safe withdrawal processing inside the official DURGA application suite. Engineered natively with clean dark layouts and optimized data matrix feeds.
+        Experience lightning-fast market updates and secure withdrawal clearances inside the official DURGA application suite. Engineered with responsive layouts and cloud database matching framework. Founded by Durga Official in 2021.
     </p>
 
-    <div class="play-section-heading-row">
-        <h2 class="play-section-title">Data safety</h2>
-        <span class="play-section-arrow">→</span>
+    <h2 class="play-section-title">Ratings and reviews</h2>
+    <div class="reviews-summary-display-box">
+        <div class="huge-rating-number">4.9</div>
+        <div style="display:flex; flex-direction:column; gap:2px;">
+            <div class="review-stars-static">★★★★★</div>
+            <div style="font-size:11px; color:#5f6368;">18,412 total ratings</div>
+        </div>
     </div>
+
+    <div class="interactive-user-review-panel">
+        <div style="font-size:13px; font-weight:500; color:#202124; margin-bottom:6px;">Rate this application</div>
+        <textarea id="userReviewInputField" class="review-input-box" rows="2" placeholder="Describe your experience with Durga App..."></textarea>
+        <button class="review-submit-action-btn" onclick="executeSimulatedReviewSubmission()">Submit Review</button>
+    </div>
+
+    <div id="reviewsStreamRootAnchor">
+        <div class="static-review-slip">
+            <div class="review-user-row"><div class="review-user-avatar">R</div><span class="review-user-name">Rahul Sharma</span></div>
+            <p class="review-body-text">Best app for fast results! Withdrawals are hitting bank accounts within 10 minutes safely.</p>
+        </div>
+        <div class="static-review-slip">
+            <div class="review-user-row"><div class="review-user-avatar">A</div><span class="review-user-name">Abhishek Patel</span></div>
+            <p class="review-body-text">Very professional and smooth design. Rates are fully accurate and game layouts are perfect.</p>
+        </div>
+    </div>
+
+    <h2 class="play-section-title">Data safety</h2>
     <div class="play-safety-card">
         <div class="safety-row-item">
             <span class="safety-icon">🛡️</span>
             <div class="safety-text-block">
                 <span class="safety-title">No data shared with third parties</span>
-                <span class="safety-desc">The developer says this app doesn't share user data with other companies or organizations.</span>
+                <span class="safety-desc">The developer states that this application does not share profile variables with external agencies.</span>
             </div>
         </div>
         <div class="safety-row-item">
-            <span class="safety-icon">🔒</span>
+            <span class="safety-icon">124;</span>
             <div class="safety-text-block">
-                <span class="safety-title">Data is encrypted in transit</span>
-                <span class="safety-desc">Your profile data is transferred over a secure, cloud-encrypted connection channel.</span>
+                <span class="safety-title">Data encrypted in transit</span>
+                <span class="safety-desc">Your profile assets are transferred over secure, encrypted cloud data channels safely.</span>
             </div>
         </div>
     </div>
-
 </div>
 
 <script>
+    // Handles client-side verification message logging without inflating live databases
+    function executeSimulatedReviewSubmission() {
+        const field = document.getElementById('userReviewInputField');
+        const txt = field.value.trim();
+        if(!txt) { alert('Please write a review text before submitting.'); return; }
+        
+        const btn = document.querySelector('.review-submit-action-btn');
+        btn.disabled = true; btn.innerText = 'Submitting...';
+        
+        setTimeout(() => {
+            alert('✅ Review submitted for verification processing successfully!');
+            field.value = '';
+            btn.disabled = false; btn.innerText = 'Submit Review';
+        }, 1100);
+    }
+
     const userAgentString = navigator.userAgent || navigator.vendor || window.opera;
     const isInsideWebViewApp = (userAgentString.includes('wv') || userAgentString.includes('WebView') || userAgentString.includes('Crosswalk'));
 
