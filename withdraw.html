@@ -76,7 +76,8 @@
         .bank-detail span { color: #64748b; font-weight: 600; }
 
         .withdraw-btn { width: 100%; padding: 14px; background: #3b82f6; border: none; border-radius: 10px; color: #fff; font-weight: 700; cursor: pointer; font-size: 14px; letter-spacing: 0.5px; text-transform: uppercase; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2); margin-bottom: 10px; }
-        .withdraw-btn:active { background: #2563eb; }
+        .withdraw-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .withdraw-btn:active:not(:disabled) { background: #2563eb; }
         .back-btn { width: 100%; padding: 12px; background: #334155; border: none; border-radius: 10px; color: #cbd5e1; font-weight: 700; font-size: 14px; cursor: pointer; text-transform: uppercase; }
         
         .message { padding: 12px; border-radius: 8px; text-align: center; margin-top: 14px; font-size: 13px; font-weight: 600; display: none; }
@@ -201,7 +202,40 @@
     function getAmount(){ let amt=selectedAmount; let custom=parseInt(document.getElementById('withdrawAmount').value); if(custom&&custom>=500) amt=custom; return amt; }
     function showMessage(msg,type){ let d=document.getElementById('message'); d.innerText=msg; d.className=`message message-${type}`; d.style.display='block'; setTimeout(()=>d.style.display='none',4000); }
     
-    function showTermsPopup(){ let amt=getAmount(); if(amt<500){ showMessage('Minimum ₹500','error'); return; } if(amt>2500000){ showMessage('Maximum ₹25,00,000','error'); return; } if(amt>(currentUserData?.balance||0)){ showMessage(`Insufficient balance! You have ₹${currentUserData?.balance||0}`,'error'); return; } if(!pendingBankDetails){ showMessage('Please add bank details first!','error'); setTimeout(()=>showBankModal(),2000); return; } pendingAmount=amt; document.getElementById('termsPopup').style.display='flex'; }
+    // ENFORCED INTERLOCK VERIFICATION: Double-checks pending transaction constraints before launching popups
+    async function showTermsPopup(){ 
+        let amt=getAmount(); 
+        if(amt<500){ showMessage('Minimum ₹500','error'); return; } 
+        if(amt>2500000){ showMessage('Maximum ₹25,00,000','error'); return; } 
+        if(amt>(currentUserData?.balance||0)){ showMessage(`Insufficient balance! You have ₹${currentUserData?.balance||0}`,'error'); return; } 
+        if(!pendingBankDetails){ showMessage('Please add bank details first!','error'); setTimeout(()=>showBankModal(),2000); return; } 
+        
+        let btn = document.getElementById('withdrawBtn');
+        btn.disabled = true; btn.innerText = 'Checking Requests...';
+
+        try {
+            // Check collection logs to see if this user has any active pending tickets
+            const pendingSnapshot = await db.collection('withdrawRequests')
+                .where('userId', '==', currentUser.uid)
+                .where('status', '==', 'Pending')
+                .limit(1)
+                .get();
+
+            if (!pendingSnapshot.empty) {
+                showMessage('⚠️ Already submitted! Your previous withdrawal request is still pending.', 'error');
+                btn.disabled = false; btn.innerText = 'Submit Cashout Request';
+                return;
+            }
+
+            pendingAmount=amt; 
+            document.getElementById('termsPopup').style.display='flex';
+        } catch(e) {
+            showMessage('⚠️ Connection processing lag experienced. Retrying...', 'error');
+        } finally {
+            btn.disabled = false; btn.innerText = 'Submit Cashout Request';
+        }
+    }
+    
     function closeTermsPopup(){ document.getElementById('termsPopup').style.display='none'; pendingAmount=0; }
     
     async function acceptTermsAndWithdraw(){ 
@@ -224,6 +258,12 @@
     function showNoticeModal(){ db.collection('settings').doc('notice').get().then(d => { alert(d.exists ? d.data().text : 'Welcome to DURGA!'); }); }
     function closeNotice(){ document.getElementById('noticeBoard').style.display='none'; }
     
+    function listenToNotice() {
+        db.collection('settings').doc('notice').onSnapshot(doc=>{ 
+            document.getElementById('noticeText').innerHTML=doc.exists?doc.data().text:'Welcome to DURGA!'; 
+        });
+    }
+
     function showProfileModal(){ if(currentUserData){ document.getElementById('profileInfo').innerHTML=`<div style="text-align:center;"><div style="font-size:18px; font-weight:700; color:#cbd5e1;">${currentUserData.name}</div><div style="color:#64748b; font-size:13px; margin:2px 0 6px 0;">${currentUserData.phone}</div><div style="font-size:20px; font-weight:800; color:#10b981;">₹${currentUserData.balance}</div></div>`; document.getElementById('profileModal').style.display='flex'; } }
     function closeProfileModal(){ document.getElementById('profileModal').style.display='none'; }
     function showGameRatesModal(){ closeProfileModal(); document.getElementById('gameRatesModal').style.display='flex'; }
@@ -235,7 +275,6 @@
     function closeBankModal(){ document.getElementById('bankModal').style.display='none'; document.getElementById('bankMsg').innerHTML=''; }
     async function saveBankDetails(){ let ah=document.getElementById('bankAccountHolder').value.trim(), bn=document.getElementById('bankName').value.trim(), an=document.getElementById('bankAccountNumber').value.trim(), ifsc=document.getElementById('bankIfsc').value.trim(); if(!ah||!bn||!an||!ifsc){ document.getElementById('bankMsg').innerHTML='Fill all fields'; return; } await db.collection('users').doc(currentUser.uid).update({bankDetails:{accountHolder:ah,bankName:bn,accountNumber:an,ifscCode:ifsc}}); currentUserData.bankDetails={accountHolder:ah,bankName:bn,accountNumber:an,ifscCode:ifsc}; document.getElementById('bankMsg').innerHTML='✅ Saved!'; setTimeout(()=>closeBankModal(),1500); loadBankDetails(); }
     
-    db.collection('settings').doc('notice').onSnapshot(doc=>{ document.getElementById('noticeText').innerHTML=doc.exists?doc.data().text:'Welcome to DURGA!'; });
     document.getElementById('withdrawBtn').onclick=showTermsPopup;
     
     window.selectAmount=selectAmount; window.showBalance=showBalance; window.showProfileModal=showProfileModal; window.closeProfileModal=closeProfileModal; window.showGameRatesModal=showGameRatesModal; window.closeGameRatesModal=closeGameRatesModal; window.showChangePinModal=showChangePinModal; window.closeChangePinModal=closeChangePinModal; window.updatePin=updatePin; window.showBankModal=showBankModal; window.closeBankModal=closeBankModal; window.saveBankDetails=saveBankDetails; window.closeNotice=closeNotice; window.showGames=showGames; window.showTermsPopup=showTermsPopup; window.closeTermsPopup=closeTermsPopup; window.acceptTermsAndWithdraw=acceptTermsAndWithdraw; window.goBack=goBack;
