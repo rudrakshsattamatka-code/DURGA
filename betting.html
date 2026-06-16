@@ -165,7 +165,7 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth(), db = firebase.firestore();
     
-    let currentUser = null, currentMarket = '', currentMarketId = '', currentStatus = 'open', currentGameType = 'Single Digit', bids = [];
+    let currentUser = null, currentMarket = '', currentMarketId = '', currentStatus = 'open', currentGameType = '', bids = [];
     let marketOpenEndTime = null, marketCloseEndTime = null, isSubmitting = false, selectedOpenClose = 'Open';
 
     const validSinglePanaList = ['128','137','146','236','245','290','380','470','489','560','579','678','129','138','147','156','237','246','345','390','480','570','589','679','120','139','148','157','238','247','256','346','490','580','670','689','130','149','158','167','239','248','257','347','356','590','680','789','140','159','168','230','249','258','267','348','357','456','690','780','123','150','169','178','240','259','268','349','358','367','457','790','124','160','278','179','250','269','340','359','368','458','467','890','125','134','170','189','260','279','350','369','468','378','459','567','126','135','180','234','270','289','360','379','450','469','478','568','127','136','145','190','235','280','370','389','460','479','569','578'];
@@ -202,6 +202,20 @@
         ['400','450','455','559','590','900'], ['000','500','550','555']
     ];
 
+    const allGameTypes = [
+        { name: 'Single Digit', availableInOpen: true, availableInClose: true, shape: '▪️', color: 'icon-red' },
+        { name: 'Family Red Jodi', availableInOpen: true, availableInClose: false, shape: '⁜', color: 'icon-red' },
+        { name: 'Jodi', availableInOpen: true, availableInClose: false, shape: '🎲', color: 'icon-green' },
+        { name: 'Family Jodi', availableInOpen: true, availableInClose: false, shape: '🎲', color: 'icon-green' },
+        { name: 'Single Pana', availableInOpen: true, availableInClose: true, shape: '♠', color: 'icon-blue' },
+        { name: 'Family Pana', availableInOpen: true, availableInClose: true, shape: '♠', color: 'icon-blue' },
+        { name: 'Double Pana', availableInOpen: true, availableInClose: true, shape: '♣', color: 'icon-orange' },
+        { name: 'Half Sangam A', availableInOpen: true, availableInClose: false, shape: '▲', color: 'icon-orange' },
+        { name: 'Triple Pana', availableInOpen: true, availableInClose: true, shape: '✦', color: 'icon-purple' },
+        { name: 'Half Sangam B', availableInOpen: true, availableInClose: false, shape: '▼', color: 'icon-purple' },
+        { name: 'Full Sangam', availableInOpen: true, availableInClose: false, shape: '✪', color: 'icon-green' }
+    ];
+
     async function getServerTime() {
         const docRef = db.collection('settings').doc('servertime');
         await docRef.set({ timestamp: firebase.firestore.FieldValue.serverTimestamp() });
@@ -217,7 +231,7 @@
         let evaluatedTimeLimit = marketOpenEndTime;
         if (currentStatus === 'close') {
             evaluatedTimeLimit = marketCloseEndTime;
-        } else if (['Single Digit', 'Single Pana', 'Double Pana', 'Triple Pana', 'Family Pana'].includes(currentGameType)) {
+        } else if (currentGameType && ['Single Digit', 'Single Pana', 'Double Pana', 'Triple Pana', 'Family Pana'].includes(currentGameType)) {
             evaluatedTimeLimit = (selectedOpenClose === 'Open') ? marketOpenEndTime : marketCloseEndTime;
         }
 
@@ -254,6 +268,7 @@
     }
 
     function showGameSelection() {
+        currentGameType = '';
         document.getElementById('biddingPanel').classList.remove('bidding-panel-active');
         document.getElementById('bottomSummaryDeck').style.display = 'none';
         document.getElementById('gameSelectionScreen').style.display = 'block';
@@ -371,7 +386,6 @@
     async function submitBids() {
         if (isSubmitting || bids.length === 0) return;
         
-        // FORCED REAL-TIME GATE CHECK: Re-verify against the exact server clock right now
         const check = await isBettingAllowed(); 
         if (!check.allowed) { 
             showMsg(check.message, true); 
@@ -530,10 +544,11 @@
         if(d.exists) {
             marketOpenEndTime = timeToMinutes(d.data().openBidEnd);
             marketCloseEndTime = timeToMinutes(d.data().closeBidEnd);
+            renderGameTypeSelection();
         }
     });
 
-    auth.onAuthStateChanged(user => { if(!user) location.href='index.html'; else db.collection('users').doc(user.uid).get().then(d => { document.getElementById('userBalance').innerText = (d.data().balance || 0).toFixed(2); renderGameTypeSelection(); }); });
+    auth.onAuthStateChanged(user => { if(!user) location.href='index.html'; else db.collection('users').doc(user.uid).get().then(d => { document.getElementById('userBalance').innerText = (d.data().balance || 0).toFixed(2); }); });
 </script>
 </body>
 </html>
