@@ -30,7 +30,7 @@
         .navigation-view-title { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.75px; margin-left: auto; }
 
         /* Game Grid Mode Content Views (Matching game type.jpeg) */
-        .game-types-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 4px 16px 16px 16px; overflow-y: auto; flex: 1; }
+        .game-types-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 4px 16px 16px 16px; }
         .game-type-card { 
             background: #ffffff; border-radius: 14px; padding: 18px 12px; text-align: center; 
             cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
@@ -202,20 +202,6 @@
         ['400','450','455','559','590','900'], ['000','500','550','555']
     ];
 
-    const allGameTypes = [
-        { name: 'Single Digit', availableInOpen: true, availableInClose: true, shape: '▪️', color: 'icon-red', isCaps: false },
-        { name: 'Family Red Jodi', availableInOpen: true, availableInClose: false, shape: '⁜', color: 'icon-red', isCaps: true },
-        { name: 'Jodi', availableInOpen: true, availableInClose: false, shape: '🎲', color: 'icon-green', isCaps: false },
-        { name: 'Family Jodi', availableInOpen: true, availableInClose: false, shape: '🎲', color: 'icon-green', isCaps: true },
-        { name: 'Single Pana', availableInOpen: true, availableInClose: true, shape: '♠', color: 'icon-blue', isCaps: false },
-        { name: 'Family Pana', availableInOpen: true, availableInClose: true, shape: '♠', color: 'icon-blue', isCaps: true },
-        { name: 'Double Pana', availableInOpen: true, availableInClose: true, shape: '♣', color: 'icon-orange', isCaps: false },
-        { name: 'Half Sangam A', availableInOpen: true, availableInClose: false, shape: '▲', color: 'icon-orange', isCaps: true },
-        { name: 'Triple Pana', availableInOpen: true, availableInClose: true, shape: '✦', color: 'icon-purple', isCaps: false },
-        { name: 'Half Sangam B', availableInOpen: true, availableInClose: false, shape: '▼', color: 'icon-purple', isCaps: true },
-        { name: 'Full Sangam', availableInOpen: true, availableInClose: false, shape: '✪', color: 'icon-green', isCaps: true }
-    ];
-
     async function getServerTime() {
         const docRef = db.collection('settings').doc('servertime');
         await docRef.set({ timestamp: firebase.firestore.FieldValue.serverTimestamp() });
@@ -228,7 +214,6 @@
         const serverTime = await getServerTime();
         const curMin = serverTime.getHours() * 60 + serverTime.getMinutes();
         
-        // Dynamic context evaluation block for safety check verification metrics
         let evaluatedTimeLimit = marketOpenEndTime;
         if (currentStatus === 'close') {
             evaluatedTimeLimit = marketCloseEndTime;
