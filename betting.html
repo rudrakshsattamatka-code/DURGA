@@ -227,8 +227,18 @@
         if (currentStatus === 'holiday') return { allowed: false, message: '⚠️ Market Closed due to holiday.' };
         const serverTime = await getServerTime();
         const curMin = serverTime.getHours() * 60 + serverTime.getMinutes();
-        if (currentStatus === 'open' && marketOpenEndTime && curMin >= marketOpenEndTime) return { allowed: false, message: '⚠️ Open bidding time is over.' };
-        if (currentStatus === 'close' && marketCloseEndTime && curMin >= marketCloseEndTime) return { allowed: false, message: '⚠️ Market is now closed.' };
+        
+        // Dynamic context evaluation block for safety check verification metrics
+        let evaluatedTimeLimit = marketOpenEndTime;
+        if (currentStatus === 'close') {
+            evaluatedTimeLimit = marketCloseEndTime;
+        } else if (['Single Digit', 'Single Pana', 'Double Pana', 'Triple Pana', 'Family Pana'].includes(currentGameType)) {
+            evaluatedTimeLimit = (selectedOpenClose === 'Open') ? marketOpenEndTime : marketCloseEndTime;
+        }
+
+        if (evaluatedTimeLimit && curMin >= evaluatedTimeLimit) {
+            return { allowed: false, message: '⚠️ Time over for bidding! Market has been closed.' };
+        }
         return { allowed: true };
     }
 
@@ -245,8 +255,9 @@
     }
 
     async function selectGame(type) {
-        const check = await isBettingAllowed(); if (!check.allowed) { showMsg(check.message, true); return; }
         currentGameType = type;
+        const check = await isBettingAllowed(); if (!check.allowed) { alert(check.message); return; }
+        
         document.getElementById('gameSelectionScreen').style.display = 'none';
         document.getElementById('biddingPanel').classList.add('bidding-panel-active');
         document.getElementById('bottomSummaryDeck').style.display = 'flex';
@@ -374,7 +385,18 @@
 
     async function submitBids() {
         if (isSubmitting || bids.length === 0) return;
-        const check = await isBettingAllowed(); if (!check.allowed) { showMsg(check.message, true); return; }
+        
+        // FORCED REAL-TIME GATE CHECK: Re-verify against the exact server clock right now
+        const check = await isBettingAllowed(); 
+        if (!check.allowed) { 
+            showMsg(check.message, true); 
+            alert(check.message); 
+            bids = []; 
+            updateSummary(); 
+            showGameSelection(); 
+            return; 
+        }
+        
         const total = bids.reduce((s,b)=>s+b.points,0);
         const userDoc = await db.collection('users').doc(auth.currentUser.uid).get();
         const bal = userDoc.data().balance || 0;
@@ -398,7 +420,6 @@
         return validSinglePanaList.includes(p) || validDoublePanaList.includes(p) || validTriplePanaList.includes(p);
     }
 
-    // FIXED: Adjusted to reference correct point inputs cleanly
     function addSangamPlacements() {
         let v1 = document.getElementById('v1').value.trim();
         let v2 = document.getElementById('v2').value.trim();
