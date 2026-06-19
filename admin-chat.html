@@ -13,7 +13,6 @@
         
         .users-panel { width: 280px; background: #2a2a3e; display: flex; flex-direction: column; }
         
-        /* UPDATED: Adjusted header space to cleanly mount the new message trigger node button */
         .users-panel-header {
             padding: 15px; 
             background: linear-gradient(135deg, #e91e63, #9c27b0); 
@@ -24,7 +23,6 @@
         }
         .users-panel h3 { font-size: 14px; font-weight: 700; }
         
-        /* FIXED: Styled premium capsule action node button for loading brand new chat sequences */
         .new-chat-btn {
             background: rgba(255, 255, 255, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.4);
@@ -174,26 +172,42 @@
             });
         }
         
-        // FIXED: Added functional logic pipeline to programmatically establish new chat documents for uninitiated users
+        // FIXED: Dynamically matches user documents via Phone Number or Full Name instead of long UIDs
         async function startNewUserChatSequence() {
-            const targetUid = prompt("🔑 Enter the User's Firebase UID:\n(You can copy this from your main Users list)");
-            if (!targetUid || !targetUid.trim()) return;
+            const searchValue = prompt("🔍 Enter User's Mobile Phone Number or Full Name:");
+            if (!searchValue || !searchValue.trim()) return;
+            
+            const standardInput = searchValue.trim();
+            let matchedUserDoc = null;
             
             try {
-                // Fetch user data from collection profile safely
-                const userDoc = await db.collection('users').doc(targetUid.trim()).get();
-                if (!userDoc.exists) {
-                    alert("❌ Error: No registered user found with that exact UID!");
+                // 1. First attempt: Query database by explicit exact phone match
+                const phoneQuery = await db.collection('users').where('phone', '==', standardInput).get();
+                
+                if (!phoneQuery.empty) {
+                    matchedUserDoc = phoneQuery.docs[0];
+                } else {
+                    // 2. Second attempt: Fallback to case-insensitive name lookup search string
+                    const usersSnapshot = await db.collection('users').get();
+                    matchedUserDoc = usersSnapshot.docs.find(doc => {
+                        const nameField = (doc.data().name || '').toLowerCase();
+                        return nameField === standardInput.toLowerCase();
+                    });
+                }
+                
+                if (!matchedUserDoc) {
+                    alert("❌ Error: No user profile could be found with that Name or Phone Number!");
                     return;
                 }
                 
-                const uData = userDoc.data();
+                const foundUid = matchedUserDoc.id;
+                const uData = matchedUserDoc.data();
                 const userNameStr = uData.name || "User Account";
                 const userPhoneStr = uData.phone || "";
                 
-                // Initialize the root chat container room model parameters securely
-                await db.collection('chats').doc(targetUid.trim()).set({
-                    userId: targetUid.trim(),
+                // 3. Automatically instantiate the chat room layout metrics document reference inside database
+                await db.collection('chats').doc(foundUid).set({
+                    userId: foundUid,
                     userName: userNameStr,
                     userPhone: userPhoneStr,
                     lastMessage: "Conversation opened by Admin",
@@ -202,12 +216,12 @@
                     unread: false
                 }, { merge: true });
                 
-                // Instantly pivot focus onto the newly populated chat room block container
-                selectUser(targetUid.trim(), userNameStr);
-                alert(`✅ Chat channel successfully instantiated with ${userNameStr}!`);
+                // 4. Focus target session stream directly 
+                selectUser(foundUid, userNameStr);
+                alert(`✅ Chat channel connected with ${userNameStr}!`);
                 
             } catch(err) {
-                alert("Transaction Exception: " + err.message);
+                alert("Query fault exception: " + err.message);
             }
         }
 
