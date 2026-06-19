@@ -36,7 +36,7 @@
         .header-action-line { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: 35px; }
         .menu-toggle-btn { position: absolute; left: 0; background: none; border: none; color: #94a3b8; font-size: 26px; cursor: pointer; display: flex; align-items: center; }
         
-        /* Large Bold CentCentered Title Engine */
+        /* Large Bold Centered Title Engine */
         .app-title {
             font-weight: 900; font-size: 24px; letter-spacing: 3px; text-align: center;
             background: linear-gradient(45deg, #3b82f6, #f43f5e, #10b981, #fbbf24, #3b82f6);
@@ -265,7 +265,7 @@
     async function syncUserContext() {
         const user = auth.currentUser; if (!user) { window.location.href = 'index.html'; return; }
         
-        // FIXED: Listens explicitly for 'adminUnread' written directly by your verified admin panel script
+        // FIXED: Watches the parent chat reference for 'adminUnread === true' changes
         db.collection('chats').doc(`chat_${user.uid}`).onSnapshot(doc => {
             const dot = document.getElementById('chatAlertDot');
             const alertPopup = document.getElementById('chatMessageAlertPopup');
