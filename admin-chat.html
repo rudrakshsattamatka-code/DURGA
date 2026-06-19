@@ -12,7 +12,33 @@
         body { background: #1a1a2e; display: flex; height: 100vh; overflow: hidden; }
         
         .users-panel { width: 280px; background: #2a2a3e; display: flex; flex-direction: column; }
-        .users-panel h3 { padding: 15px; background: linear-gradient(135deg, #e91e63, #9c27b0); color: #fff; font-size: 14px; }
+        
+        /* UPDATED: Adjusted header space to cleanly mount the new message trigger node button */
+        .users-panel-header {
+            padding: 15px; 
+            background: linear-gradient(135deg, #e91e63, #9c27b0); 
+            color: #fff; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+        }
+        .users-panel h3 { font-size: 14px; font-weight: 700; }
+        
+        /* FIXED: Styled premium capsule action node button for loading brand new chat sequences */
+        .new-chat-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: #fff;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 800;
+            border-radius: 20px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
+        .new-chat-btn:hover { background: #fff; color: #9c27b0; }
+
         .users-list { flex: 1; overflow-y: auto; }
         .user-item { padding: 12px; border-bottom: 1px solid #3a3a4e; cursor: pointer; transition: 0.2s; }
         .user-item:hover { background: #3a3a4e; }
@@ -53,7 +79,10 @@
 <body>
     <div id="adminChatContainer" style="display: flex; width: 100%; height: 100vh;">
         <div class="users-panel">
-            <h3>🌸 Active Chat Users</h3>
+            <div class="users-panel-header">
+                <h3>🌸 Active Chat Users</h3>
+                <button class="new-chat-btn" onclick="startNewUserChatSequence()">➕ New</button>
+            </div>
             <div class="users-list" id="usersList"><div class="no-users" style="padding:20px;text-align:center;color:#888;">Loading...</div></div>
         </div>
         <div class="chat-panel">
@@ -145,6 +174,43 @@
             });
         }
         
+        // FIXED: Added functional logic pipeline to programmatically establish new chat documents for uninitiated users
+        async function startNewUserChatSequence() {
+            const targetUid = prompt("🔑 Enter the User's Firebase UID:\n(You can copy this from your main Users list)");
+            if (!targetUid || !targetUid.trim()) return;
+            
+            try {
+                // Fetch user data from collection profile safely
+                const userDoc = await db.collection('users').doc(targetUid.trim()).get();
+                if (!userDoc.exists) {
+                    alert("❌ Error: No registered user found with that exact UID!");
+                    return;
+                }
+                
+                const uData = userDoc.data();
+                const userNameStr = uData.name || "User Account";
+                const userPhoneStr = uData.phone || "";
+                
+                // Initialize the root chat container room model parameters securely
+                await db.collection('chats').doc(targetUid.trim()).set({
+                    userId: targetUid.trim(),
+                    userName: userNameStr,
+                    userPhone: userPhoneStr,
+                    lastMessage: "Conversation opened by Admin",
+                    lastMessageTime: firebase.firestore.FieldValue.serverTimestamp(),
+                    adminUnread: false,
+                    unread: false
+                }, { merge: true });
+                
+                // Instantly pivot focus onto the newly populated chat room block container
+                selectUser(targetUid.trim(), userNameStr);
+                alert(`✅ Chat channel successfully instantiated with ${userNameStr}!`);
+                
+            } catch(err) {
+                alert("Transaction Exception: " + err.message);
+            }
+        }
+
         function selectUser(userId, userName) {
             selectedUserId = userId;
             selectedUserName = userName;
@@ -236,7 +302,6 @@
                     isAdmin: true
                 });
                 
-                // FIXED: Set adminUnread to true so user dashboards instantly notice and trigger the live alert popup container metrics
                 await db.collection('chats').doc(selectedUserId).update({
                     lastMessage: text,
                     lastMessageTime: firebase.firestore.FieldValue.serverTimestamp(),
@@ -260,7 +325,6 @@
             document.getElementById('imageModal').style.display = 'none';
         }
         
-        // FIXED: Repaired the syntax crash inside the conditional replacement matrix sequence loop cleanly
         function escapeHtml(str) {
             if (!str) return '';
             return str.replace(/[&<>]/g, function(m) {
@@ -292,6 +356,7 @@
         window.sendAdminMessage = sendAdminMessage;
         window.showImageModal = showImageModal;
         window.closeImageModal = closeImageModal;
+        window.startNewUserChatSequence = startNewUserChatSequence;
     </script>
 </body>
 </html>
