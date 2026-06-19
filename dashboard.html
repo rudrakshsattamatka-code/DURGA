@@ -244,11 +244,11 @@
     async function syncUserContext() {
         const user = auth.currentUser; if (!user) { window.location.href = 'index.html'; return; }
         
-        // Real-time listener for the root chat room document unread status
+        // FIXED: Listens explicitly for the correct unread variable updated by the admin console
         db.collection('chats').doc(`chat_${user.uid}`).onSnapshot(doc => {
             const dot = document.getElementById('chatAlertDot');
-            if (dot && doc.exists) {
-                dot.style.display = doc.data().adminUnread === true ? 'block' : 'none';
+            if (dot) {
+                dot.style.display = (doc.exists && doc.data().adminUnread === true) ? 'block' : 'none';
             }
         });
 
@@ -381,10 +381,32 @@
             window.location.href = 'index.html';
         }
     }
+
+    // FIXED: Wipes active online variables immediately when user kills or closes app instance
+    function clearOnlineStatusSync() {
+        if (auth.currentUser) {
+            db.collection('users').doc(auth.currentUser.uid).update({
+                isOnline: false,
+                lastActive: firebase.firestore.FieldValue.serverTimestamp()
+            }).catch(() => {});
+        }
+    }
     
     db.collection('settings').doc('notice').onSnapshot(doc => {
         document.getElementById('dashboardNoticeTextField').innerText = doc.exists ? doc.data().text : 'Welcome to DURGA Trading Suite!';
     });
+
+    document.addEventListener('visibilitychange', () => { 
+        if (document.hidden) {
+            clearOnlineStatusSync();
+        } else {
+            if (auth.currentUser) {
+                db.collection('users').doc(auth.currentUser.uid).update({ isOnline: true, lastActive: firebase.firestore.FieldValue.serverTimestamp() });
+            }
+        }
+    });
+    window.addEventListener('pagehide', clearOnlineStatusSync);
+    window.addEventListener('beforeunload', clearOnlineStatusSync);
 
     showPageLoader();
     auth.onAuthStateChanged(async (user) => {
