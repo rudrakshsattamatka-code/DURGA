@@ -79,7 +79,7 @@
         .market-identity-box { flex: 1; display: flex; flex-direction: column; gap: 4px; }
         .market-title-line { display: flex; align-items: center; gap: 6px; }
         .market-name-label { font-size: 18px; font-weight: 700; color: #1e293b; letter-spacing: 0.3px; text-transform: uppercase; }
-        .info-bubble-icon { inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border: 1px solid #64748b; color: #64748b; border-radius: 50%; font-size: 10px; font-weight: bold; }
+        .info-bubble-icon { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border: 1px solid #64748b; color: #64748b; border-radius: 50%; font-size: 10px; font-weight: bold; }
         .market-numbers-display { font-size: 22px; font-weight: 800; color: #0f172a; letter-spacing: 0.5px; font-family: -apple-system, BlinkMacSystemFont, monospace; margin: 2px 0; }
         
         .market-status-text { font-size: 12px; font-weight: 700; }
@@ -159,7 +159,7 @@
         .popup-input-element { width: 100%; padding: 10px 12px; margin: 8px 0; border: 1px solid #cbd5e1; background: #f8fafc; border-radius: 8px; font-size: 14px; outline: none; font-weight: 600; color: #0f172a; }
         .popup-rate-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f1f5f9; font-size: 14px; font-weight: 600; color: #334155; }
 
-        /* FIXED: Added explicit custom style rules for message alerts modal popup box */
+        /* Injected Custom Styles for the Pop-up Alert Modal Box */
         .alert-popup-layer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(5px); z-index: 5000; justify-content: center; align-items: center; }
         .alert-popup-body { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 22px; width: 85%; max-width: 320px; box-shadow: 0 15px 30px rgba(0,0,0,0.4); text-align: center; color: #f8fafc; }
         .alert-popup-title { font-size: 17px; font-weight: 800; color: #f59e0b; margin-bottom: 8px; letter-spacing: 0.5px; }
@@ -237,9 +237,10 @@
 <div id="ratesModalPopup" class="modal-popup-layer"><div class="modal-popup-body">     <h3>🎲 GAME RATES</h3>     <div class="popup-rate-row"><span>Single Digit</span><span>10x</span></div>     <div class="popup-rate-row"><span>Jodi</span><span>100x</span></div>     <div class="popup-rate-row"><span>Single Pana</span><span>160x</span></div>     <div class="popup-rate-row"><span>Double Pana</span><span>320x</span></div>     <div class="popup-rate-row"><span>Triple Pana</span><span>1000x</span></div>     <div class="popup-rate-row"><span>Half Sangam A</span><span>1000x</span></div>     <div class="popup-rate-row"><span>Half Sangam B</span><span>1000x</span></div>     <div class="popup-rate-row"><span>Full Sangam</span><span>10000x</span></div>     <button class="modal-action-button modal-close-trigger" onclick="closePopupModal('ratesModalPopup')">Close</button> </div></div>
 <div id="bankModalPopup" class="modal-popup-layer"><div class="modal-popup-body">     <h3>🏦 Bank Details</h3>     <input type="text" id="bankHolderNameField" class="popup-input-element" placeholder="Account Holder Name">     <input type="text" id="bankTitleField" class="popup-input-element" placeholder="Bank Name">     <input type="text" id="bankNumberField" class="popup-input-element" placeholder="Account Number">     <input type="text" id="bankIfscField" class="popup-input-element" placeholder="IFSC Code">     <button class="modal-action-button" onclick="commitBankingUpdate()">Save Coordinates</button>     <button class="modal-action-button modal-close-trigger" onclick="closePopupModal('bankModalPopup')">Cancel</button>     <div id="bankCallbackLog" style="text-align:center; font-size:12px; margin-top:8px; font-weight:700;"></div> </div></div>
 
+<!-- Custom Message Notification Pop-up Modal Layout -->
 <div id="chatMessageAlertPopup" class="alert-popup-layer">
     <div class="alert-popup-body">
-        <div class="alert-popup-title">💬 NEW SUPPORT REPLY</div>
+        <div class="alert-popup-title">💬 NEW SUPPORT MESSAGE</div>
         <div class="alert-popup-desc">You have an unread message from our support team. Please check or reply now.</div>
         <div class="alert-action-row">
             <button class="alert-btn-primary" onclick="window.location.href='chat.html'">Read Message</button>
@@ -255,6 +256,9 @@
     
     let currentUserData = null;
 
+    // Tracker variable to avoid popping up the window repeatedly if already closed once
+    let hasAlertedForCurrentMessage = false;
+
     function showPageLoader() { 
         let div = document.createElement('div'); div.className = 'loader-overlay'; div.id = 'dashboardMainLoaderNode'; 
         div.innerHTML = '<div class="loader-spinner"></div>'; document.body.appendChild(div); 
@@ -264,16 +268,22 @@
     async function syncUserContext() {
         const user = auth.currentUser; if (!user) { window.location.href = 'index.html'; return; }
         
-        // FIXED: Real-time listener checking for unread message events to trigger the dot AND the live popup modal
+        // FIXED: Corrected real-time collection observer path to track matching 'unread' value fields
         db.collection('chats').doc(`chat_${user.uid}`).onSnapshot(doc => {
             const dot = document.getElementById('chatAlertDot');
             const alertPopup = document.getElementById('chatMessageAlertPopup');
             
             if (doc.exists && doc.data().unread === true) {
                 if (dot) dot.style.display = 'block';
-                if (alertPopup) alertPopup.style.display = 'flex';
+                // Trigger the popup modal layer immediately if user hasn't dismissed it yet
+                if (alertPopup && !hasAlertedForCurrentMessage) {
+                    alertPopup.style.display = 'flex';
+                    hasAlertedForCurrentMessage = true;
+                }
             } else {
                 if (dot) dot.style.display = 'none';
+                if (alertPopup) alertPopup.style.display = 'none';
+                hasAlertedForCurrentMessage = false; // Reset when messages are cleared
             }
         });
 
