@@ -23,6 +23,7 @@
         .unread-badge { background: #e91e63; color: #fff; border-radius: 10px; padding: 2px 6px; font-size: 9px; margin-left: 8px; }
         
         .chat-panel { flex: 1; display: flex; flex-direction: column; background: #2a2a3e; }
+        .chat-panel { flex: 1; display: flex; flex-direction: column; background: #2a2a3e; }
         .chat-header { padding: 15px; background: #1a1a2e; color: #fff; border-bottom: 1px solid #3a3a4e; }
         .chat-header .user-name { color: #e91e63; }
         .chat-messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
@@ -123,6 +124,7 @@
                 let html = '';
                 snapshot.forEach(doc => {
                     const user = doc.data();
+                    // Shows "New" bubble if the user left an unread message for admin
                     const hasUnread = user.unread === true;
                     const timeAgo = user.lastMessageTime?.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) || '';
                     
@@ -236,10 +238,12 @@
                     isAdmin: true
                 });
                 
+                // FIXED: Flags unread property directly onto parent layout container block to light up dashboard alerts
                 await db.collection('chats').doc(selectedUserId).update({
                     lastMessage: text,
                     lastMessageTime: firebase.firestore.FieldValue.serverTimestamp(),
-                    adminTyping: false
+                    adminTyping: false,
+                    unread: true
                 });
             } catch (error) {
                 console.error("Error sending message:", error);
