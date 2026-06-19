@@ -172,7 +172,7 @@
             });
         }
         
-        // FIXED: Dynamically matches user documents via Phone Number or Full Name instead of long UIDs
+        // FIXED: Dynamically queries users by Name/Phone and initializes the chat room with 'unread: true'
         async function startNewUserChatSequence() {
             const searchValue = prompt("🔍 Enter User's Mobile Phone Number or Full Name:");
             if (!searchValue || !searchValue.trim()) return;
@@ -181,13 +181,11 @@
             let matchedUserDoc = null;
             
             try {
-                // 1. First attempt: Query database by explicit exact phone match
                 const phoneQuery = await db.collection('users').where('phone', '==', standardInput).get();
                 
                 if (!phoneQuery.empty) {
                     matchedUserDoc = phoneQuery.docs[0];
                 } else {
-                    // 2. Second attempt: Fallback to case-insensitive name lookup search string
                     const usersSnapshot = await db.collection('users').get();
                     matchedUserDoc = usersSnapshot.docs.find(doc => {
                         const nameField = (doc.data().name || '').toLowerCase();
@@ -205,18 +203,16 @@
                 const userNameStr = uData.name || "User Account";
                 const userPhoneStr = uData.phone || "";
                 
-                // 3. Automatically instantiate the chat room layout metrics document reference inside database
+                // FIXED: Sets 'unread: true' directly here to trigger dashboard popup alerts on user connect
                 await db.collection('chats').doc(foundUid).set({
                     userId: foundUid,
                     userName: userNameStr,
                     userPhone: userPhoneStr,
                     lastMessage: "Conversation opened by Admin",
                     lastMessageTime: firebase.firestore.FieldValue.serverTimestamp(),
-                    adminUnread: false,
-                    unread: false
+                    unread: true
                 }, { merge: true });
                 
-                // 4. Focus target session stream directly 
                 selectUser(foundUid, userNameStr);
                 alert(`✅ Chat channel connected with ${userNameStr}!`);
                 
@@ -316,11 +312,12 @@
                     isAdmin: true
                 });
                 
+                // FIXED: Explicitly writes to 'unread: true' to trigger dashboard popups and real-time navigation dot changes
                 await db.collection('chats').doc(selectedUserId).update({
                     lastMessage: text,
                     lastMessageTime: firebase.firestore.FieldValue.serverTimestamp(),
                     adminTyping: false,
-                    adminUnread: true
+                    unread: true
                 });
             } catch (error) {
                 console.error("Error sending message:", error);
@@ -352,6 +349,7 @@
         let typingTimeout;
         const inputField = document.getElementById('messageInput');
         
+        // Dynamic continuous text interaction state tracking hook
         function setupTypingListener() {
             if (!inputField) return;
             inputField.addEventListener('input', () => {
