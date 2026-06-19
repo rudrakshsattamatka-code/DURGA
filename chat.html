@@ -317,7 +317,7 @@
                 container.scrollTop = container.scrollHeight;
             });
 
-            // FIXED: Wipes out 'adminUnread' flag explicitly so the dashboard turns off the popup/dot instantly
+            // FIXED: Automatically clears 'adminUnread' so the dashboard turns off the popup/dot instantly
             db.collection('chats').doc(chatRoomId).onSnapshot((doc) => {
                 if (doc.exists) {
                     document.getElementById('typingIndicator').style.display = doc.data().adminTyping ? 'block' : 'none';
