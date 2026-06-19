@@ -244,11 +244,11 @@
     async function syncUserContext() {
         const user = auth.currentUser; if (!user) { window.location.href = 'index.html'; return; }
         
-        // FIXED: Listens explicitly for the correct unread variable updated by the admin console
+        // FIXED: Listens directly for 'unread' value updated by admin system
         db.collection('chats').doc(`chat_${user.uid}`).onSnapshot(doc => {
             const dot = document.getElementById('chatAlertDot');
             if (dot) {
-                dot.style.display = (doc.exists && doc.data().adminUnread === true) ? 'block' : 'none';
+                dot.style.display = (doc.exists && doc.data().unread === true) ? 'block' : 'none';
             }
         });
 
@@ -382,7 +382,7 @@
         }
     }
 
-    // FIXED: Wipes active online variables immediately when user kills or closes app instance
+    // FIXED: Writes clean user offline flag conditions if tab gets abruptly exited
     function clearOnlineStatusSync() {
         if (auth.currentUser) {
             db.collection('users').doc(auth.currentUser.uid).update({
