@@ -244,11 +244,12 @@
     async function syncUserContext() {
         const user = auth.currentUser; if (!user) { window.location.href = 'index.html'; return; }
         
-        // Dynamic continuous stream tracker listening for unread admin chat pings
-        db.collection('chats').where('userId', '==', user.uid).where('sender', '==', 'admin').where('read', '==', false)
-        .onSnapshot(snap => {
+        // Real-time listener for the root chat room document unread status
+        db.collection('chats').doc(`chat_${user.uid}`).onSnapshot(doc => {
             const dot = document.getElementById('chatAlertDot');
-            if (dot) dot.style.display = snap.empty ? 'none' : 'block';
+            if (dot && doc.exists) {
+                dot.style.display = doc.data().adminUnread === true ? 'block' : 'none';
+            }
         });
 
         db.collection('users').doc(user.uid).onSnapshot(doc => {
