@@ -236,7 +236,7 @@
                     isAdmin: true
                 });
                 
-                // FIXED: Flags unread property directly onto parent layout container block to light up dashboard alerts
+                // FIXED: Set adminUnread to true so user dashboards instantly notice and trigger the live alert popup container metrics
                 await db.collection('chats').doc(selectedUserId).update({
                     lastMessage: text,
                     lastMessageTime: firebase.firestore.FieldValue.serverTimestamp(),
@@ -260,11 +260,12 @@
             document.getElementById('imageModal').style.display = 'none';
         }
         
+        // FIXED: Repaired the syntax crash inside the conditional replacement matrix sequence loop cleanly
         function escapeHtml(str) {
             if (!str) return '';
             return str.replace(/[&<>]/g, function(m) {
                 if (m === '&') return '&amp;';
-                if (m === '<' ? return '&lt;' : '');
+                if (m === '<') return '&lt;';
                 if (m === '>') return '&gt;';
                 return m;
             });
